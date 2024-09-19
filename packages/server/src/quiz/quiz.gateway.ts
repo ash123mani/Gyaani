@@ -10,6 +10,7 @@ import { Logger } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { Server } from 'socket.io';
 import { Socket } from 'socket.io-client';
+import { QuizRoomClientToServerEvent, QuizRoomServerToClientEvents } from '@qj/shared';
 
 @WebSocketGateway({
   cors: {
@@ -41,11 +42,12 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.debug(`Number of connected clients: ${sockets.size}`);
   }
 
-  @SubscribeMessage('ping')
+  @SubscribeMessage<QuizRoomClientToServerEvent>('CreateQuizRoom')
   handleMessage(client: Socket, data: any) {
     this.logger.log(`Message received from client id: ${client.id}`);
     this.logger.debug(`Payload: ${data}`);
-    client.emit('pong', data);
+
+    client.emit<QuizRoomServerToClientEvents>('SuccessfullyCreatedQuizRoom', data);
     return 'pong';
   }
 }

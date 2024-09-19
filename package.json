@@ -4,9 +4,10 @@
   "description": "Open Quiz",
   "private": true,
   "scripts": {
-    "client": "yarn workspace client dev",
-    "server": "yarn workspace server start:dev",
-    "start": "npm-run-all --parallel client server"
+    "client": "yarn workspace @qj/client dev",
+    "server": "yarn workspace  @qj/server start:dev",
+    "shared": "yarn workspace  @qj/shared dev",
+    "start": "npm-run-all --parallel client server shared"
   },
   "author": "",
   "license": "ISC",

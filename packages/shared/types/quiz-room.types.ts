@@ -4,7 +4,7 @@ import {
   QuizRoomServerToClientEventsEnum,
 } from "../schema/quiz-room.schema";
 
-export type QuizRoomClientToServerEvents = z.infer<
+export type QuizRoomClientToServerEvent = z.infer<
   typeof QuizRoomClientToServerEventsEnum
 >;
 
