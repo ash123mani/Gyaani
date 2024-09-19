@@ -4,8 +4,8 @@
   "description": "Open Quiz",
   "private": true,
   "scripts": {
-    "client": "yarn workspace gyaani-client dev",
-    "server": "yarn workspace gyaani-server start:dev",
+    "client": "yarn workspace client dev",
+    "server": "yarn workspace server start:dev",
     "start": "npm-run-all --parallel client server"
   },
   "author": "",
