@@ -1,8 +1,23 @@
 import { QuizRoomService } from '@/src/quiz/quiz-room.service';
 import { Server, Socket } from 'socket.io';
-import { CreateQuizRoomEventData, JoinQuizRoomEventData } from '@qj/shared/dist/types';
+import {
+  CreateQuizRoomEventData,
+  JoinQuizRoomEventData,
+  QuizRoomServerErrors,
+  ServerExceptionResponse,
+} from '@qj/shared/dist/types';
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
+
+export class ServerException extends WsException {
+  constructor(type: QuizRoomServerErrors, message?: string | object) {
+    const serverExceptionResponse: ServerExceptionResponse = {
+      exception: type,
+      message: message,
+    };
+    super(serverExceptionResponse);
+  }
+}
 
 @Injectable()
 export class QuizRoomManagerService {
@@ -23,11 +38,11 @@ export class QuizRoomManagerService {
     const quizRoom = this.lobbies.get(data.quizRoomId);
 
     if (!quizRoom) {
-      throw new WsException('No Quiz Room Found.');
+      throw new ServerException(QuizRoomServerErrors.NoQuizRoomFound, 'No Quiz Rooms Found');
     }
 
     if (quizRoom.players.size === quizRoom.maxPlayersAllowed) {
-      throw new WsException('Quiz Room is already fill');
+      throw new ServerException(QuizRoomServerErrors.LobbyFull, 'Lobby Full');
     }
 
     quizRoom.addPlayerToQuizRoom(player, data);
