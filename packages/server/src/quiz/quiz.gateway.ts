@@ -10,7 +10,7 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { CreateQuizRoomEventData, QuizRoomClientToServerEvent } from '@qj/shared';
+import { CreateQuizRoomEventData, JoinQuizRoomEventData, QuizRoomClientToServerEvent } from '@qj/shared';
 import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
 
 @WebSocketGateway({
@@ -46,7 +46,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   // TODO: This should fail with proper error message when CreateQuizRoomEventData is not in proper format (use zod validation pipe)
   @SubscribeMessage<QuizRoomClientToServerEvent>('CreateQuizRoom')
-  handleMessage(@MessageBody() data: CreateQuizRoomEventData, @ConnectedSocket() client: Socket) {
+  handleCreateQuizRoomEvent(@MessageBody() data: CreateQuizRoomEventData, @ConnectedSocket() client: Socket) {
     this.logger.log(`CreateQuizRoom event received from client id: ${client.id}`);
     this.logger.debug(`Payload: ${typeof data}`);
 
@@ -54,13 +54,37 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     quizRoom.addPlayerToQuizRoom(client, data);
     // TODO: Define the payload data types for different events
     quizRoom.dispatchEventToQuizRoom('SuccessfullyCreatedQuizRoom', {
-      users: quizRoom.users,
+      users: quizRoom.usersNames,
     });
 
-    if (quizRoom.clients.size === data.maxPlayersAllowed) quizRoom.quizGame.startQuizGame();
+    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) {
+      quizRoom.quizGame.startQuizGame();
+      quizRoom.dispatchEventToQuizRoom<(typeof quizRoom.quizGame.quizQues)[0]>('StartedQuizGame', {
+        quiz: quizRoom.quizGame.quizQues,
+      });
+    }
 
     this.logger.log(
-      `QuizRoom: ${quizRoom.id} have maxAllowed players: ${data.maxPlayersAllowed} and currently ${quizRoom.clients.size} Players have joined`,
+      `QuizRoom: ${quizRoom.id} have maxAllowed players: ${data.maxPlayersAllowed} and currently ${quizRoom.players.size} Players have joined`,
     );
+  }
+
+  @SubscribeMessage<QuizRoomClientToServerEvent>('JoinQuizRoom')
+  handleJoinQuizRoomEvent(@MessageBody() data: JoinQuizRoomEventData, @ConnectedSocket() client: Socket) {
+    this.logger.log(`CreateQuizRoom event received from client id: ${client.id}`);
+    this.logger.debug(`Payload: ${typeof data}`);
+
+    const quizRoom = this.quizRoomManager.addPlayerToQuizRoom(client, data);
+
+    quizRoom.dispatchEventToQuizRoom('SuccessfullyJoinedQuizRoom', {
+      users: quizRoom.usersNames,
+    });
+
+    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) {
+      quizRoom.quizGame.startQuizGame();
+      quizRoom.dispatchEventToQuizRoom<(typeof quizRoom.quizGame.quizQues)[0]>('StartedQuizGame', {
+        quiz: quizRoom.quizGame.quizQues,
+      });
+    }
   }
 }

@@ -17,3 +17,8 @@ export const CreateQuizRoomEventDataSchema = z.object({
   userName: z.string(),
   maxPlayersAllowed: z.number(),
 });
+
+export const JoinQuizRoomEventDataSchema = z.object({
+  quizRoomId: z.string(),
+  userName: z.string(),
+});

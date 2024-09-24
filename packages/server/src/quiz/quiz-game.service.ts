@@ -12,10 +12,6 @@ export class QuizGame {
   public startQuizGame() {
     if (this.hasStarted) return;
     this.hasStarted = true;
-
-    this.quizRoom.dispatchEventToQuizRoom<(typeof this.quizQues)[0]>('StartedQuizGame', {
-      quiz: this.quizQues,
-    });
   }
 
   private initializeQuizGame() {

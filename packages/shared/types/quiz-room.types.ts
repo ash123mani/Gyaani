@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   CreateQuizRoomEventDataSchema,
+  JoinQuizRoomEventDataSchema,
   QuizRoomClientToServerEventsEnum,
   QuizRoomServerToClientEventsEnum,
 } from "../schema";
@@ -16,3 +17,5 @@ export type QuizRoomServerToClientEvents = z.infer<
 export type CreateQuizRoomEventData = z.infer<
   typeof CreateQuizRoomEventDataSchema
 >;
+
+export type JoinQuizRoomEventData = z.infer<typeof JoinQuizRoomEventDataSchema>;
