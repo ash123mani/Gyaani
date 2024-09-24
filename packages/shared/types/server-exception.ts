@@ -1,9 +1,9 @@
-export enum QuizRoomServerErrors {
+export enum QuizRoomServerExceptionEvents {
   LobbyFull = "LobbyFull",
   NoQuizRoomFound = "NoQuizRoomFound",
 }
 
 export type ServerExceptionResponse = {
-  exception: QuizRoomServerErrors;
+  exception: QuizRoomServerExceptionEvents;
   message?: string | object;
 };

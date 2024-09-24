@@ -8,16 +8,18 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { Logger, UseFilters } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { CreateQuizRoomEventData, JoinQuizRoomEventData, QuizRoomClientToServerEvent } from '@qj/shared';
 import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
+import { CustomWsExceptionFilter } from '@/src/errors/ws-exception-filter';
 
 @WebSocketGateway({
   cors: {
     origin: '*',
   },
 })
+@UseFilters(new CustomWsExceptionFilter())
 export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(QuizGateway.name);
 
@@ -71,8 +73,8 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage<QuizRoomClientToServerEvent>('JoinQuizRoom')
   handleJoinQuizRoomEvent(@MessageBody() data: JoinQuizRoomEventData, @ConnectedSocket() client: Socket) {
-    this.logger.log(`CreateQuizRoom event received from client id: ${client.id}`);
-    this.logger.debug(`Payload: ${typeof data}`);
+    this.logger.log(`JoinQuizRoom event received from client id: ${client.id} for QuizRoom ${data.quizRoomId}`);
+    this.logger.debug(`Payload: ${data}`);
 
     const quizRoom = this.quizRoomManager.addPlayerToQuizRoom(client, data);
 
