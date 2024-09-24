@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import { QuizGateway } from './quiz.gateway';
 import { INestApplication } from '@nestjs/common';
 import { Socket, io } from 'socket.io-client';
-import { QuizService } from './quiz.service';
+import { QuizRoomService } from './quiz-room.service';
 
 async function createNestApp(...gateways: any): Promise<INestApplication> {
   const testingModule = await Test.createTestingModule({
@@ -17,7 +17,7 @@ describe('QuizGateway', () => {
   let ioClient: Socket;
 
   beforeAll(async () => {
-    app = await createNestApp(QuizGateway, QuizService);
+    app = await createNestApp(QuizGateway, QuizRoomService);
     gateway = app.get<QuizGateway>(QuizGateway);
     ioClient = io('http://localhost:3000', {
       autoConnect: false,

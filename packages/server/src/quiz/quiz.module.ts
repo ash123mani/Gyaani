@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { QuizService } from './quiz.service';
 import { QuizGateway } from './quiz.gateway';
+import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
 
 @Module({
-  providers: [QuizGateway, QuizService],
+  providers: [QuizGateway, QuizRoomManagerService],
 })
 export class QuizModule {}

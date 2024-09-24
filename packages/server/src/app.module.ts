@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { QuizModule } from './quiz/quiz.module';
-import { QuizService } from './quiz/quiz.service';
+import { QuizRoomService } from './quiz/quiz-room.service';
 
 @Module({
   imports: [QuizModule],
   controllers: [AppController],
-  providers: [AppService, QuizService],
+  providers: [AppService, QuizRoomService],
 })
 export class AppModule {}

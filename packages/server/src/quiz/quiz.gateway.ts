@@ -1,4 +1,6 @@
 import {
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -7,10 +9,9 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
-import { QuizService } from './quiz.service';
-import { Server } from 'socket.io';
-import { Socket } from 'socket.io-client';
-import { QuizRoomClientToServerEvent, QuizRoomServerToClientEvents } from '@qj/shared';
+import { Server, Socket } from 'socket.io';
+import { CreateQuizRoomEventData, QuizRoomClientToServerEvent, QuizRoomServerToClientEvents } from '@qj/shared';
+import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
 
 @WebSocketGateway({
   cors: {
@@ -22,10 +23,11 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @WebSocketServer() io: Server;
 
-  constructor(private readonly quizService: QuizService) {}
+  constructor(private readonly quizRoomManager: QuizRoomManagerService) {}
 
-  afterInit() {
-    this.logger.log('Server is running');
+  afterInit(server: Server) {
+    this.quizRoomManager.server = server;
+    this.logger.log('Quiz Room Server is running');
   }
 
   handleConnection(client: Socket) {
@@ -42,12 +44,22 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.debug(`Number of connected clients: ${sockets.size}`);
   }
 
+  // TODO: This should fail with proper error message
   @SubscribeMessage<QuizRoomClientToServerEvent>('CreateQuizRoom')
-  handleMessage(client: Socket, data: any) {
-    this.logger.log(`Message received from client id: ${client.id}`);
-    this.logger.debug(`Payload: ${data}`);
+  handleMessage(@MessageBody() data: CreateQuizRoomEventData, @ConnectedSocket() client: Socket) {
+    this.logger.log(`CreateQuizRoom event received from client id: ${client.id}`);
+    this.logger.debug(`Payload: ${typeof data}`);
 
-    client.emit<QuizRoomServerToClientEvents>('SuccessfullyCreatedQuizRoom', data);
-    return 'pong';
+    const quizRoom = this.quizRoomManager.createQuizRoom(data);
+    quizRoom.addPlayerToQuizRoom(client, data);
+    this.io.emit<QuizRoomServerToClientEvents>('SuccessfullyCreatedQuizRoom', {
+      users: quizRoom.users,
+    });
+
+    if (quizRoom.clients.size === data.maxPlayersAllowed) quizRoom.quizGame.startQuizGame();
+
+    this.logger.log(
+      `QuizRoom: ${quizRoom.id} have maxAllowed players: ${data.maxPlayersAllowed} and currently ${quizRoom.clients.size} Players have joined`,
+    );
   }
 }
