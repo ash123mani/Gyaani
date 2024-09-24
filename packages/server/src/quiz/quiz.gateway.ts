@@ -10,7 +10,7 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { CreateQuizRoomEventData, QuizRoomClientToServerEvent, QuizRoomServerToClientEvents } from '@qj/shared';
+import { CreateQuizRoomEventData, QuizRoomClientToServerEvent } from '@qj/shared';
 import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
 
 @WebSocketGateway({
@@ -44,7 +44,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.debug(`Number of connected clients: ${sockets.size}`);
   }
 
-  // TODO: This should fail with proper error message
+  // TODO: This should fail with proper error message when CreateQuizRoomEventData is not in proper format (use zod validation pipe)
   @SubscribeMessage<QuizRoomClientToServerEvent>('CreateQuizRoom')
   handleMessage(@MessageBody() data: CreateQuizRoomEventData, @ConnectedSocket() client: Socket) {
     this.logger.log(`CreateQuizRoom event received from client id: ${client.id}`);
@@ -52,7 +52,8 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     const quizRoom = this.quizRoomManager.createQuizRoom(data);
     quizRoom.addPlayerToQuizRoom(client, data);
-    this.io.emit<QuizRoomServerToClientEvents>('SuccessfullyCreatedQuizRoom', {
+    // TODO: Define the payload data types for different events
+    quizRoom.dispatchEventToQuizRoom('SuccessfullyCreatedQuizRoom', {
       users: quizRoom.users,
     });
 
