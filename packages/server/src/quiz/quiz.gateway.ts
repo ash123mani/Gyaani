@@ -59,6 +59,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // TODO: Define the payload data types for different events
     quizRoom.dispatchEventToQuizRoom('SuccessfullyCreatedQuizRoom', {
       users: Array.from(quizRoom.usersNames, ([, userName]) => userName),
+      quizRoomId: quizRoom.roomId,
     });
 
     if (quizRoom.players.size === quizRoom.maxPlayersAllowed) {
@@ -82,6 +83,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     quizRoom.dispatchEventToQuizRoom('SuccessfullyJoinedQuizRoom', {
       users: Array.from(quizRoom.usersNames, ([, userName]) => userName),
+      quizRoomId: quizRoom.roomId,
     });
 
     if (quizRoom.players.size === quizRoom.maxPlayersAllowed) {

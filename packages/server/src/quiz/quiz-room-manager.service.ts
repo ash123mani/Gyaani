@@ -20,10 +20,8 @@ export class QuizRoomManagerService {
   }
 
   public createQuizRoom(createQuizRoomEventData: CreateQuizRoomEventData): QuizRoomService {
-    if (this.quizRooms.has(createQuizRoomEventData.quizRoomId)) throw new WsException(ERRORS.QUIZ_ROOM_ALREADY_EXISTS);
-
     const quizRoom = new QuizRoomService(this.server, createQuizRoomEventData.maxPlayersAllowed);
-    this.quizRooms.set(createQuizRoomEventData.quizRoomId, quizRoom);
+    this.quizRooms.set(quizRoom.roomId, quizRoom);
 
     return quizRoom;
   }

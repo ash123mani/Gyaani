@@ -1,27 +1,57 @@
 "use client";
 
-import { Box, Button, Heading, Stack } from "@chakra-ui/react";
+import { Box, Button, Heading, Stack, useDisclosure } from "@chakra-ui/react";
 import { AddIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import { Link } from "@chakra-ui/next-js";
+
+import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizModal";
 
 import styles from "./styles.module.css";
+import { WaitingToJoinRoomModal } from "@/app/components/waiting-to-join-modal/WaitingToJoinRoomModal";
 
 export default function Home() {
+  const {
+    isOpen: isCreateQuizRoomModalOpen,
+    onOpen: onCreateQuizRoomModalOpen,
+    onClose: onCreateQuizRoomModalClose,
+  } = useDisclosure({ id: "CreateQuizRoomModalOpen" });
+
+  const {
+    isOpen: isWaitingRoomModalOpen,
+    onOpen: onWaitingRoomModalOpen,
+    onClose: onWaitingRoomModalClose,
+  } = useDisclosure({ id: "WaitingRoomModalOpen" });
+
+  function handleSuccessfulQuizRoomCreation() {
+    onCreateQuizRoomModalClose();
+    onWaitingRoomModalOpen();
+  }
+
   return (
     <Box as="main" className={styles.main}>
       <Heading as="h1" size="2xl" color="blackAlpha.500">
         Start Playing Quiz
       </Heading>
       <Stack spacing={2} direction="row">
-        <Link href="/quiz-room" _hover={{ textDecoration: "none" }}>
-          <Button colorScheme="orange" leftIcon={<AddIcon />}>
-            Create a quiz room
-          </Button>
-        </Link>
+        <Button
+          colorScheme="orange"
+          leftIcon={<AddIcon />}
+          onClick={onCreateQuizRoomModalOpen}
+        >
+          Create a quiz room
+        </Button>
         <Button colorScheme="blackAlpha" rightIcon={<ArrowForwardIcon />}>
           Join a quiz room
         </Button>
       </Stack>
+      <CreateQuizModal
+        onClose={onCreateQuizRoomModalClose}
+        isOpen={isCreateQuizRoomModalOpen}
+        onSuccessfulQuizRoomCreation={handleSuccessfulQuizRoomCreation}
+      />
+      <WaitingToJoinRoomModal
+        isOpen={isWaitingRoomModalOpen}
+        onClose={onWaitingRoomModalClose}
+      />
     </Box>
   );
 }
