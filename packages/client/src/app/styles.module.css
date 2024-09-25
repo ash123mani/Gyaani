@@ -1,9 +1,14 @@
 .page {
-    display: flex;
-    flex-direction: column;
     height: 100vh;
     margin: 0 180px;
     padding: 12px 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.layoutContainer {
+    height: 100%;
+    flex: 1;
 }
 
 
@@ -13,7 +18,7 @@
     align-items: center;
     gap: 32px;
     justify-content: center;
-    flex: 1;
+    height: 100%;
 }
 
 

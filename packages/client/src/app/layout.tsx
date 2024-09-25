@@ -3,8 +3,8 @@ import { type ReactNode } from "react";
 
 import { Providers } from "./providers";
 import { geistMono, geistSans } from "@/app/fonts";
-import { Header } from "@/app/_components/header/Header";
-import { Footer } from "@/app/_components/footer/Footer";
+import { Header } from "@/app/components/header/Header";
+import { Footer } from "@/app/components/footer/Footer";
 import styles from "@/app/styles.module.css";
 import { Box } from "@chakra-ui/react";
 
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Providers>
           <Box className={styles.page}>
             <Header />
-            {children}
+            <Box className={styles.layoutContainer}>{children}</Box>
             <Footer />
           </Box>
         </Providers>
