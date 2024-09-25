@@ -1,7 +1,10 @@
-import { Box, Button, Link } from "@chakra-ui/react";
-import NextLink from "next/link";
+"use client";
+
+import { Box } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/next-js";
 
 import styles from "./styles.module.css";
+import { AppLogo } from "@/app/components/icons/AppLogo";
 
 export function Header() {
   return (
@@ -11,15 +14,8 @@ export function Header() {
       border="thickDark"
       borderRadius="md"
     >
-      <Link
-        as={NextLink}
-        href="/"
-        _hover={{ textDecoration: "none" }}
-        color="teal.600"
-        fontSize="xl"
-        fontWeight="semibold"
-      >
-        <Button>Gyaani Quiz</Button>
+      <Link href="/" _hover={{ textDecoration: "none", colorScheme: "orange" }}>
+        <AppLogo />
       </Link>
     </Box>
   );

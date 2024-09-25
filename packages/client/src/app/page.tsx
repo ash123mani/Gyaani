@@ -1,7 +1,10 @@
-import { Box, Button, Heading, Link, Stack } from "@chakra-ui/react";
+"use client";
+
+import { Box, Button, Heading, Stack } from "@chakra-ui/react";
+import { AddIcon, ArrowForwardIcon } from "@chakra-ui/icons";
+import { Link } from "@chakra-ui/next-js";
 
 import styles from "./styles.module.css";
-import NextLink from "next/link";
 
 export default function Home() {
   return (
@@ -10,14 +13,14 @@ export default function Home() {
         Start Playing Quiz
       </Heading>
       <Stack spacing={2} direction="row">
-        <Link
-          as={NextLink}
-          href="/quiz-room"
-          _hover={{ textDecoration: "none" }}
-        >
-          <Button colorScheme="orange">Create a quiz room</Button>
+        <Link href="/quiz-room" _hover={{ textDecoration: "none" }}>
+          <Button colorScheme="orange" leftIcon={<AddIcon />}>
+            Create a quiz room
+          </Button>
         </Link>
-        <Button colorScheme="blackAlpha">Join a quiz room</Button>
+        <Button colorScheme="blackAlpha" rightIcon={<ArrowForwardIcon />}>
+          Join a quiz room
+        </Button>
       </Stack>
     </Box>
   );
