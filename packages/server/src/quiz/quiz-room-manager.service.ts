@@ -3,24 +3,24 @@ import { Server, Socket } from 'socket.io';
 import { CreateQuizRoomEventData, JoinQuizRoomEventData } from '@qj/shared/dist/types';
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
+import { ERRORS } from '@qj/shared';
 
 @Injectable()
 export class QuizRoomManagerService {
   public server: Server;
-  private readonly quizRooms: Map<QuizRoomService['id'], QuizRoomService> = new Map<
-    QuizRoomService['id'],
-    QuizRoomService
-  >();
+  private readonly quizRooms: Map<QuizRoomService['roomId'], QuizRoomService> = new Map();
+
+  public terminateSocket(player: Socket): void {
+    const quizRooms = this.quizRooms.values();
+    for (const quizRoom of quizRooms) {
+      if (quizRoom.players.has(player.id)) {
+        quizRoom.removePlayerFromQuizRoom(player);
+      }
+    }
+  }
 
   public createQuizRoom(createQuizRoomEventData: CreateQuizRoomEventData): QuizRoomService {
-    if (this.quizRooms.has(createQuizRoomEventData.quizRoomId)) {
-      throw new WsException({
-        code: 'QUIZ_ROOM_ALREADY_EXISTS',
-        message: 'QuizRoom already exists',
-        details: 'Seems like this Quiz Room has been occupied already',
-        timestamp: Date.now(),
-      });
-    }
+    if (this.quizRooms.has(createQuizRoomEventData.quizRoomId)) throw new WsException(ERRORS.QUIZ_ROOM_ALREADY_EXISTS);
 
     const quizRoom = new QuizRoomService(this.server, createQuizRoomEventData.maxPlayersAllowed);
     this.quizRooms.set(createQuizRoomEventData.quizRoomId, quizRoom);
@@ -31,23 +31,8 @@ export class QuizRoomManagerService {
   public addPlayerToQuizRoom(player: Socket, data: JoinQuizRoomEventData): QuizRoomService {
     const quizRoom = this.quizRooms.get(data.quizRoomId);
 
-    if (!quizRoom) {
-      throw new WsException({
-        code: 'QUIZ_ROOM_NOT_FOUND',
-        message: 'No such quiz room exist',
-        details: 'Try creating a new room',
-        timestamp: Date.now(),
-      });
-    }
-
-    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) {
-      throw new WsException({
-        code: 'QUIZ_ROOM_ALREADY_FULL',
-        message: 'Quiz room is already full',
-        details: 'Try joining new room',
-        timestamp: Date.now(),
-      });
-    }
+    if (!quizRoom) throw new WsException(ERRORS.QUIZ_ROOM_NOT_FOUND);
+    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) throw new WsException(ERRORS.QUIZ_ROOM_ALREADY_FULL);
 
     quizRoom.addPlayerToQuizRoom(player, data);
 

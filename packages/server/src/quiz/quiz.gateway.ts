@@ -42,6 +42,8 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleDisconnect(client: Socket) {
     const { sockets } = this.io.sockets;
 
+    this.quizRoomManager.terminateSocket(client);
+
     this.logger.log(`Client id:${client.id} disconnected`);
     this.logger.debug(`Number of connected clients: ${sockets.size}`);
   }
@@ -56,7 +58,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     quizRoom.addPlayerToQuizRoom(client, data);
     // TODO: Define the payload data types for different events
     quizRoom.dispatchEventToQuizRoom('SuccessfullyCreatedQuizRoom', {
-      users: quizRoom.usersNames,
+      users: Array.from(quizRoom.usersNames, ([, userName]) => userName),
     });
 
     if (quizRoom.players.size === quizRoom.maxPlayersAllowed) {
@@ -67,7 +69,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     this.logger.log(
-      `QuizRoom: ${quizRoom.id} have maxAllowed players: ${data.maxPlayersAllowed} and currently ${quizRoom.players.size} Players have joined`,
+      `QuizRoom: ${quizRoom.roomId} have maxAllowed players: ${data.maxPlayersAllowed} and currently ${quizRoom.players.size} Players have joined`,
     );
   }
 
@@ -79,7 +81,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const quizRoom = this.quizRoomManager.addPlayerToQuizRoom(client, data);
 
     quizRoom.dispatchEventToQuizRoom('SuccessfullyJoinedQuizRoom', {
-      users: quizRoom.usersNames,
+      users: Array.from(quizRoom.usersNames, ([, userName]) => userName),
     });
 
     if (quizRoom.players.size === quizRoom.maxPlayersAllowed) {

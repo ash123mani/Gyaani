@@ -2,8 +2,9 @@ import { ArgumentsHost, Catch, WsExceptionFilter } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { ErrorDetails, ServerErrorResponse } from '@qj/shared/dist/types';
+import { ERRORS } from '@qj/shared';
 
-function isCustomErrorDetails(error: any): error is ErrorDetails {
+function isCustomErrorDetails(error: any): error is Exclude<ErrorDetails, 'timestamp'> {
   return !!error.code && !!error.message && !!error.details;
 }
 
@@ -16,20 +17,19 @@ export class CustomWsExceptionFilter implements WsExceptionFilter {
     const error = exception.getError(); // Get the error message or object
     let response: ServerErrorResponse;
 
+    const errorTimeStamp = {
+      timestamp: new Date(),
+    };
+
     if (isCustomErrorDetails(error)) {
       response = {
         status: 'error',
-        error: error,
+        error: Object.assign(errorTimeStamp, error),
       };
     } else {
       response = {
         status: 'error',
-        error: {
-          code: 'WS_INTERNAL_SERVER_ERROR',
-          message: 'Something went wrong on our side',
-          details: 'Please try again after some time. If issue persists report it at fixmeqj@gmail.com',
-          timestamp: new Date(),
-        },
+        error: Object.assign(errorTimeStamp, ERRORS.WS_INTERNAL_SERVER_ERROR),
       };
     }
 
