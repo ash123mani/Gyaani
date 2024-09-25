@@ -7,8 +7,10 @@ import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizMo
 
 import styles from "./styles.module.css";
 import { WaitingToJoinRoomModal } from "@/app/components/waiting-to-join-modal/WaitingToJoinRoomModal";
+import { useState } from "react";
 
 export default function Home() {
+  const [roomId, setRoomId] = useState<string>("");
   const {
     isOpen: isCreateQuizRoomModalOpen,
     onOpen: onCreateQuizRoomModalOpen,
@@ -21,8 +23,9 @@ export default function Home() {
     onClose: onWaitingRoomModalClose,
   } = useDisclosure({ id: "WaitingRoomModalOpen" });
 
-  function handleSuccessfulQuizRoomCreation() {
+  function handleSuccessfulQuizRoomCreation(values: unknown) {
     onCreateQuizRoomModalClose();
+    setRoomId((values as unknown as { quizRoomId: string }).quizRoomId);
     onWaitingRoomModalOpen();
   }
 
@@ -51,6 +54,7 @@ export default function Home() {
       <WaitingToJoinRoomModal
         isOpen={isWaitingRoomModalOpen}
         onClose={onWaitingRoomModalClose}
+        roomId={roomId}
       />
     </Box>
   );

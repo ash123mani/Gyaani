@@ -13,25 +13,21 @@ import {
 interface WaitingToJoinRoomModalProps {
   onClose: UseModalProps["onClose"];
   isOpen: UseModalProps["isOpen"];
+  roomId: string;
 }
 
 export function WaitingToJoinRoomModal({
   isOpen,
   onClose,
+  roomId,
 }: WaitingToJoinRoomModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Waiting for Players to join</ModalHeader>
+        <ModalHeader>Waiting for Players to join Room </ModalHeader>
         <ModalCloseButton />
-        <ModalBody>Waiting to join..</ModalBody>
-
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
-            Close
-          </Button>
-        </ModalFooter>
+        <ModalBody>Waiting for other players to join room {roomId}</ModalBody>
       </ModalContent>
     </Modal>
   );
