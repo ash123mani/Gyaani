@@ -22,10 +22,13 @@ export const CreateQuizRoomEventDataSchema = z.object({
   maxPlayersAllowed: z.number().int().min(1, { message: "Required" }),
 });
 
-export const SuccessfullyCreatedQuizRoomEventPayloadSchema = z.object({
+export const QuiRoomStateSchema = z.object({
   users: z.array(z.string().min(2, { message: "Required" })),
-  quizRoomId: z.string().min(2, { message: "Required" }),
-  hasGameStarted: z.boolean(),
+  roomId: z.string().min(2, { message: "Required" }),
+  quizGame: z.object({
+    hasStarted: z.boolean(),
+    ques: z.array(z.object({})),
+  }),
 });
 
 export const JoinQuizRoomEventDataSchema = z.object({

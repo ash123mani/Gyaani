@@ -16,30 +16,21 @@ import {
   type UseModalProps,
 } from "@chakra-ui/react";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import {
-  JoinQuizRoomEventData,
-  JoinQuizRoomEventDataSchema,
-  QuizRoomClientToServerEvent,
-  QuizRoomServerToClientEvents,
-  SuccessfullyCreatedQuizRoomEventPayload,
-} from "@qj/shared";
+import { JoinQuizRoomEventData, JoinQuizRoomEventDataSchema } from "@qj/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import styles from "@/app/components/create-quiz-modal/styles.module.css";
-import { socket } from "@/app/socket";
 
 interface JoinQuizRoomModalProps {
   onClose: UseModalProps["onClose"];
   isOpen: UseModalProps["isOpen"];
-  onSuccessfulQuizRoomJoin: (
-    values: SuccessfullyCreatedQuizRoomEventPayload,
-  ) => void;
+  onJoinQuizRoomSubmit: SubmitHandler<JoinQuizRoomEventData>;
 }
 
 export function JoinQuizRoomModal({
   onClose,
   isOpen,
-  onSuccessfulQuizRoomJoin,
+  onJoinQuizRoomSubmit,
 }: JoinQuizRoomModalProps) {
   const {
     handleSubmit,
@@ -53,16 +44,6 @@ export function JoinQuizRoomModal({
     },
   });
 
-  const onSubmit: SubmitHandler<JoinQuizRoomEventData> = (
-    values: JoinQuizRoomEventData,
-  ) => {
-    socket.emit<QuizRoomClientToServerEvent>("JoinQuizRoom", values);
-    socket.on<QuizRoomServerToClientEvents>(
-      "SuccessfullyJoinedQuizRoom",
-      onSuccessfulQuizRoomJoin,
-    );
-  };
-
   return (
     <Modal
       isCentered
@@ -73,7 +54,7 @@ export function JoinQuizRoomModal({
     >
       <ModalOverlay />
       <Box
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onJoinQuizRoomSubmit)}
         className={styles.createQuizRoomForm}
         as="form"
       >

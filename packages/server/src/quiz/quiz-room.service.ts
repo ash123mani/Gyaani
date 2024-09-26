@@ -1,7 +1,8 @@
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { QuizGame } from '@/src/quiz/quiz-game.service';
-import { JoinQuizRoomEventData, QuizRoomServerToClientEvents } from '@qj/shared/dist/types';
+import { JoinQuizRoomEventData, QuizRoomState, QuizRoomServerToClientEvents } from '@qj/shared';
+import { mapToArrayValues } from '@/src/utils/map-to-array';
 
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring
 export class QuizRoomService {
@@ -25,6 +26,17 @@ export class QuizRoomService {
   public removePlayerFromQuizRoom(player: Socket) {
     player.leave(this.roomId);
     this.usersNames.delete(player.id);
+  }
+
+  public get state(): QuizRoomState {
+    return {
+      users: mapToArrayValues(this.usersNames),
+      roomId: this.roomId,
+      quizGame: {
+        hasStarted: this.quizGame.hasStarted,
+        ques: this.quizGame.quizQues,
+      },
+    };
   }
 
   public dispatchEventToQuizRoom<T>(event: QuizRoomServerToClientEvents, payload: T) {

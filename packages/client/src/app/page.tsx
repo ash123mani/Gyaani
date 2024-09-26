@@ -5,8 +5,11 @@ import { AddIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  CreateQuizRoomEventData,
+  JoinQuizRoomEventData,
+  QuizRoomState,
+  QuizRoomClientToServerEvent,
   QuizRoomServerToClientEvents,
-  SuccessfullyCreatedQuizRoomEventPayload,
 } from "@qj/shared";
 
 import { socket } from "@/app/socket";
@@ -42,17 +45,29 @@ export default function Home() {
     router.replace("/quiz-game");
   }
 
-  function handleSuccessfulQuizRoomJoin(
-    values: SuccessfullyCreatedQuizRoomEventPayload,
-  ) {
+  function handleSuccessfulQuizRoomJoin(quizRoom: QuizRoomState) {
     onJoinRoomModalClose();
-    setRoomId(values.quizRoomId);
-
-    if (!values.hasGameStarted) onWaitingRoomModalOpen();
-
+    setRoomId(quizRoom.roomId);
+    if (!quizRoom.quizGame.hasStarted) onWaitingRoomModalOpen();
     socket.on<QuizRoomServerToClientEvents>(
       "StartedQuizGame",
       handleQuizGameStart,
+    );
+  }
+
+  function handleJoinQuizRoomSubmit(values: JoinQuizRoomEventData) {
+    socket.emit<QuizRoomClientToServerEvent>("JoinQuizRoom", values);
+    socket.on<QuizRoomServerToClientEvents>(
+      "SuccessfullyJoinedQuizRoom",
+      handleSuccessfulQuizRoomJoin,
+    );
+  }
+
+  function handleCreateQuizRoomSubmit(values: CreateQuizRoomEventData) {
+    socket.emit<QuizRoomClientToServerEvent>("CreateQuizRoom", values);
+    socket.on<QuizRoomServerToClientEvents>(
+      "SuccessfullyCreatedQuizRoom",
+      handleSuccessfulQuizRoomJoin,
     );
   }
 
@@ -80,7 +95,7 @@ export default function Home() {
       <CreateQuizModal
         onClose={onCreateQuizRoomModalClose}
         isOpen={isCreateQuizRoomModalOpen}
-        onSuccessfulQuizRoomCreation={handleSuccessfulQuizRoomJoin}
+        onCreateQuizRoomSubmit={handleCreateQuizRoomSubmit}
       />
       <WaitingToJoinRoomModal
         isOpen={isWaitingRoomModalOpen}
@@ -90,7 +105,7 @@ export default function Home() {
       <JoinQuizRoomModal
         isOpen={isJoinRoomModalOpen}
         onClose={onJoinRoomModalClose}
-        onSuccessfulQuizRoomJoin={handleSuccessfulQuizRoomJoin}
+        onJoinQuizRoomSubmit={handleJoinQuizRoomSubmit}
       />
     </Box>
   );

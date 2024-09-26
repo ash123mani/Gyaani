@@ -26,9 +26,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CreateQuizRoomEventData,
   CreateQuizRoomEventDataSchema,
-  QuizRoomClientToServerEvent,
-  QuizRoomServerToClientEvents,
-  SuccessfullyCreatedQuizRoomEventPayload,
 } from "@qj/shared";
 
 import { socket } from "@/app/socket";
@@ -38,15 +35,13 @@ import styles from "./styles.module.css";
 interface CreateQuizModalProps {
   onClose: UseModalProps["onClose"];
   isOpen: UseModalProps["isOpen"];
-  onSuccessfulQuizRoomCreation: (
-    values: SuccessfullyCreatedQuizRoomEventPayload,
-  ) => void;
+  onCreateQuizRoomSubmit: SubmitHandler<CreateQuizRoomEventData>;
 }
 
 export function CreateQuizModal({
   onClose,
   isOpen,
-  onSuccessfulQuizRoomCreation,
+  onCreateQuizRoomSubmit,
 }: CreateQuizModalProps) {
   const {
     handleSubmit,
@@ -67,14 +62,6 @@ export function CreateQuizModal({
     socket.connect();
   }, []);
 
-  const onSubmit: SubmitHandler<CreateQuizRoomEventData> = (values) => {
-    socket.emit<QuizRoomClientToServerEvent>("CreateQuizRoom", values);
-    socket.on<QuizRoomServerToClientEvents>(
-      "SuccessfullyCreatedQuizRoom",
-      onSuccessfulQuizRoomCreation,
-    );
-  };
-
   return (
     <Modal
       isCentered
@@ -85,7 +72,7 @@ export function CreateQuizModal({
     >
       <ModalOverlay />
       <Box
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onCreateQuizRoomSubmit)}
         className={styles.createQuizRoomForm}
         as="form"
       >
