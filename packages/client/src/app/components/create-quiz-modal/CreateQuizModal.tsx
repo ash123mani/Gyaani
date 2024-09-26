@@ -81,6 +81,7 @@ export function CreateQuizModal({
       onClose={onClose}
       isOpen={isOpen}
       motionPreset="slideInBottom"
+      size="lg"
     >
       <ModalOverlay />
       <Box
