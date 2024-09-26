@@ -7,20 +7,15 @@
     "import/order": [
       "error",
       {
+        "distinctGroup": true,
         "newlines-between": "always",
-        "pathGroups": [
-          {
-            "pattern": "@qj/**",
-            "group": "internal"
-          }
-        ],
         "groups": [
           "builtin",
           "external",
           "internal",
           [
-            "sibling",
-            "parent"
+            "parent",
+            "sibling"
           ],
           "index",
           "object",
