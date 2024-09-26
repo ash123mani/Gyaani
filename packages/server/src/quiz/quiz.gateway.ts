@@ -56,7 +56,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     const quizRoom = this.quizRoomManager.createQuizRoom(data);
     quizRoom.addPlayerToQuizRoom(client, data);
-    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) quizRoom.quizGame.startQuizGame();
+    quizRoom.startQuizGame();
 
     // TODO: Define the payload data types for different events
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);
@@ -65,14 +65,15 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       quizRoom.dispatchEventToQuizRoom<QuizRoomState>('StartedQuizGame', quizRoom.state);
 
       const intervalId = setInterval(() => {
-        quizRoom.quizGame.moveToNextQues();
-        quizRoom.dispatchEventToQuizRoom<QuizRoomState>('CurrentQues', quizRoom.state);
-
-        if (quizRoom.quizGame.hasFinished) {
+        if (!quizRoom.quizGame.isLastQues) {
+          quizRoom.quizGame.moveToNextQues();
+          quizRoom.dispatchEventToQuizRoom<QuizRoomState>('CurrentQues', quizRoom.state);
+        } else {
+          quizRoom.endQuizGame();
           quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameEnded', quizRoom.state);
           clearInterval(intervalId);
         }
-      }, 10000);
+      }, 5000);
     }
 
     this.logger.log(
@@ -86,7 +87,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.debug(`Payload: ${data}`);
 
     const quizRoom = this.quizRoomManager.addPlayerToQuizRoom(client, data);
-    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) quizRoom.quizGame.startQuizGame();
+    quizRoom.startQuizGame();
 
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
     if (quizRoom.quizGame.hasStarted) {

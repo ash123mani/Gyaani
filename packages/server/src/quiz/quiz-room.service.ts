@@ -28,14 +28,22 @@ export class QuizRoomService {
     this.usersNames.delete(player.id);
   }
 
+  public startQuizGame() {
+    if (this.players.size === this.maxPlayersAllowed) this.quizGame.startGame();
+  }
+
+  public endQuizGame() {
+    this.quizGame.endGame();
+  }
+
   public get state(): QuizRoomState {
     return {
       users: mapToArrayValues(this.usersNames),
       roomId: this.roomId,
       quizGame: {
         hasStarted: this.quizGame.hasStarted,
-        ques: this.quizGame.quizQues,
         currentQues: this.quizGame.currentQues,
+        hasFinished: this.quizGame.hasFinished,
       },
     };
   }

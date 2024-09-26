@@ -35,7 +35,7 @@ export const QuiRoomStateSchema = z.object({
   roomId: z.string().min(2, { message: "Required" }),
   quizGame: z.object({
     hasStarted: z.boolean(),
-    ques: z.array(QuizQuesSchema),
+    hasFinished: z.boolean(),
     currentQues: QuizQuesSchema,
   }),
 });

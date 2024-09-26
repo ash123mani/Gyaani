@@ -12,9 +12,15 @@ export class QuizGame {
     this.initializeQuizGame();
   }
 
-  public startQuizGame() {
+  public startGame() {
     if (this.hasStarted) return;
     this.hasStarted = true;
+  }
+
+  public endGame() {
+    if (this.hasFinished) return;
+    this.hasFinished = true;
+    this.currentQuestionIndex = this.quizQues.length + 1;
   }
 
   public get currentQues(): QuizQues {
