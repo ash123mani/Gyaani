@@ -90,7 +90,7 @@ export function CreateQuizModal({
         as="form"
       >
         <ModalContent>
-          <ModalHeader>Create Quiz Room</ModalHeader>
+          <ModalHeader>Create a new Quiz Room</ModalHeader>
           <ModalCloseButton />
 
           <ModalBody>

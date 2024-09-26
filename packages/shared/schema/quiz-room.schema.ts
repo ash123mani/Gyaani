@@ -15,7 +15,10 @@ export const QuizRoomServerToClientEventsEnum = z.enum([
 ]);
 
 export const CreateQuizRoomEventDataSchema = z.object({
-  userName: z.string().min(2, { message: "Required" }),
+  userName: z.string().min(2, {
+    message:
+      "Player Name should be minimum of 2 characters. Please enter 2 or more characters.",
+  }),
   maxPlayersAllowed: z.number().int().min(1, { message: "Required" }),
 });
 
@@ -26,6 +29,12 @@ export const SuccessfullyCreatedQuizRoomEventPayloadSchema = z.object({
 });
 
 export const JoinQuizRoomEventDataSchema = z.object({
-  quizRoomId: z.string(),
-  userName: z.string(),
+  quizRoomId: z.string().min(5, {
+    message:
+      "Room code should be minimum of 5 characters. Please enter 5 or more characters.",
+  }),
+  userName: z.string().min(2, {
+    message:
+      "Player Name should be minimum of 2 characters. Please enter 2 or more characters.",
+  }),
 });

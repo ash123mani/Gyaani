@@ -91,6 +91,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     quizRoom.dispatchEventToQuizRoom('SuccessfullyJoinedQuizRoom', {
       users: Array.from(quizRoom.usersNames, ([, userName]) => userName),
       quizRoomId: quizRoom.roomId,
+      hasGameStarted: quizRoom.quizGame.hasStarted,
     });
     if (quizRoom.quizGame.hasStarted) {
       quizRoom.dispatchEventToQuizRoom<(typeof quizRoom.quizGame.quizQues)[0]>('StartedQuizGame', {
