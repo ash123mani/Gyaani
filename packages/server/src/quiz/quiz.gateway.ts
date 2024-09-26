@@ -56,14 +56,15 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     const quizRoom = this.quizRoomManager.createQuizRoom(data);
     quizRoom.addPlayerToQuizRoom(client, data);
+    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) quizRoom.quizGame.startQuizGame();
+
     // TODO: Define the payload data types for different events
     quizRoom.dispatchEventToQuizRoom('SuccessfullyCreatedQuizRoom', {
       users: Array.from(quizRoom.usersNames, ([, userName]) => userName),
       quizRoomId: quizRoom.roomId,
+      hasGameStarted: quizRoom.quizGame.hasStarted,
     });
-
-    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) {
-      quizRoom.quizGame.startQuizGame();
+    if (quizRoom.quizGame.hasStarted) {
       quizRoom.dispatchEventToQuizRoom<(typeof quizRoom.quizGame.quizQues)[0]>('StartedQuizGame', {
         quiz: quizRoom.quizGame.quizQues,
       });
@@ -80,14 +81,13 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.debug(`Payload: ${data}`);
 
     const quizRoom = this.quizRoomManager.addPlayerToQuizRoom(client, data);
+    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) quizRoom.quizGame.startQuizGame();
 
     quizRoom.dispatchEventToQuizRoom('SuccessfullyJoinedQuizRoom', {
       users: Array.from(quizRoom.usersNames, ([, userName]) => userName),
       quizRoomId: quizRoom.roomId,
     });
-
-    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) {
-      quizRoom.quizGame.startQuizGame();
+    if (quizRoom.quizGame.hasStarted) {
       quizRoom.dispatchEventToQuizRoom<(typeof quizRoom.quizGame.quizQues)[0]>('StartedQuizGame', {
         quiz: quizRoom.quizGame.quizQues,
       });

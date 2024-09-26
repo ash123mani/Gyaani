@@ -50,10 +50,15 @@ export function CreateQuizModal({
     register,
     formState: { errors },
     setValue,
-    getValues,
+    watch,
   } = useForm<CreateQuizRoomEventData>({
     resolver: zodResolver(CreateQuizRoomEventDataSchema),
+    defaultValues: {
+      maxPlayersAllowed: 1,
+      userName: "",
+    },
   });
+  const maxPlayersAllowed = watch("maxPlayersAllowed");
 
   useEffect(() => {
     socket.connect();
@@ -107,11 +112,15 @@ export function CreateQuizModal({
                 <NumberInput
                   id="maxPlayersAllowed"
                   inputMode="numeric"
+                  min={1}
                   onChange={(valueAsString, valueAsNumber) => {
-                    setValue("maxPlayersAllowed", valueAsNumber);
+                    setValue(
+                      "maxPlayersAllowed",
+                      isNaN(valueAsNumber) ? 1 : valueAsNumber,
+                    );
                   }}
                   name="maxPlayersAllowed"
-                  value={getValues("maxPlayersAllowed")}
+                  value={maxPlayersAllowed}
                 >
                   <NumberInputField />
                   <NumberInputStepper>

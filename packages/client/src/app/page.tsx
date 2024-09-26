@@ -8,9 +8,11 @@ import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizMo
 import styles from "./styles.module.css";
 import { WaitingToJoinRoomModal } from "@/app/components/waiting-to-join-modal/WaitingToJoinRoomModal";
 import { useState } from "react";
+import { socket } from "@/app/socket";
+import { QuizRoomServerToClientEvents } from "@qj/shared";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [roomId, setRoomId] = useState<string>("");
   const {
     isOpen: isCreateQuizRoomModalOpen,
     onOpen: onCreateQuizRoomModalOpen,
@@ -23,10 +25,32 @@ export default function Home() {
     onClose: onWaitingRoomModalClose,
   } = useDisclosure({ id: "WaitingRoomModalOpen" });
 
+  const router = useRouter();
+  const [roomId, setRoomId] = useState<string>("");
+
+  function handleQuizGameStart() {
+    router.replace("/quiz-game");
+  }
+
   function handleSuccessfulQuizRoomCreation(values: unknown) {
     onCreateQuizRoomModalClose();
-    setRoomId((values as unknown as { quizRoomId: string }).quizRoomId);
-    onWaitingRoomModalOpen();
+    // TODO: Fix this mis types
+    setRoomId(
+      (values as unknown as { quizRoomId: string; hasGameStarted: boolean })
+        .quizRoomId,
+    );
+    // TODO: Fix this mis types
+    if (
+      !(values as unknown as { quizRoomId: string; hasGameStarted: boolean })
+        .hasGameStarted
+    ) {
+      onWaitingRoomModalOpen();
+    }
+
+    socket.on<QuizRoomServerToClientEvents>(
+      "StartedQuizGame",
+      handleQuizGameStart,
+    );
   }
 
   return (

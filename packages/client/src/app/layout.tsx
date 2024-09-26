@@ -24,7 +24,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Providers>
           <Box className={styles.page}>
             <Header />
-            <Box className={styles.layoutContainer}>{children}</Box>
+            <Box
+              className={styles.layoutContainer}
+              border="thickDark"
+              borderRadius="md"
+            >
+              {children}
+            </Box>
             <Footer />
           </Box>
         </Providers>
