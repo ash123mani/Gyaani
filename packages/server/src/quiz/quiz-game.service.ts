@@ -1,9 +1,12 @@
 import { QuizRoomService } from '@/src/quiz/quiz-room.service';
+import { QuizQues } from '@qj/shared';
 
 export class QuizGame {
   public hasStarted: boolean = false;
   public hasFinished: boolean = false;
-  public quizQues: object[] = [];
+  public quizQues: QuizQues[] = [];
+  private answers: Map<string, number> = new Map();
+  public currentQuestionIndex: number = 0;
 
   constructor(private readonly quizRoom: QuizRoomService) {
     this.initializeQuizGame();
@@ -14,12 +17,41 @@ export class QuizGame {
     this.hasStarted = true;
   }
 
+  public get currentQues(): QuizQues {
+    return this.quizQues[this.currentQuestionIndex];
+  }
+
+  public get isLastQues() {
+    return this.currentQuestionIndex === this.quizQues.length - 1;
+  }
+
+  public moveToNextQues() {
+    if (this.isLastQues) this.hasFinished = true;
+    this.currentQuestionIndex = this.currentQuestionIndex + 1;
+  }
+
   private initializeQuizGame() {
     this.quizQues = [
       {
-        ques: "What's Your name",
-        options: ['Tel1', 'Tel2', 'Tel3', 'Tel4'],
+        ques: 'Who is PM of India?',
+        options: ['Modi', 'PM Modi', 'Ek hi Modi', 'Feku Modi'],
+        id: '20',
+      },
+      {
+        ques: "What's his name",
+        options: ['Modi', 'Narendra', 'Namo', 'PM'],
+        id: '21',
+      },
+      {
+        ques: "What's his pet name",
+        options: ['Shah', 'Amit', 'HM', 'Dogla'],
+        id: '22',
       },
     ];
+    this.answers = new Map([
+      ['20', 0],
+      ['21', 3],
+      ['22', 3],
+    ]);
   }
 }

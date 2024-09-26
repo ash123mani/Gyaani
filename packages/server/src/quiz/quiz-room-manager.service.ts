@@ -11,12 +11,8 @@ export class QuizRoomManagerService {
   private readonly quizRooms: Map<QuizRoomService['roomId'], QuizRoomService> = new Map();
 
   public terminateSocket(player: Socket): void {
-    const quizRooms = this.quizRooms.values();
-    for (const quizRoom of quizRooms) {
-      if (quizRoom.players.has(player.id)) {
-        quizRoom.removePlayerFromQuizRoom(player);
-      }
-    }
+    const playerQuizRoom = this.getPlayerQuizRoom(player);
+    playerQuizRoom.removePlayerFromQuizRoom(player);
   }
 
   public createQuizRoom(createQuizRoomEventData: CreateQuizRoomEventData): QuizRoomService {
@@ -35,5 +31,14 @@ export class QuizRoomManagerService {
     quizRoom.addPlayerToQuizRoom(player, data);
 
     return quizRoom;
+  }
+
+  public getPlayerQuizRoom(player: Socket) {
+    const quizRooms = this.quizRooms.values();
+    for (const quizRoom of quizRooms) {
+      if (quizRoom.players.has(player.id)) {
+        return quizRoom;
+      }
+    }
   }
 }

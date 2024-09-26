@@ -3,6 +3,7 @@ import {
   CreateQuizRoomEventDataSchema,
   JoinQuizRoomEventDataSchema,
   QuiRoomStateSchema,
+  QuizQuesSchema,
   QuizRoomClientToServerEventsEnum,
   QuizRoomServerToClientEventsEnum,
 } from "../schema";
@@ -22,3 +23,5 @@ export type CreateQuizRoomEventData = z.infer<
 export type JoinQuizRoomEventData = z.infer<typeof JoinQuizRoomEventDataSchema>;
 
 export type QuizRoomState = z.infer<typeof QuiRoomStateSchema>;
+
+export type QuizQues = z.infer<typeof QuizQuesSchema>;

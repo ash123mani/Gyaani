@@ -35,6 +35,7 @@ export class QuizRoomService {
       quizGame: {
         hasStarted: this.quizGame.hasStarted,
         ques: this.quizGame.quizQues,
+        currentQues: this.quizGame.currentQues,
       },
     };
   }

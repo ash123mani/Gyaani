@@ -60,8 +60,19 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     // TODO: Define the payload data types for different events
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
     if (quizRoom.quizGame.hasStarted) {
       quizRoom.dispatchEventToQuizRoom<QuizRoomState>('StartedQuizGame', quizRoom.state);
+
+      const intervalId = setInterval(() => {
+        quizRoom.quizGame.moveToNextQues();
+        quizRoom.dispatchEventToQuizRoom<QuizRoomState>('CurrentQues', quizRoom.state);
+
+        if (quizRoom.quizGame.hasFinished) {
+          quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameEnded', quizRoom.state);
+          clearInterval(intervalId);
+        }
+      }, 10000);
     }
 
     this.logger.log(
