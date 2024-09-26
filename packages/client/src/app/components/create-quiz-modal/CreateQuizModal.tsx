@@ -18,8 +18,9 @@ import {
   NumberInputField,
   NumberInputStepper,
   Stack,
-  UseModalProps,
+  type UseModalProps,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -27,17 +28,19 @@ import {
   CreateQuizRoomEventDataSchema,
   QuizRoomClientToServerEvent,
   QuizRoomServerToClientEvents,
+  SuccessfullyCreatedQuizRoomEventPayload,
 } from "@qj/shared";
 
-import styles from "./styles.module.css";
 import { socket } from "@/app/socket";
-import { useEffect } from "react";
+
+import styles from "./styles.module.css";
 
 interface CreateQuizModalProps {
   onClose: UseModalProps["onClose"];
   isOpen: UseModalProps["isOpen"];
-  // TODO: Fix the type for Web Socket message body
-  onSuccessfulQuizRoomCreation: (values: object) => void;
+  onSuccessfulQuizRoomCreation: (
+    values: SuccessfullyCreatedQuizRoomEventPayload,
+  ) => void;
 }
 
 export function CreateQuizModal({

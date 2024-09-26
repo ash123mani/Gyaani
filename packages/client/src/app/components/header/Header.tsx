@@ -3,8 +3,9 @@
 import { Box } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/next-js";
 
-import styles from "./styles.module.css";
 import { AppLogo } from "@/app/components/icons/AppLogo";
+
+import styles from "./styles.module.css";
 
 export function Header() {
   return (

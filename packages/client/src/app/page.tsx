@@ -2,15 +2,18 @@
 
 import { Box, Button, Heading, Stack, useDisclosure } from "@chakra-ui/react";
 import { AddIcon, ArrowForwardIcon } from "@chakra-ui/icons";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  QuizRoomServerToClientEvents,
+  SuccessfullyCreatedQuizRoomEventPayload,
+} from "@qj/shared";
 
+import { socket } from "@/app/socket";
+import { WaitingToJoinRoomModal } from "@/app/components/waiting-to-join-modal/WaitingToJoinRoomModal";
 import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizModal";
 
 import styles from "./styles.module.css";
-import { WaitingToJoinRoomModal } from "@/app/components/waiting-to-join-modal/WaitingToJoinRoomModal";
-import { useState } from "react";
-import { socket } from "@/app/socket";
-import { QuizRoomServerToClientEvents } from "@qj/shared";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
   const {
@@ -32,20 +35,12 @@ export default function Home() {
     router.replace("/quiz-game");
   }
 
-  function handleSuccessfulQuizRoomCreation(values: unknown) {
+  function handleSuccessfulQuizRoomCreation(
+    values: SuccessfullyCreatedQuizRoomEventPayload,
+  ) {
     onCreateQuizRoomModalClose();
-    // TODO: Fix this mis types
-    setRoomId(
-      (values as unknown as { quizRoomId: string; hasGameStarted: boolean })
-        .quizRoomId,
-    );
-    // TODO: Fix this mis types
-    if (
-      !(values as unknown as { quizRoomId: string; hasGameStarted: boolean })
-        .hasGameStarted
-    ) {
-      onWaitingRoomModalOpen();
-    }
+    setRoomId(values.quizRoomId);
+    if (!values.hasGameStarted) onWaitingRoomModalOpen();
 
     socket.on<QuizRoomServerToClientEvents>(
       "StartedQuizGame",

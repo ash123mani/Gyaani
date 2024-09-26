@@ -10,7 +10,12 @@ import {
 } from '@nestjs/websockets';
 import { Logger, UseFilters } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { CreateQuizRoomEventData, JoinQuizRoomEventData, QuizRoomClientToServerEvent } from '@qj/shared';
+import {
+  CreateQuizRoomEventData,
+  JoinQuizRoomEventData,
+  QuizRoomClientToServerEvent,
+  SuccessfullyCreatedQuizRoomEventPayload,
+} from '@qj/shared';
 import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
 import { CustomWsExceptionFilter } from '@/src/errors/ws-exception-filter';
 
@@ -59,7 +64,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     if (quizRoom.players.size === quizRoom.maxPlayersAllowed) quizRoom.quizGame.startQuizGame();
 
     // TODO: Define the payload data types for different events
-    quizRoom.dispatchEventToQuizRoom('SuccessfullyCreatedQuizRoom', {
+    quizRoom.dispatchEventToQuizRoom<SuccessfullyCreatedQuizRoomEventPayload>('SuccessfullyCreatedQuizRoom', {
       users: Array.from(quizRoom.usersNames, ([, userName]) => userName),
       quizRoomId: quizRoom.roomId,
       hasGameStarted: quizRoom.quizGame.hasStarted,

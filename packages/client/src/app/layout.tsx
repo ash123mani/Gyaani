@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
 import { type ReactNode } from "react";
+import { Box } from "@chakra-ui/react";
+import { type Metadata } from "next";
 
-import { Providers } from "./providers";
 import { geistMono, geistSans } from "@/app/fonts";
-import { Header } from "@/app/components/header/Header";
 import { Footer } from "@/app/components/footer/Footer";
 import styles from "@/app/styles.module.css";
-import { Box } from "@chakra-ui/react";
+import { Header } from "@/app/components/header/Header";
+
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Gyaani Quiz",
