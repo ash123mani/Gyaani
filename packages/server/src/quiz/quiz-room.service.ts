@@ -29,7 +29,9 @@ export class QuizRoomService {
   }
 
   public startQuizGame() {
-    if (this.players.size === this.maxPlayersAllowed) this.quizGame.startGame();
+    if (this.players.size === this.maxPlayersAllowed) {
+      this.quizGame.startGame();
+    }
   }
 
   public endQuizGame() {
@@ -50,5 +52,9 @@ export class QuizRoomService {
 
   public dispatchEventToQuizRoom<T>(event: QuizRoomServerToClientEvents, payload: T) {
     this.server.to(this.roomId).emit(event, payload);
+  }
+
+  public get hasAllPlayersJoined() {
+    return this.players.size === this.maxPlayersAllowed;
   }
 }

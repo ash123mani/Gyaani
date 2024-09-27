@@ -6,7 +6,7 @@ export class QuizGame {
   public hasFinished: boolean = false;
   public quizQues: QuizQues[] = [];
   private answers: Map<string, number> = new Map();
-  public currentQuestionIndex: number = 0;
+  public currentQuestionIndex: number = -1;
 
   constructor(private readonly quizRoom: QuizRoomService) {
     this.initializeQuizGame();
@@ -15,6 +15,7 @@ export class QuizGame {
   public startGame() {
     if (this.hasStarted) return;
     this.hasStarted = true;
+    this.currentQuestionIndex = 0;
   }
 
   public endGame() {

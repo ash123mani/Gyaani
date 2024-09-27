@@ -56,14 +56,12 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     const quizRoom = this.quizRoomManager.createQuizRoom(data);
     quizRoom.addPlayerToQuizRoom(client, data);
-    quizRoom.startQuizGame();
 
-    // TODO: Define the payload data types for different events
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
-    if (quizRoom.quizGame.hasStarted) {
-      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('StartedQuizGame', quizRoom.state);
-    }
+
+    if (quizRoom.hasAllPlayersJoined)
+      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameReadyToStart', quizRoom.state);
 
     this.logger.log(
       `QuizRoom: ${quizRoom.roomId} have maxAllowed players: ${data.maxPlayersAllowed} and currently ${quizRoom.players.size} Players have joined`,
@@ -76,29 +74,33 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.debug(`Payload: ${data}`);
 
     const quizRoom = this.quizRoomManager.addPlayerToQuizRoom(client, data);
-    quizRoom.startQuizGame();
-
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
-    if (quizRoom.quizGame.hasStarted) {
-      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('StartedQuizGame', quizRoom.state);
-    }
+
+    if (quizRoom.hasAllPlayersJoined)
+      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameReadyToStart', quizRoom.state);
+
+    this.logger.log(`Player joined the QuizRoom: ${quizRoom.roomId}`);
   }
 
-  @SubscribeMessage<QuizRoomClientToServerEvent>('StartSendingQuizQues')
+  @SubscribeMessage<QuizRoomClientToServerEvent>('StartQuizGame')
   handleStartQuizGameEvent(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    this.logger.log(`StartSendingQuizQues event received from client id: ${client.id}`);
+    this.logger.log(`StartQuizGame event received from client id: ${client.id}`);
 
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('CurrentQues', quizRoom.state);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameStarted', quizRoom.state);
+    quizRoom.startQuizGame();
+
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('NewQuizQuestion', quizRoom.state);
+    quizRoom.quizGame.moveToNextQues();
 
     const intervalId = setInterval(() => {
-      if (!quizRoom.quizGame.isLastQues) {
-        quizRoom.quizGame.moveToNextQues();
-        quizRoom.dispatchEventToQuizRoom<QuizRoomState>('CurrentQues', quizRoom.state);
-      } else {
+      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('NewQuizQuestion', quizRoom.state);
+      quizRoom.quizGame.moveToNextQues();
+
+      if (quizRoom.quizGame.isLastQues) {
+        clearInterval(intervalId);
         quizRoom.endQuizGame();
         quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameEnded', quizRoom.state);
-        clearInterval(intervalId);
       }
     }, 5000);
   }

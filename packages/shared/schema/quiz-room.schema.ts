@@ -4,7 +4,7 @@ export const QuizRoomClientToServerEventsEnum = z.enum([
   "CreateQuizRoom",
   "JoinQuizRoom",
   "LeaveQuizRoom",
-  "StartSendingQuizQues",
+  "StartQuizGame",
 
   "WS_SERVER_ERROR",
 ]);
@@ -12,8 +12,9 @@ export const QuizRoomClientToServerEventsEnum = z.enum([
 export const QuizRoomServerToClientEventsEnum = z.enum([
   "SuccessfullyCreatedQuizRoom",
   "SuccessfullyJoinedQuizRoom",
-  "StartedQuizGame",
-  "CurrentQues",
+  "QuizGameReadyToStart",
+  "QuizGameStarted",
+  "NewQuizQuestion",
   "QuizGameEnded",
 ]);
 

@@ -16,11 +16,14 @@ export default function QuizGamePage() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
 
   useEffect(() => {
-    socket.emit<QuizRoomClientToServerEvent>("StartSendingQuizQues");
-    socket.on<QuizRoomServerToClientEvents>("CurrentQues", handleCurrentQues);
+    socket.emit<QuizRoomClientToServerEvent>("StartQuizGame");
+    socket.on<QuizRoomServerToClientEvents>(
+      "NewQuizQuestion",
+      handleNewQuizQues,
+    );
   }, []);
 
-  function handleCurrentQues(quizRoom: QuizRoomState) {
+  function handleNewQuizQues(quizRoom: QuizRoomState) {
     setCurrentQues(quizRoom.quizGame.currentQues);
   }
 
