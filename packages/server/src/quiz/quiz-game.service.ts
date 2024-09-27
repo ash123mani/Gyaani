@@ -20,7 +20,6 @@ export class QuizGame {
   public endGame() {
     if (this.hasFinished) return;
     this.hasFinished = true;
-    this.currentQuestionIndex = this.quizQues.length + 1;
   }
 
   public get currentQues(): QuizQues {
@@ -32,7 +31,7 @@ export class QuizGame {
   }
 
   public moveToNextQues() {
-    if (this.isLastQues) this.hasFinished = true;
+    if (this.isLastQues) return;
     this.currentQuestionIndex = this.currentQuestionIndex + 1;
   }
 
@@ -44,7 +43,7 @@ export class QuizGame {
         id: '20',
       },
       {
-        ques: "What's his name",
+        ques: "What's?",
         options: ['Modi', 'Narendra', 'Namo', 'PM'],
         id: '21',
       },

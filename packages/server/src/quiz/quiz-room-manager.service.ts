@@ -12,7 +12,7 @@ export class QuizRoomManagerService {
 
   public terminateSocket(player: Socket): void {
     const playerQuizRoom = this.getPlayerQuizRoom(player);
-    playerQuizRoom.removePlayerFromQuizRoom(player);
+    playerQuizRoom?.removePlayerFromQuizRoom(player);
   }
 
   public createQuizRoom(createQuizRoomEventData: CreateQuizRoomEventData): QuizRoomService {
