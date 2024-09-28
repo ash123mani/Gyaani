@@ -87,21 +87,29 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log(`StartQuizGame event received from client id: ${client.id}`);
 
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameStarted', quizRoom.state);
     quizRoom.startQuizGame();
-
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('NewQuizQuestion', quizRoom.state);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameStarted', quizRoom.state);
     quizRoom.quizGame.moveToNextQues();
 
+    let rounds = 1;
     const intervalId = setInterval(() => {
-      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('NewQuizQuestion', quizRoom.state);
-      quizRoom.quizGame.moveToNextQues();
-
-      if (quizRoom.quizGame.isLastQues) {
-        clearInterval(intervalId);
-        quizRoom.endQuizGame();
-        quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameEnded', quizRoom.state);
+      if (rounds <= quizRoom.quizGame.quizQues.length - 1) {
+        quizRoom.dispatchEventToQuizRoom<QuizRoomState>('NewQuizQuestion', quizRoom.state);
+        quizRoom.quizGame.moveToNextQues();
+      } else {
+        if (quizRoom.quizGame.isLastQues) {
+          quizRoom.endQuizGame();
+          quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameEnded', quizRoom.state);
+          clearInterval(intervalId);
+        }
       }
+      rounds = rounds + 1;
     }, 5000);
+  }
+
+  @SubscribeMessage<QuizRoomClientToServerEvent>('GetQuizRoomState')
+  handleGetQuizRoomState(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+    const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
   }
 }

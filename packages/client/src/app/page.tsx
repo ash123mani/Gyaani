@@ -2,18 +2,15 @@
 
 import { Box, Button, Heading, Stack, useDisclosure } from "@chakra-ui/react";
 import { AddIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import { useState } from "react";
 import {
   CreateQuizRoomEventData,
   JoinQuizRoomEventData,
-  QuizRoomState,
   QuizRoomClientToServerEvent,
   QuizRoomServerToClientEvents,
 } from "@qj/shared";
 import { useRouter } from "next/navigation";
 
 import { socket } from "@/app/socket";
-import { WaitingToJoinRoomModal } from "@/app/components/waiting-to-join-modal/WaitingToJoinRoomModal";
 import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizModal";
 import { JoinQuizRoomModal } from "@/app/components/join-quiz-room-modal/JoinQuizRoomModal";
 
@@ -29,38 +26,23 @@ export default function Home() {
   } = useDisclosure({ id: "CreateQuizRoomModalOpen" });
 
   const {
-    isOpen: isWaitingRoomModalOpen,
-    onOpen: onWaitingRoomModalOpen,
-    onClose: onWaitingRoomModalClose,
-  } = useDisclosure({ id: "WaitingRoomModalOpen" });
-
-  const {
     isOpen: isJoinRoomModalOpen,
     onOpen: onJoinRoomModalOpen,
     onClose: onJoinRoomModalClose,
   } = useDisclosure({ id: "JoinRoomModalOpen" });
 
-  const [roomId, setRoomId] = useState<string>("");
-  const [quizGameReadyToStart, setQuizGameReadyToStart] = useState(false);
-
-  function handleQuizGameStartReadyToStart() {
-    onCreateQuizRoomModalClose();
-    setQuizGameReadyToStart(true);
-    onWaitingRoomModalOpen();
-  }
-
-  function handleSuccessfulQuizRoomJoin(quizRoom: QuizRoomState) {
+  function handleSuccessfulQuizRoomJoin() {
     onJoinRoomModalClose();
-    setRoomId(quizRoom.roomId);
-    if (!quizRoom.quizGame.hasStarted) onWaitingRoomModalOpen();
-    socket.on<QuizRoomServerToClientEvents>(
-      "QuizGameReadyToStart",
-      handleQuizGameStartReadyToStart,
-    );
+    onCreateQuizRoomModalClose();
+    router.replace("/quiz-game");
   }
 
   function handleJoinQuizRoomSubmit(values: JoinQuizRoomEventData) {
     socket.emit<QuizRoomClientToServerEvent>("JoinQuizRoom", values);
+    socket.on<QuizRoomServerToClientEvents>(
+      "SuccessfullyJoinedQuizRoom",
+      handleSuccessfulQuizRoomJoin,
+    );
   }
 
   function handleCreateQuizRoomSubmit(values: CreateQuizRoomEventData) {
@@ -69,10 +51,6 @@ export default function Home() {
       "SuccessfullyJoinedQuizRoom",
       handleSuccessfulQuizRoomJoin,
     );
-  }
-
-  function handleQuizGameStartClick() {
-    router.replace("/quiz-game");
   }
 
   return (
@@ -100,13 +78,6 @@ export default function Home() {
         onClose={onCreateQuizRoomModalClose}
         isOpen={isCreateQuizRoomModalOpen}
         onCreateQuizRoomSubmit={handleCreateQuizRoomSubmit}
-      />
-      <WaitingToJoinRoomModal
-        isOpen={isWaitingRoomModalOpen}
-        onClose={onWaitingRoomModalClose}
-        roomId={roomId}
-        quizGameReadyToStart={quizGameReadyToStart}
-        onQuizGameStartClick={handleQuizGameStartClick}
       />
       <JoinQuizRoomModal
         isOpen={isJoinRoomModalOpen}

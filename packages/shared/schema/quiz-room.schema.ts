@@ -5,6 +5,7 @@ export const QuizRoomClientToServerEventsEnum = z.enum([
   "JoinQuizRoom",
   "LeaveQuizRoom",
   "StartQuizGame",
+  "GetQuizRoomState",
 
   "WS_SERVER_ERROR",
 ]);
@@ -13,6 +14,7 @@ export const QuizRoomServerToClientEventsEnum = z.enum([
   "SuccessfullyCreatedQuizRoom",
   "SuccessfullyJoinedQuizRoom",
   "QuizGameReadyToStart",
+  "QuizRoomState",
   "QuizGameStarted",
   "NewQuizQuestion",
   "QuizGameEnded",
@@ -35,6 +37,7 @@ export const QuizQuesSchema = z.object({
 export const QuiRoomStateSchema = z.object({
   users: z.array(z.string().min(2, { message: "Required" })),
   roomId: z.string().min(2, { message: "Required" }),
+  hasAllPlayersJoined: z.boolean(),
   quizGame: z.object({
     hasStarted: z.boolean(),
     hasFinished: z.boolean(),

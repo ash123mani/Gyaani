@@ -42,6 +42,7 @@ export class QuizRoomService {
     return {
       users: mapToArrayValues(this.usersNames),
       roomId: this.roomId,
+      hasAllPlayersJoined: this.hasAllPlayersJoined,
       quizGame: {
         hasStarted: this.quizGame.hasStarted,
         currentQues: this.quizGame.currentQues,
