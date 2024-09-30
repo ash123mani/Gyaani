@@ -19,7 +19,7 @@ interface WaitingPlayersToJoinContentProps {
 export function WaitingPlayersToJoinContent({
   roomId,
 }: WaitingPlayersToJoinContentProps) {
-  const { onCopy, value, setValue, hasCopied } = useClipboard("");
+  const { onCopy, value, setValue, hasCopied } = useClipboard(roomId);
   const prevRoomIdRef = useRef("");
 
   if (prevRoomIdRef.current !== roomId && roomId) {

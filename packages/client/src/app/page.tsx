@@ -34,7 +34,7 @@ export default function Home() {
   function handleSuccessfulQuizRoomJoin() {
     onJoinRoomModalClose();
     onCreateQuizRoomModalClose();
-    router.replace("/quiz-game");
+    router.replace("/quiz-room");
   }
 
   function handleJoinQuizRoomSubmit(values: JoinQuizRoomEventData) {
@@ -54,7 +54,7 @@ export default function Home() {
   }
 
   return (
-    <Box as="main" className={styles.main}>
+    <Box className={styles.main}>
       <Heading as="h1" size="2xl" color="blackAlpha.500">
         Start Playing Quiz
       </Heading>

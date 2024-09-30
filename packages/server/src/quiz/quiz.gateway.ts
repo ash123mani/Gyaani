@@ -89,27 +89,18 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
     quizRoom.startQuizGame();
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameStarted', quizRoom.state);
-    quizRoom.quizGame.moveToNextQues();
-
-    let rounds = 1;
-    const intervalId = setInterval(() => {
-      if (rounds <= quizRoom.quizGame.quizQues.length - 1) {
-        quizRoom.dispatchEventToQuizRoom<QuizRoomState>('NewQuizQuestion', quizRoom.state);
-        quizRoom.quizGame.moveToNextQues();
-      } else {
-        if (quizRoom.quizGame.isLastQues) {
-          quizRoom.endQuizGame();
-          quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameEnded', quizRoom.state);
-          clearInterval(intervalId);
-        }
-      }
-      rounds = rounds + 1;
-    }, 5000);
   }
 
   @SubscribeMessage<QuizRoomClientToServerEvent>('GetQuizRoomState')
   handleGetQuizRoomState(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
+  }
+
+  @SubscribeMessage<QuizRoomClientToServerEvent>('GetQuizQues')
+  handleGetCurrentQuizQues(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+    const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('NewQuizQuestion', quizRoom.state);
+    quizRoom.quizGame.moveToNextQues();
   }
 }

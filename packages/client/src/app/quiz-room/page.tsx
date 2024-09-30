@@ -3,56 +3,48 @@
 import { Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
-  QuizQues,
   QuizRoomClientToServerEvent,
   QuizRoomServerToClientEvents,
   QuizRoomState,
 } from "@qj/shared";
+import { useRouter } from "next/navigation";
 
 import { socket } from "@/app/socket";
-import { WaitingPlayersToJoinContent } from "@/app/quiz-game/components/WaitingPlayersToJoinContent";
-import { AllPlayersJoinedContent } from "@/app/quiz-game/components/AllPlayersJoinedContent";
-import { QuizQuesView } from "@/app/quiz-game/components/QuizQues";
+import { WaitingPlayersToJoinContent } from "@/app/quiz-room/components/WaitingPlayersToJoinContent";
+import { AllPlayersJoinedContent } from "@/app/quiz-room/components/AllPlayersJoinedContent";
 
-export default function QuizGamePage() {
-  const [currentQues, setCurrentQues] = useState<QuizQues | null>(null);
-
+export default function QuizRoomPage() {
+  const router = useRouter();
   const [quizRoomState, setQuizRoomState] = useState<QuizRoomState | undefined>(
     undefined,
   );
 
   useEffect(() => {
     socket.emit<QuizRoomClientToServerEvent>("GetQuizRoomState");
+
     socket.on<QuizRoomServerToClientEvents>(
       "QuizRoomState",
       handleQuizRoomState,
     );
 
-    socket.on("QuizGameStarted", handleQuizRoomState);
-    socket.on<QuizRoomServerToClientEvents>(
-      "NewQuizQuestion",
-      handleNewQuizQues,
-    );
+    socket.on("QuizGameStarted", handleQuizGameStart);
   }, []);
 
   function handleQuizRoomState(quizRoom: QuizRoomState) {
     setQuizRoomState(quizRoom);
-    handleNewQuizQues(quizRoom);
-  }
-
-  function handleNewQuizQues(quizRoom: QuizRoomState) {
-    setCurrentQues(quizRoom.quizGame.currentQues);
   }
 
   function handleQuizGameStartClick() {
     socket.emit<QuizRoomClientToServerEvent>("StartQuizGame");
   }
 
+  function handleQuizGameStart(room: QuizRoomState) {
+    router.push(`/quiz-room/${room!.roomId}`);
+  }
+
   let content = null;
   if (!quizRoomState?.hasAllPlayersJoined && quizRoomState?.roomId) {
     content = <WaitingPlayersToJoinContent roomId={quizRoomState.roomId} />;
-  } else if (quizRoomState?.quizGame?.hasStarted && currentQues) {
-    content = <QuizQuesView ques={currentQues} />;
   } else {
     content = (
       <AllPlayersJoinedContent
@@ -65,7 +57,6 @@ export default function QuizGamePage() {
     <Flex
       direction="column"
       mx="auto"
-      as="main"
       gap={8}
       p={4}
       width="fit-content"

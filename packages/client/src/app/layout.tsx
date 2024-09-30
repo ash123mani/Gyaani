@@ -29,6 +29,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               className={styles.layoutContainer}
               border="thickDark"
               borderRadius="md"
+              as="main"
             >
               {children}
             </Box>

@@ -47,6 +47,7 @@ export class QuizRoomService {
         hasStarted: this.quizGame.hasStarted,
         currentQues: this.quizGame.currentQues,
         hasFinished: this.quizGame.hasFinished,
+        isLatsQues: this.quizGame.isLastQues,
       },
     };
   }
