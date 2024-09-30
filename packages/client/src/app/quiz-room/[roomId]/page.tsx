@@ -1,31 +1,39 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  QuizQues,
   QuizRoomClientToServerEvent,
   QuizRoomServerToClientEvents,
   QuizRoomState,
 } from "@qj/shared";
+import { useBoolean } from "@chakra-ui/react";
 
 import { socket } from "@/app/socket";
 import { QuizQuesView } from "@/app/quiz-room/components/QuizQues";
+import { StartQuizCountDown } from "@/app/quiz-room/components/StartQuizCountDown";
+import { QuizGameFinished } from "@/app/quiz-room/components/QuizGameFinished";
 
-export default function QuizRoomPage() {
-  const [currentQues, setCurrentQues] = useState<QuizQues | null>(null);
-  const isLatQuesRef = useRef<boolean>(false);
+export default function QuizGamePage() {
+  const isLastQuesRef = useRef<boolean>(false);
+  const [showStartCountDown, setShowStartCountDown] = useBoolean(true);
+  const [quizRoomState, setQuizRoomState] = useState<
+    QuizRoomState | undefined
+  >();
 
-  useLayoutEffect(() => {
-    socket.emit<QuizRoomClientToServerEvent>("GetQuizQues");
+  useEffect(() => {
     socket.on<QuizRoomServerToClientEvents>(
       "NewQuizQuestion",
       handleNewQuizQues,
     );
+    socket.on<QuizRoomServerToClientEvents>("QuizGameEnded", handQuizGameEnded);
   }, []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    setShowStartCountDown.on();
     const timerId = setInterval(() => {
-      if (isLatQuesRef.current) {
+      if (isLastQuesRef.current) {
+        setShowStartCountDown.off();
+        socket.emit<QuizRoomClientToServerEvent>("EndQuizGame");
         clearInterval(timerId);
         return;
       }
@@ -36,13 +44,21 @@ export default function QuizRoomPage() {
   }, []);
 
   function handleNewQuizQues(quizRoom: QuizRoomState) {
-    setCurrentQues(quizRoom.quizGame.currentQues);
-    isLatQuesRef.current = quizRoom.quizGame.isLatsQues;
+    setQuizRoomState(quizRoom);
+    isLastQuesRef.current = quizRoom.quizGame.isLatsQues;
   }
 
-  if (!currentQues) {
-    return null;
+  function handQuizGameEnded(quizRoom: QuizRoomState) {
+    setQuizRoomState(quizRoom);
   }
 
-  return <QuizQuesView ques={currentQues} />;
+  if (showStartCountDown) {
+    return <StartQuizCountDown />;
+  }
+
+  if (quizRoomState?.quizGame.hasFinished) {
+    return <QuizGameFinished />;
+  }
+
+  return <QuizQuesView ques={quizRoomState!.quizGame.currentQues} />;
 }
