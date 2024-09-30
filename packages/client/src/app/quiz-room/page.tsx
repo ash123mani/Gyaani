@@ -1,7 +1,7 @@
 "use client";
 
-import { Checkbox, Flex, Heading, Stack } from "@chakra-ui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Flex } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import {
   QuizQues,
   QuizRoomClientToServerEvent,
@@ -12,10 +12,10 @@ import {
 import { socket } from "@/app/socket";
 import { WaitingPlayersToJoinContent } from "@/app/quiz-game/components/WaitingPlayersToJoinContent";
 import { AllPlayersJoinedContent } from "@/app/quiz-game/components/AllPlayersJoinedContent";
+import { QuizQuesView } from "@/app/quiz-game/components/QuizQues";
 
 export default function QuizGamePage() {
   const [currentQues, setCurrentQues] = useState<QuizQues | null>(null);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
 
   const [quizRoomState, setQuizRoomState] = useState<QuizRoomState | undefined>(
     undefined,
@@ -51,28 +51,8 @@ export default function QuizGamePage() {
   let content = null;
   if (!quizRoomState?.hasAllPlayersJoined && quizRoomState?.roomId) {
     content = <WaitingPlayersToJoinContent roomId={quizRoomState.roomId} />;
-  } else if (quizRoomState?.quizGame?.hasStarted) {
-    content = (
-      <Fragment>
-        <Heading as="h3" size="2xl">
-          {currentQues?.ques}
-        </Heading>
-        <Stack direction="column" gap={4}>
-          {currentQues?.options.map((option: string, index: number) => (
-            <Checkbox
-              size="lg"
-              colorScheme="orange"
-              value={index}
-              key={option}
-              isChecked={index === selectedAnswer}
-              onChange={() => setSelectedAnswer(index)}
-            >
-              {option}
-            </Checkbox>
-          ))}
-        </Stack>
-      </Fragment>
-    );
+  } else if (quizRoomState?.quizGame?.hasStarted && currentQues) {
+    content = <QuizQuesView ques={currentQues} />;
   } else {
     content = (
       <AllPlayersJoinedContent

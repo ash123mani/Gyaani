@@ -41,7 +41,7 @@ export function WaitingPlayersToJoinContent({
           <InputRightElement width="auto">
             <Button onClick={onCopy}>{hasCopied ? "Copied!" : "Copy"}</Button>
           </InputRightElement>
-          <Input placeholder={roomId} value={value} mr={2} />
+          <Input placeholder={roomId} value={value} ml={2} />
         </InputGroup>
         <FormHelperText color="green">
           Share it with your friends to join the room and play.
