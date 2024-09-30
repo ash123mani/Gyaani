@@ -32,7 +32,6 @@ export default function QuizGamePage() {
     setShowStartCountDown.on();
     const timerId = setInterval(() => {
       if (isLastQuesRef.current) {
-        setShowStartCountDown.off();
         socket.emit<QuizRoomClientToServerEvent>("EndQuizGame");
         clearInterval(timerId);
         return;
@@ -53,7 +52,7 @@ export default function QuizGamePage() {
   }
 
   if (showStartCountDown) {
-    return <StartQuizCountDown />;
+    return <StartQuizCountDown onCountDownEnd={setShowStartCountDown.off} />;
   }
 
   if (quizRoomState?.quizGame.hasFinished) {

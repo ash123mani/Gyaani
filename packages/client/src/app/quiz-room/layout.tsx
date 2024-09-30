@@ -12,8 +12,7 @@ export default function QuizRoomLayout({
       mx="auto"
       as="section"
       gap={8}
-      p={4}
-      width="fit-content"
+      width="100%"
       height="100%"
       justifyContent="center"
     >

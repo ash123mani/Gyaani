@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Box,
   CircularProgress,
@@ -6,23 +5,28 @@ import {
   CircularProgressLabel,
 } from "@chakra-ui/react";
 
-const START_GAME_COUNT_DOWN_SECS = 5;
+import { useCountDownTimer } from "@/app/hooks";
 
-export function StartQuizCountDown({ onCountDownStart, onCountDownEnd }) {
-  const [startCountDownAt, setStartCountDownAt] = useState(0);
+interface StartQuizCountDownProps {
+  onCountDownStart?: () => void;
+  onCountDownEnd?: () => void;
+}
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStartCountDownAt((prev) =>
-        prev >= START_GAME_COUNT_DOWN_SECS ? 0 : prev + 1,
-      );
-    }, 1000);
+export const START_GAME_COUNT_DOWN_SECS = 5;
 
-    return () => clearInterval(interval);
-  }, []);
+export function StartQuizCountDown({
+  onCountDownStart,
+  onCountDownEnd,
+}: StartQuizCountDownProps) {
+  const [startCountDownAt] = useCountDownTimer({
+    onCountDownStart,
+    onCountDownEnd,
+  });
 
-  const progressPercent = (startCountDownAt / START_GAME_COUNT_DOWN_SECS) * 100;
-  const timeLeftToStartTheGame = START_GAME_COUNT_DOWN_SECS - startCountDownAt;
+  const progressPercent =
+    ((startCountDownAt as number) / START_GAME_COUNT_DOWN_SECS) * 100;
+  const timeLeftToStartTheGame =
+    START_GAME_COUNT_DOWN_SECS - (startCountDownAt as number);
   return (
     <Box
       display="flex"
