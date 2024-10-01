@@ -5,12 +5,17 @@ import { START_GAME_COUNT_DOWN_SECS } from "@/app/quiz-room/components/StartQuiz
 interface UseCountDownTimerProps {
   onCountDownStart?: () => void;
   onCountDownEnd?: () => void;
+  countDownSecs?: number;
 }
 
-export function useCountDownTimer({
-  onCountDownStart,
-  onCountDownEnd,
-}: UseCountDownTimerProps) {
+export function useCountDownTimer(
+  props: UseCountDownTimerProps,
+): [number, () => void] {
+  const {
+    onCountDownStart,
+    onCountDownEnd,
+    countDownSecs = START_GAME_COUNT_DOWN_SECS,
+  } = props;
   const [startCountDownAt, setStartCountDownAt] = useState<number>(0);
 
   useEffect(() => {
@@ -18,16 +23,20 @@ export function useCountDownTimer({
 
     const interval = setInterval(() => {
       setStartCountDownAt((prev) => {
-        if (prev + 1 === START_GAME_COUNT_DOWN_SECS) {
+        if (prev + 1 === countDownSecs) {
           onCountDownEnd?.();
           clearInterval(interval);
         }
-        return prev >= START_GAME_COUNT_DOWN_SECS ? 0 : prev + 1;
+        return prev >= countDownSecs ? 0 : prev + 1;
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [props, countDownSecs]);
 
-  return [startCountDownAt, setStartCountDownAt];
+  function resetCountDownAt() {
+    setStartCountDownAt(0);
+  }
+
+  return [startCountDownAt, resetCountDownAt];
 }

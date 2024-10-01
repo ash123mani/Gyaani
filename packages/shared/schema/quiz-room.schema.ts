@@ -6,8 +6,6 @@ export const QuizRoomClientToServerEventsEnum = z.enum([
   "LeaveQuizRoom",
   "StartQuizGame",
   "GetQuizRoomState",
-  "GetQuizQues",
-  "EndQuizGame",
 
   "WS_SERVER_ERROR",
 ]);
@@ -20,6 +18,7 @@ export const QuizRoomServerToClientEventsEnum = z.enum([
   "QuizGameStarted",
   "NewQuizQuestion",
   "QuizGameEnded",
+  "QuizStartingInSomeTime",
 ]);
 
 export const CreateQuizRoomEventDataSchema = z.object({
@@ -44,7 +43,7 @@ export const QuiRoomStateSchema = z.object({
     hasStarted: z.boolean(),
     hasFinished: z.boolean(),
     currentQues: QuizQuesSchema,
-    isLatsQues: z.boolean(),
+    hasNextQues: z.boolean(),
   }),
 });
 

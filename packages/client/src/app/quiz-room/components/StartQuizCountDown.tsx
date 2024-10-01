@@ -10,6 +10,7 @@ import { useCountDownTimer } from "@/app/hooks";
 interface StartQuizCountDownProps {
   onCountDownStart?: () => void;
   onCountDownEnd?: () => void;
+  countDownSecs?: number;
 }
 
 export const START_GAME_COUNT_DOWN_SECS = 5;
@@ -17,16 +18,16 @@ export const START_GAME_COUNT_DOWN_SECS = 5;
 export function StartQuizCountDown({
   onCountDownStart,
   onCountDownEnd,
+  countDownSecs = START_GAME_COUNT_DOWN_SECS,
 }: StartQuizCountDownProps) {
   const [startCountDownAt] = useCountDownTimer({
     onCountDownStart,
     onCountDownEnd,
+    countDownSecs,
   });
 
-  const progressPercent =
-    ((startCountDownAt as number) / START_GAME_COUNT_DOWN_SECS) * 100;
-  const timeLeftToStartTheGame =
-    START_GAME_COUNT_DOWN_SECS - (startCountDownAt as number);
+  const progressPercent = ((startCountDownAt as number) / countDownSecs) * 100;
+  const timeLeftToStartTheGame = countDownSecs - (startCountDownAt as number);
   return (
     <Box
       display="flex"

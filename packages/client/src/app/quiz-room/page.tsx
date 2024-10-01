@@ -26,8 +26,6 @@ export default function QuizRoomPage() {
       "QuizRoomState",
       handleQuizRoomState,
     );
-
-    socket.on("QuizGameStarted", handleQuizGameStart);
   }, []);
 
   function handleQuizRoomState(quizRoom: QuizRoomState) {
@@ -35,11 +33,7 @@ export default function QuizRoomPage() {
   }
 
   function handleQuizGameStartClick() {
-    socket.emit<QuizRoomClientToServerEvent>("StartQuizGame");
-  }
-
-  function handleQuizGameStart(room: QuizRoomState) {
-    router.push(`/quiz-room/${room!.roomId}`);
+    router.push(`/quiz-room/${quizRoomState!.roomId}`);
   }
 
   let content = null;

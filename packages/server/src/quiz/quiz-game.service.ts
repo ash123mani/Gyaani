@@ -21,6 +21,7 @@ export class QuizGame {
   public endGame() {
     if (this.hasFinished) return;
     this.hasFinished = true;
+    this.currentQuestionIndex = -1;
   }
 
   public get currentQues(): QuizQues {
@@ -29,6 +30,10 @@ export class QuizGame {
 
   public get isLastQues() {
     return this.currentQuestionIndex === this.quizQues.length - 1;
+  }
+
+  public get hasNextQues() {
+    return this.currentQuestionIndex < this.quizQues.length - 1;
   }
 
   public moveToNextQues() {

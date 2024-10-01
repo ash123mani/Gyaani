@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   QuizRoomClientToServerEvent,
   QuizRoomServerToClientEvents,
   QuizRoomState,
 } from "@qj/shared";
-import { useBoolean } from "@chakra-ui/react";
+import { Skeleton, Stack, useBoolean } from "@chakra-ui/react";
 
 import { socket } from "@/app/socket";
 import { QuizQuesView } from "@/app/quiz-room/components/QuizQues";
@@ -14,13 +14,22 @@ import { StartQuizCountDown } from "@/app/quiz-room/components/StartQuizCountDow
 import { QuizGameFinished } from "@/app/quiz-room/components/QuizGameFinished";
 
 export default function QuizGamePage() {
-  const isLastQuesRef = useRef<boolean>(false);
   const [showStartCountDown, setShowStartCountDown] = useBoolean(true);
   const [quizRoomState, setQuizRoomState] = useState<
     QuizRoomState | undefined
   >();
 
   useEffect(() => {
+    socket.emit<QuizRoomClientToServerEvent>("StartQuizGame");
+  }, []);
+
+  useEffect(() => {
+    socket.on<QuizRoomServerToClientEvents>(
+      "QuizStartingInSomeTime",
+      setShowStartCountDown.on,
+    );
+    socket.on("QuizGameStarted", handleQuizGameStart);
+
     socket.on<QuizRoomServerToClientEvents>(
       "NewQuizQuestion",
       handleNewQuizQues,
@@ -28,23 +37,12 @@ export default function QuizGamePage() {
     socket.on<QuizRoomServerToClientEvents>("QuizGameEnded", handQuizGameEnded);
   }, []);
 
-  useEffect(() => {
-    setShowStartCountDown.on();
-    const timerId = setInterval(() => {
-      if (isLastQuesRef.current) {
-        socket.emit<QuizRoomClientToServerEvent>("EndQuizGame");
-        clearInterval(timerId);
-        return;
-      }
-      socket.emit<QuizRoomClientToServerEvent>("GetQuizQues");
-    }, 5000);
-
-    return () => clearInterval(timerId);
-  }, []);
+  function handleQuizGameStart() {
+    setShowStartCountDown.off();
+  }
 
   function handleNewQuizQues(quizRoom: QuizRoomState) {
     setQuizRoomState(quizRoom);
-    isLastQuesRef.current = quizRoom.quizGame.isLatsQues;
   }
 
   function handQuizGameEnded(quizRoom: QuizRoomState) {
@@ -52,11 +50,21 @@ export default function QuizGamePage() {
   }
 
   if (showStartCountDown) {
-    return <StartQuizCountDown onCountDownEnd={setShowStartCountDown.off} />;
+    return <StartQuizCountDown />;
   }
 
   if (quizRoomState?.quizGame.hasFinished) {
     return <QuizGameFinished />;
+  }
+
+  if (!showStartCountDown && !quizRoomState?.quizGame.currentQues) {
+    return (
+      <Stack>
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+        <Skeleton height="20px" />
+      </Stack>
+    );
   }
 
   return <QuizQuesView ques={quizRoomState!.quizGame.currentQues} />;

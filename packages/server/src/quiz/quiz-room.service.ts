@@ -11,6 +11,8 @@ export class QuizRoomService {
   public readonly players: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
   public readonly quizGame: QuizGame = new QuizGame(this);
   public readonly usersNames: Map<Socket['id'], string> = new Map();
+  private queue = Array.from(this.quizGame.quizQues);
+  private notRunning: boolean = true;
 
   constructor(
     private readonly server: Server,
@@ -47,7 +49,7 @@ export class QuizRoomService {
         hasStarted: this.quizGame.hasStarted,
         currentQues: this.quizGame.currentQues,
         hasFinished: this.quizGame.hasFinished,
-        isLatsQues: this.quizGame.isLastQues,
+        hasNextQues: this.quizGame.hasNextQues,
       },
     };
   }
@@ -58,5 +60,36 @@ export class QuizRoomService {
 
   public get hasAllPlayersJoined() {
     return this.players.size === this.maxPlayersAllowed;
+  }
+
+  private sendQues() {
+    if (this.queue.length > 0) {
+      // TODO: Clear timeout after need
+
+      setTimeout(() => {
+        if (!this.quizGame.hasStarted) {
+          this.startQuizGame();
+          this.dispatchEventToQuizRoom<QuizRoomState>('QuizGameStarted', this.state);
+        }
+        this.dispatchEventToQuizRoom<QuizRoomState>('NewQuizQuestion', this.state);
+        this.quizGame.moveToNextQues();
+
+        this.queue.shift();
+        this.sendQues();
+      }, 5000);
+    } else {
+      setTimeout(() => {
+        this.notRunning = true;
+        this.quizGame.endGame();
+        this.dispatchEventToQuizRoom<QuizRoomState>('QuizGameEnded', this.state);
+      }, 5000);
+    }
+  }
+
+  public startSendingQues(): void {
+    if (this.notRunning) {
+      this.notRunning = false;
+      this.sendQues();
+    }
   }
 }

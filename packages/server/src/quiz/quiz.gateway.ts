@@ -87,29 +87,14 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log(`StartQuizGame event received from client id: ${client.id}`);
 
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
-    quizRoom.startQuizGame();
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameStarted', quizRoom.state);
+
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizStartingInSomeTime', quizRoom.state);
+    quizRoom.startSendingQues();
   }
 
   @SubscribeMessage<QuizRoomClientToServerEvent>('GetQuizRoomState')
   handleGetQuizRoomState(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
-  }
-
-  @SubscribeMessage<QuizRoomClientToServerEvent>('GetQuizQues')
-  handleGetCurrentQuizQues(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    this.logger.log(`GetQuizQues event received from client id: ${client.id}`);
-    const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('NewQuizQuestion', quizRoom.state);
-    quizRoom.quizGame.moveToNextQues();
-  }
-
-  @SubscribeMessage<QuizRoomClientToServerEvent>('EndQuizGame')
-  handleQuizGameEnd(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    this.logger.log(`EndQuizGame event received from client id: ${client.id}`);
-    const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
-    quizRoom.endQuizGame();
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameEnded', quizRoom.state);
   }
 }
