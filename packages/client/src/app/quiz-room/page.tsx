@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex } from "@chakra-ui/react";
+import { Flex, useBoolean } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
   QuizRoomClientToServerEvent,
@@ -15,6 +15,7 @@ import { AllPlayersJoinedContent } from "@/app/quiz-room/components/AllPlayersJo
 
 export default function QuizRoomPage() {
   const router = useRouter();
+
   const [quizRoomState, setQuizRoomState] = useState<QuizRoomState | undefined>(
     undefined,
   );
@@ -23,17 +24,26 @@ export default function QuizRoomPage() {
     socket.emit<QuizRoomClientToServerEvent>("GetQuizRoomState");
 
     socket.on<QuizRoomServerToClientEvents>(
+      "QuizStartingInSomeTime",
+      redirectToQuizPage,
+    );
+
+    socket.on<QuizRoomServerToClientEvents>(
       "QuizRoomState",
       handleQuizRoomState,
     );
   }, []);
+
+  function redirectToQuizPage(quizRoom: QuizRoomState) {
+    router.push(`/quiz-room/${quizRoom!.roomId}`);
+  }
 
   function handleQuizRoomState(quizRoom: QuizRoomState) {
     setQuizRoomState(quizRoom);
   }
 
   function handleQuizGameStartClick() {
-    router.push(`/quiz-room/${quizRoomState!.roomId}`);
+    socket.emit<QuizRoomClientToServerEvent>("StartQuizGame");
   }
 
   let content = null;

@@ -13,8 +13,8 @@ import {
   OnAnswerChange,
   QuizQuesView,
 } from "@/app/quiz-room/components/QuizQues";
-import { StartQuizCountDown } from "@/app/quiz-room/components/StartQuizCountDown";
 import { QuizGameFinished } from "@/app/quiz-room/components/QuizGameFinished";
+import { StartQuizCountDown } from "@/app/quiz-room/components/StartQuizCountDown";
 
 export default function QuizGamePage() {
   const [showStartCountDown, setShowStartCountDown] = useBoolean(true);
@@ -23,14 +23,6 @@ export default function QuizGamePage() {
   >();
 
   useEffect(() => {
-    socket.emit<QuizRoomClientToServerEvent>("StartQuizGame");
-  }, []);
-
-  useEffect(() => {
-    socket.on<QuizRoomServerToClientEvents>(
-      "QuizStartingInSomeTime",
-      setShowStartCountDown.on,
-    );
     socket.on("QuizGameStarted", handleQuizGameStart);
 
     socket.on<QuizRoomServerToClientEvents>(
