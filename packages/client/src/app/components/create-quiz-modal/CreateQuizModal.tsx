@@ -89,6 +89,7 @@ export function CreateQuizModal({
                 placeholder="Your Player Name"
                 colorScheme="red"
                 {...register("userName")}
+                size="lg"
               />
               {errors.userName?.message && (
                 <FormErrorMessage>
@@ -104,6 +105,7 @@ export function CreateQuizModal({
                 id="maxPlayersAllowed"
                 inputMode="numeric"
                 min={1}
+                size="lg"
                 onChange={(valueAsString, valueAsNumber) => {
                   setValue(
                     "maxPlayersAllowed",
@@ -129,7 +131,9 @@ export function CreateQuizModal({
         </ModalBody>
 
         <ModalFooter>
-          <Button type="submit">Creat Quiz Room</Button>
+          <Button type="submit" width="100%" size="lg">
+            Creat Quiz Room
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

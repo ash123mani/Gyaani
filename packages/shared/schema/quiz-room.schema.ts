@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Socket } from "socket.io";
 
 export const QuizRoomClientToServerEventsEnum = z.enum([
   "CreateQuizRoom",
@@ -6,6 +7,8 @@ export const QuizRoomClientToServerEventsEnum = z.enum([
   "LeaveQuizRoom",
   "StartQuizGame",
   "GetQuizRoomState",
+
+  "SelectedAnswer",
 
   "WS_SERVER_ERROR",
 ]);
@@ -39,11 +42,22 @@ export const QuiRoomStateSchema = z.object({
   users: z.array(z.string().min(2, { message: "Required" })),
   roomId: z.string().min(2, { message: "Required" }),
   hasAllPlayersJoined: z.boolean(),
+  hostSocketId: z.custom<Socket["id"]>(),
   quizGame: z.object({
     hasStarted: z.boolean(),
     hasFinished: z.boolean(),
     currentQues: QuizQuesSchema,
     hasNextQues: z.boolean(),
+    totalScore: z.number(),
+    scores: z.array(
+      z.object({
+        playerId: z.string().min(2, { message: "Required" }),
+        playerName: z.string().min(2, { message: "Required" }),
+        score: z.number(),
+        inCorrectQuesCount: z.number(),
+        correctQuesCount: z.number(),
+      }),
+    ),
   }),
 });
 
@@ -56,4 +70,9 @@ export const JoinQuizRoomEventDataSchema = z.object({
     message:
       "Player Name should be minimum of 2 characters. Please enter 2 or more characters.",
   }),
+});
+
+export const SelectedAnswerEventDataSchema = z.object({
+  selectedAns: z.number(),
+  quesId: z.string().min(2, {}),
 });

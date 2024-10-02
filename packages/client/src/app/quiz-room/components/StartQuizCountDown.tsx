@@ -34,7 +34,7 @@ export function StartQuizCountDown({
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      gap={4}
+      gap="8"
     >
       <Heading
         as="h2"

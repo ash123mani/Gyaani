@@ -1,28 +1,32 @@
 import { Box, Checkbox, Heading, Progress, Stack } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { QuizQues } from "@qj/shared";
 
 import { useCountDownTimer } from "@/app/hooks";
 import { START_GAME_COUNT_DOWN_SECS } from "@/app/quiz-room/components/StartQuizCountDown";
 
+export type OnAnswerChange = ({
+  quesId,
+  selectedAns,
+}: {
+  quesId: string;
+  selectedAns: number;
+}) => void;
+
 interface QizQuesProps {
   ques: QuizQues;
-  countDownSecs?: number;
+  onAnsChange: OnAnswerChange;
 }
 
-export function QuizQuesView({
-  ques,
-  countDownSecs = START_GAME_COUNT_DOWN_SECS,
-}: QizQuesProps) {
+export function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
   const prevQuesRef = useRef<QuizQues | null>(ques);
-  const [startCountDownAt, resetCountDownAt] = useCountDownTimer({
-    countDownSecs,
-  });
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [startCountDownAt, resetCountDownAt] = useCountDownTimer({});
+  const [selectedAnswer, setSelectedAnswer] = useState<number>(-1);
 
   if (prevQuesRef.current !== ques) {
     prevQuesRef.current = ques;
     resetCountDownAt();
+    setSelectedAnswer(-1);
   }
 
   const progressPercent =
@@ -43,7 +47,13 @@ export function QuizQuesView({
                 value={index}
                 key={option}
                 isChecked={index === selectedAnswer}
-                onChange={() => setSelectedAnswer(index)}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  setSelectedAnswer(Number(event.target.value));
+                  onAnsChange({
+                    quesId: ques.id,
+                    selectedAns: Number(event.target.value),
+                  });
+                }}
               >
                 {option}
               </Checkbox>
@@ -54,8 +64,8 @@ export function QuizQuesView({
 
       <Progress
         value={progressPercent}
-        size="lg"
-        colorScheme="orange"
+        size="xs"
+        color="red.200"
         key={ques.id}
       />
     </Box>

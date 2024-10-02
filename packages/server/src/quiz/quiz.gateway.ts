@@ -10,7 +10,13 @@ import {
 } from '@nestjs/websockets';
 import { Logger, UseFilters } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { CreateQuizRoomEventData, JoinQuizRoomEventData, QuizRoomClientToServerEvent, QuizRoomState } from '@qj/shared';
+import {
+  CreateQuizRoomEventData,
+  JoinQuizRoomEventData,
+  QuizRoomClientToServerEvent,
+  QuizRoomState,
+  SelectedAnswerEventData,
+} from '@qj/shared';
 import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
 import { CustomWsExceptionFilter } from '@/src/errors/ws-exception-filter';
 
@@ -54,7 +60,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log(`CreateQuizRoom event received from client id: ${client.id}`);
     this.logger.debug(`Payload: ${typeof data}`);
 
-    const quizRoom = this.quizRoomManager.createQuizRoom(data);
+    const quizRoom = this.quizRoomManager.createQuizRoom(client, data);
     quizRoom.addPlayerToQuizRoom(client, data);
 
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);
@@ -95,6 +101,13 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage<QuizRoomClientToServerEvent>('GetQuizRoomState')
   handleGetQuizRoomState(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
+  }
+
+  @SubscribeMessage<QuizRoomClientToServerEvent>('SelectedAnswer')
+  handleAnswer(@MessageBody() data: SelectedAnswerEventData, @ConnectedSocket() client: Socket) {
+    const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
+    quizRoom.updateSelectedAns(client, data);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
   }
 }

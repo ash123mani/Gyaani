@@ -9,7 +9,10 @@ import {
 import { Skeleton, Stack, useBoolean } from "@chakra-ui/react";
 
 import { socket } from "@/app/socket";
-import { QuizQuesView } from "@/app/quiz-room/components/QuizQues";
+import {
+  OnAnswerChange,
+  QuizQuesView,
+} from "@/app/quiz-room/components/QuizQues";
 import { StartQuizCountDown } from "@/app/quiz-room/components/StartQuizCountDown";
 import { QuizGameFinished } from "@/app/quiz-room/components/QuizGameFinished";
 
@@ -49,12 +52,19 @@ export default function QuizGamePage() {
     setQuizRoomState(quizRoom);
   }
 
+  const handleAnswerSelection: OnAnswerChange = (ans) => {
+    socket.emit<QuizRoomClientToServerEvent>("SelectedAnswer", {
+      selectedAns: ans.selectedAns,
+      quesId: ans.quesId,
+    });
+  };
+
   if (showStartCountDown) {
     return <StartQuizCountDown />;
   }
 
   if (quizRoomState?.quizGame.hasFinished) {
-    return <QuizGameFinished />;
+    return <QuizGameFinished scores={quizRoomState.quizGame.scores} />;
   }
 
   if (!showStartCountDown && !quizRoomState?.quizGame.currentQues) {
@@ -67,5 +77,10 @@ export default function QuizGamePage() {
     );
   }
 
-  return <QuizQuesView ques={quizRoomState!.quizGame.currentQues} />;
+  return (
+    <QuizQuesView
+      ques={quizRoomState!.quizGame.currentQues}
+      onAnsChange={handleAnswerSelection}
+    />
+  );
 }

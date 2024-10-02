@@ -5,7 +5,7 @@ export class QuizGame {
   public hasStarted: boolean = false;
   public hasFinished: boolean = false;
   public quizQues: QuizQues[] = [];
-  private answers: Map<string, number> = new Map();
+  public answers: Map<string, number> = new Map();
   public currentQuestionIndex: number = -1;
 
   constructor(private readonly quizRoom: QuizRoomService) {
@@ -45,24 +45,24 @@ export class QuizGame {
     this.quizQues = [
       {
         ques: 'Who is PM of India?',
-        options: ['Modi', 'PM Modi', 'Ek hi Modi', 'Feku Modi'],
+        options: ['Modi', 'Lodi', 'Shodi', 'Fodi'],
         id: '20',
       },
       {
-        ques: "What's?",
-        options: ['Modi', 'Narendra', 'Namo', 'PM'],
+        ques: "What's his pet name",
+        options: ['jatiely', 'Waah', 'Amit Shah', 'Dogla'],
         id: '21',
       },
       {
-        ques: "What's his pet name",
-        options: ['Shah', 'Amit', 'HM', 'Dogla'],
+        ques: "Who is enemy of Pm's pet?",
+        options: ['Nitin', 'Yogi', 'Akhilesh', 'PM'],
         id: '22',
       },
     ];
     this.answers = new Map([
       ['20', 0],
-      ['21', 3],
-      ['22', 3],
+      ['21', 2],
+      ['22', 1],
     ]);
   }
 }

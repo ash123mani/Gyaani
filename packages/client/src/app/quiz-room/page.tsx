@@ -43,6 +43,7 @@ export default function QuizRoomPage() {
     content = (
       <AllPlayersJoinedContent
         onQuizGameStartClick={handleQuizGameStartClick}
+        isHost={socket.id === quizRoomState?.hostSocketId}
       />
     );
   }

@@ -1,7 +1,13 @@
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { QuizGame } from '@/src/quiz/quiz-game.service';
-import { JoinQuizRoomEventData, QuizRoomState, QuizRoomServerToClientEvents } from '@qj/shared';
+import {
+  JoinQuizRoomEventData,
+  QuizRoomState,
+  QuizRoomServerToClientEvents,
+  SelectedAnswerEventData,
+  QuizQues,
+} from '@qj/shared';
 import { mapToArrayValues } from '@/src/utils/map-to-array';
 
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring
@@ -13,11 +19,17 @@ export class QuizRoomService {
   public readonly usersNames: Map<Socket['id'], string> = new Map();
   private queue = Array.from(this.quizGame.quizQues);
   private notRunning: boolean = true;
+  public hostSocketId: Socket['id'];
+  public selectedAns: Map<Socket['id'], Map<QuizQues['id'], number>> = new Map();
 
   constructor(
     private readonly server: Server,
     public readonly maxPlayersAllowed: number = 1,
   ) {}
+
+  public set host(player: Socket) {
+    this.hostSocketId = player.id;
+  }
 
   public addPlayerToQuizRoom(player: Socket, data: JoinQuizRoomEventData) {
     this.players.set(player.id, player);
@@ -40,16 +52,51 @@ export class QuizRoomService {
     this.quizGame.endGame();
   }
 
+  public updateSelectedAns(player: Socket, data: SelectedAnswerEventData) {
+    this.selectedAns.set(player.id, (this.selectedAns.get(player.id) || new Map()).set(data.quesId, data.selectedAns));
+  }
+
+  public scores() {
+    const scores: QuizRoomState['quizGame']['scores'] = [];
+    for (const [playerId, answers] of this.selectedAns) {
+      let correctQuesCount = 0;
+      let inCorrectQuesCount = 0;
+
+      for (const [quesId, selectedAns] of answers) {
+        const correctAns = this.quizGame.answers.get(quesId);
+        if (correctAns === selectedAns) {
+          correctQuesCount = correctQuesCount + 1;
+        } else {
+          inCorrectQuesCount = inCorrectQuesCount + 1;
+        }
+      }
+
+      const scorePayload: QuizRoomState['quizGame']['scores'][0] = {
+        playerName: this.usersNames.get(playerId),
+        playerId: playerId,
+        correctQuesCount: correctQuesCount,
+        inCorrectQuesCount: inCorrectQuesCount,
+        score: correctQuesCount * 10,
+      };
+      scores.push(scorePayload);
+    }
+
+    return scores;
+  }
+
   public get state(): QuizRoomState {
     return {
       users: mapToArrayValues(this.usersNames),
       roomId: this.roomId,
       hasAllPlayersJoined: this.hasAllPlayersJoined,
+      hostSocketId: this.hostSocketId,
       quizGame: {
         hasStarted: this.quizGame.hasStarted,
         currentQues: this.quizGame.currentQues,
         hasFinished: this.quizGame.hasFinished,
         hasNextQues: this.quizGame.hasNextQues,
+        scores: this.scores(),
+        totalScore: this.quizGame.quizQues.length * 10,
       },
     };
   }

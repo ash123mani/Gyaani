@@ -9,14 +9,17 @@ import { ERRORS } from '@qj/shared';
 export class QuizRoomManagerService {
   public server: Server;
   private readonly quizRooms: Map<QuizRoomService['roomId'], QuizRoomService> = new Map();
+  private readonly quizRoomHosts: Map<QuizRoomService['roomId'], Socket> = new Map();
 
   public terminateSocket(player: Socket): void {
     const playerQuizRoom = this.getPlayerQuizRoom(player);
     playerQuizRoom?.removePlayerFromQuizRoom(player);
   }
 
-  public createQuizRoom(createQuizRoomEventData: CreateQuizRoomEventData): QuizRoomService {
+  public createQuizRoom(player: Socket, createQuizRoomEventData: CreateQuizRoomEventData): QuizRoomService {
     const quizRoom = new QuizRoomService(this.server, createQuizRoomEventData.maxPlayersAllowed);
+    quizRoom.host = player;
+    this.quizRoomHosts.set(quizRoom.roomId, player);
     this.quizRooms.set(quizRoom.roomId, quizRoom);
 
     return quizRoom;
