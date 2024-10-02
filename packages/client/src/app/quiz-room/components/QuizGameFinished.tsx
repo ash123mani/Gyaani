@@ -36,6 +36,7 @@ export function QuizGameFinished({ scores }: QuizGameFinishedProps) {
               <Th>Player Name</Th>
               <Th isNumeric>Correct Ques</Th>
               <Th isNumeric>InCorrect Ques</Th>
+              <Th isNumeric>Unattempted Ques</Th>
               <Th isNumeric>Score</Th>
             </Tr>
           </Thead>
@@ -46,6 +47,7 @@ export function QuizGameFinished({ scores }: QuizGameFinishedProps) {
                   <Td>{playerScore.playerName}</Td>
                   <Td isNumeric>{playerScore.correctQuesCount}</Td>
                   <Td isNumeric>{playerScore.inCorrectQuesCount}</Td>
+                  <Td isNumeric>{playerScore.unAttemptedQuesCount}</Td>
                   <Td isNumeric>{playerScore.score}</Td>
                 </Tr>
               );

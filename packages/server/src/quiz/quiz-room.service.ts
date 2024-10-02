@@ -59,51 +59,33 @@ export class QuizRoomService {
   public scores() {
     const scores: QuizRoomState['quizGame']['scores'] = [];
     for (const [playerId] of this.players) {
-      const playerSelectedAnswers = this.selectedAns.get(playerId) || new Map();
-
       let correctQuesCount = 0;
       let inCorrectQuesCount = 0;
+      let unAttemptedQuesCount = 0;
 
-      for (const [quesId, selectedAns] of playerSelectedAnswers) {
-        const correctAns = this.quizGame.answers.get(quesId);
-        if (correctAns === selectedAns) {
+      this.quizGame.quizQues.map((ques) => {
+        const correctAns = this.quizGame.answers.get(ques.id);
+        const selectedAns = (this.selectedAns.get(playerId) || new Map()).get(ques.id);
+
+        if (!selectedAns) {
+          unAttemptedQuesCount = unAttemptedQuesCount + 1;
+        } else if (correctAns === selectedAns) {
           correctQuesCount = correctQuesCount + 1;
         } else {
           inCorrectQuesCount = inCorrectQuesCount + 1;
         }
-      }
+      });
 
       const scorePayload: QuizRoomState['quizGame']['scores'][0] = {
         playerName: this.usersNames.get(playerId),
         playerId: playerId,
         correctQuesCount: correctQuesCount,
         inCorrectQuesCount: inCorrectQuesCount,
+        unAttemptedQuesCount: unAttemptedQuesCount,
         score: correctQuesCount * 10,
       };
       scores.push(scorePayload);
     }
-    // for (const [playerId, answers] of this.selectedAns) {
-    //   let correctQuesCount = 0;
-    //   let inCorrectQuesCount = 0;
-    //
-    //   for (const [quesId, selectedAns] of answers) {
-    //     const correctAns = this.quizGame.answers.get(quesId);
-    //     if (correctAns === selectedAns) {
-    //       correctQuesCount = correctQuesCount + 1;
-    //     } else {
-    //       inCorrectQuesCount = inCorrectQuesCount + 1;
-    //     }
-    //   }
-    //
-    //   const scorePayload: QuizRoomState['quizGame']['scores'][0] = {
-    //     playerName: this.usersNames.get(playerId),
-    //     playerId: playerId,
-    //     correctQuesCount: correctQuesCount,
-    //     inCorrectQuesCount: inCorrectQuesCount,
-    //     score: correctQuesCount * 10,
-    //   };
-    //   scores.push(scorePayload);
-    // }
 
     return scores;
   }
