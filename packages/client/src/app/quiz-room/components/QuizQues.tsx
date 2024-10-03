@@ -1,9 +1,9 @@
 import { Box, Checkbox, Heading, Progress, Stack } from "@chakra-ui/react";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, memo, useMemo, useRef, useState } from "react";
 import { QuizQues } from "@qj/shared";
+import { QUIZ_QUES_GAP_SECS } from "@qj/shared/config";
 
 import { useCountDownTimer } from "@/app/hooks";
-import { START_GAME_COUNT_DOWN_SECS } from "@/app/quiz-room/components/StartQuizCountDown";
 
 export type OnAnswerChange = ({
   quesId,
@@ -18,19 +18,41 @@ interface QizQuesProps {
   onAnsChange: OnAnswerChange;
 }
 
-export function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
+function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
   const prevQuesRef = useRef<QuizQues | null>(ques);
   const [startCountDownAt, resetCountDownAt] = useCountDownTimer({});
   const [selectedAnswer, setSelectedAnswer] = useState<number>(-1);
 
-  if (prevQuesRef.current !== ques) {
+  if (prevQuesRef.current?.id !== ques.id) {
     prevQuesRef.current = ques;
     resetCountDownAt();
     setSelectedAnswer(-1);
   }
 
-  const progressPercent =
-    ((startCountDownAt as number) / START_GAME_COUNT_DOWN_SECS) * 100;
+  const progressPercent = (startCountDownAt / QUIZ_QUES_GAP_SECS) * 100;
+
+  const renderOptions = useMemo(
+    () =>
+      ques?.options.map((option: string, index: number) => (
+        <Checkbox
+          size="lg"
+          colorScheme="orange"
+          value={index}
+          key={option}
+          isChecked={index === selectedAnswer}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            setSelectedAnswer(Number(event.target.value));
+            onAnsChange({
+              quesId: ques.id,
+              selectedAns: Number(event.target.value),
+            });
+          }}
+        >
+          {option}
+        </Checkbox>
+      )),
+    [ques?.options, onAnsChange, selectedAnswer, ques.id],
+  );
 
   return (
     <Box display="flex" flexDirection="column" width="100%" height="100%">
@@ -40,24 +62,7 @@ export function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
             {ques?.ques}
           </Heading>
           <Stack direction="column" gap={4}>
-            {ques?.options.map((option: string, index: number) => (
-              <Checkbox
-                size="lg"
-                colorScheme="orange"
-                value={index}
-                key={option}
-                isChecked={index === selectedAnswer}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                  setSelectedAnswer(Number(event.target.value));
-                  onAnsChange({
-                    quesId: ques.id,
-                    selectedAns: Number(event.target.value),
-                  });
-                }}
-              >
-                {option}
-              </Checkbox>
-            ))}
+            {renderOptions}
           </Stack>
         </Stack>
       </Box>
@@ -71,3 +76,7 @@ export function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
     </Box>
   );
 }
+
+const MemoizedQuizQuesView = memo(QuizQuesView);
+
+export { MemoizedQuizQuesView as QuizQuesView };

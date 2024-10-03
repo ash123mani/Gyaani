@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   QuizRoomClientToServerEvent,
   QuizRoomServerToClientEvents,
   QuizRoomState,
 } from "@qj/shared";
-import { Skeleton, Stack, useBoolean } from "@chakra-ui/react";
+import { Skeleton, Stack } from "@chakra-ui/react";
 
 import { socket } from "@/app/socket";
 import {
@@ -17,41 +17,29 @@ import { QuizGameFinished } from "@/app/quiz-room/components/QuizGameFinished";
 import { StartQuizCountDown } from "@/app/quiz-room/components/StartQuizCountDown";
 
 export default function QuizGamePage() {
-  const [showStartCountDown, setShowStartCountDown] = useBoolean(true);
   const [quizRoomState, setQuizRoomState] = useState<
     QuizRoomState | undefined
   >();
 
   useEffect(() => {
-    socket.on("QuizGameStarted", handleQuizGameStart);
-
     socket.on<QuizRoomServerToClientEvents>(
-      "NewQuizQuestion",
-      handleNewQuizQues,
+      "QuizRoomState",
+      handleQuizRoomState,
     );
-    socket.on<QuizRoomServerToClientEvents>("QuizGameEnded", handQuizGameEnded);
   }, []);
 
-  function handleQuizGameStart() {
-    setShowStartCountDown.off();
-  }
-
-  function handleNewQuizQues(quizRoom: QuizRoomState) {
+  function handleQuizRoomState(quizRoom: QuizRoomState) {
     setQuizRoomState(quizRoom);
   }
 
-  function handQuizGameEnded(quizRoom: QuizRoomState) {
-    setQuizRoomState(quizRoom);
-  }
-
-  const handleAnswerSelection: OnAnswerChange = (ans) => {
+  const handleAnswerSelection: OnAnswerChange = useCallback((ans) => {
     socket.emit<QuizRoomClientToServerEvent>("SelectedAnswer", {
       selectedAns: ans.selectedAns,
       quesId: ans.quesId,
     });
-  };
+  }, []);
 
-  if (showStartCountDown) {
+  if (!quizRoomState?.quizGame.hasStarted) {
     return <StartQuizCountDown />;
   }
 
@@ -59,9 +47,14 @@ export default function QuizGamePage() {
     return <QuizGameFinished scores={quizRoomState.quizGame.scores} />;
   }
 
-  if (!showStartCountDown && !quizRoomState?.quizGame.currentQues) {
+  if (
+    quizRoomState?.quizGame.hasStarted &&
+    !quizRoomState?.quizGame.currentQues
+  ) {
     return (
-      <Stack>
+      <Stack maxWidth="400px" gap={8}>
+        <Skeleton height="60px" />
+        <Skeleton height="20px" />
         <Skeleton height="20px" />
         <Skeleton height="20px" />
         <Skeleton height="20px" />

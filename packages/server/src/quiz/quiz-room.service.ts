@@ -7,6 +7,8 @@ import {
   QuizRoomServerToClientEvents,
   SelectedAnswerEventData,
   QuizQues,
+  QUIZ_QUES_GAP_MILLISECONDS,
+  WAIT_TIME_BEFORE_QUIZ_STOP_MILLISECONDS,
 } from '@qj/shared';
 import { mapToArrayValues } from '@/src/utils/map-to-array';
 
@@ -119,23 +121,24 @@ export class QuizRoomService {
     if (this.queue.length > 0) {
       // TODO: Clear timeout after need
 
+      const gap = this.quizGame.hasStarted ? QUIZ_QUES_GAP_MILLISECONDS : WAIT_TIME_BEFORE_QUIZ_STOP_MILLISECONDS;
+
       setTimeout(() => {
         if (!this.quizGame.hasStarted) {
           this.startQuizGame();
-          this.dispatchEventToQuizRoom<QuizRoomState>('QuizGameStarted', this.state);
         }
-        this.dispatchEventToQuizRoom<QuizRoomState>('NewQuizQuestion', this.state);
+        this.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', this.state);
         this.quizGame.moveToNextQues();
 
         this.queue.shift();
         this.sendQues();
-      }, 5000);
+      }, gap);
     } else {
       setTimeout(() => {
         this.notRunning = true;
         this.quizGame.endGame();
-        this.dispatchEventToQuizRoom<QuizRoomState>('QuizGameEnded', this.state);
-      }, 5000);
+        this.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', this.state);
+      }, QUIZ_QUES_GAP_MILLISECONDS);
     }
   }
 

@@ -4,30 +4,30 @@ import {
   Heading,
   CircularProgressLabel,
 } from "@chakra-ui/react";
+import { WAIT_TIME_BEFORE_QUIZ_START_SECS } from "@qj/shared/config";
 
 import { useCountDownTimer } from "@/app/hooks";
 
 interface StartQuizCountDownProps {
   onCountDownStart?: () => void;
   onCountDownEnd?: () => void;
-  countDownSecs?: number;
 }
-
-export const START_GAME_COUNT_DOWN_SECS = 5;
 
 export function StartQuizCountDown({
   onCountDownStart,
   onCountDownEnd,
-  countDownSecs = START_GAME_COUNT_DOWN_SECS,
 }: StartQuizCountDownProps) {
   const [startCountDownAt] = useCountDownTimer({
     onCountDownStart,
     onCountDownEnd,
-    countDownSecs,
+    countDownSecs: WAIT_TIME_BEFORE_QUIZ_START_SECS,
   });
 
-  const progressPercent = ((startCountDownAt as number) / countDownSecs) * 100;
-  const timeLeftToStartTheGame = countDownSecs - (startCountDownAt as number);
+  const progressPercent =
+    (startCountDownAt / WAIT_TIME_BEFORE_QUIZ_START_SECS) * 100;
+  const timeLeftToStartTheGame =
+    WAIT_TIME_BEFORE_QUIZ_START_SECS - startCountDownAt;
+
   return (
     <Box
       display="flex"

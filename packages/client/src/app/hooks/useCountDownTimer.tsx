@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-import { START_GAME_COUNT_DOWN_SECS } from "@/app/quiz-room/components/StartQuizCountDown";
+import { QUIZ_QUES_GAP_MILLISECONDS } from "@qj/shared/config";
 
 interface UseCountDownTimerProps {
   onCountDownStart?: () => void;
@@ -14,7 +13,7 @@ export function useCountDownTimer(
   const {
     onCountDownStart,
     onCountDownEnd,
-    countDownSecs = START_GAME_COUNT_DOWN_SECS,
+    countDownSecs = QUIZ_QUES_GAP_MILLISECONDS / 1000,
   } = props;
   const [startCountDownAt, setStartCountDownAt] = useState<number>(0);
 

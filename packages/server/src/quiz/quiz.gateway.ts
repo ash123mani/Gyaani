@@ -66,9 +66,6 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
 
-    if (quizRoom.hasAllPlayersJoined)
-      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameReadyToStart', quizRoom.state);
-
     this.logger.log(
       `QuizRoom: ${quizRoom.roomId} have maxAllowed players: ${data.maxPlayersAllowed} and currently ${quizRoom.players.size} Players have joined`,
     );
@@ -81,9 +78,6 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     const quizRoom = this.quizRoomManager.addPlayerToQuizRoom(client, data);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
-
-    if (quizRoom.hasAllPlayersJoined)
-      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizGameReadyToStart', quizRoom.state);
 
     this.logger.log(`Player joined the QuizRoom: ${quizRoom.roomId}`);
   }
@@ -108,6 +102,5 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleAnswer(@MessageBody() data: SelectedAnswerEventData, @ConnectedSocket() client: Socket) {
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
     quizRoom.updateSelectedAns(client, data);
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
   }
 }
