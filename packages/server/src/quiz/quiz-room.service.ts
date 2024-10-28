@@ -42,16 +42,17 @@ export class QuizRoomService {
   public removePlayerFromQuizRoom(player: Socket) {
     player.leave(this.roomId);
     this.usersNames.delete(player.id);
+    this.players.delete(player.id);
+    if (this.hostSocketId === player.id) {
+      this.hostSocketId = null;
+      this.quizGame.endGame();
+    }
   }
 
   public startQuizGame() {
     if (this.players.size === this.maxPlayersAllowed) {
       this.quizGame.startGame();
     }
-  }
-
-  public endQuizGame() {
-    this.quizGame.endGame();
   }
 
   public updateSelectedAns(player: Socket, data: SelectedAnswerEventData) {
@@ -117,7 +118,7 @@ export class QuizRoomService {
     return this.players.size === this.maxPlayersAllowed;
   }
 
-  private sendQues() {
+  private sendQues(player: Socket) {
     if (this.queue.length > 0) {
       // TODO: Clear timeout after need
 
@@ -131,21 +132,22 @@ export class QuizRoomService {
         this.quizGame.moveToNextQues();
 
         this.queue.shift();
-        this.sendQues();
+        this.sendQues(player);
       }, gap);
     } else {
       setTimeout(() => {
         this.notRunning = true;
         this.quizGame.endGame();
         this.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', this.state);
+        this.removePlayerFromQuizRoom(player);
       }, QUIZ_QUES_GAP_MILLISECONDS);
     }
   }
 
-  public startSendingQues(): void {
+  public startSendingQues(player: Socket): void {
     if (this.notRunning) {
       this.notRunning = false;
-      this.sendQues();
+      this.sendQues(player);
     }
   }
 }

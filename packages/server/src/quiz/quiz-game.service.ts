@@ -19,7 +19,7 @@ export class QuizGame {
   }
 
   public endGame() {
-    if (this.hasFinished) return;
+    if (this.hasFinished || !this.hasStarted) return;
     this.hasFinished = true;
     this.currentQuestionIndex = -1;
   }

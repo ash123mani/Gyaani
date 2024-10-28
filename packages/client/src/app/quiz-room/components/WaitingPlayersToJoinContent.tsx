@@ -28,7 +28,7 @@ export function WaitingPlayersToJoinContent({
   }
 
   return (
-    <Fragment>
+    <Box maxWidth="80%">
       <Box>
         <Text fontSize="2xl" align="center" fontWeight="bold" color="gray.500">
           Quiz will automatically start once all the players will join the rom.
@@ -57,6 +57,6 @@ export function WaitingPlayersToJoinContent({
       >
         Do not Close!
       </Text>
-    </Fragment>
+    </Box>
   );
 }

@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   FormControl,
   FormErrorMessage,
@@ -20,15 +19,12 @@ import {
   Stack,
   type UseModalProps,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CreateQuizRoomEventData,
   CreateQuizRoomEventDataSchema,
 } from "@qj/shared";
-
-import { socket } from "@/app/socket";
 
 import styles from "./styles.module.css";
 
@@ -57,10 +53,6 @@ export function CreateQuizModal({
     },
   });
   const maxPlayersAllowed = watch("maxPlayersAllowed");
-
-  useEffect(() => {
-    socket.connect();
-  }, []);
 
   return (
     <Modal

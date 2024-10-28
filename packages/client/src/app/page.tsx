@@ -7,8 +7,10 @@ import {
   JoinQuizRoomEventData,
   QuizRoomClientToServerEvent,
   QuizRoomServerToClientEvents,
+  QuizRoomState,
 } from "@qj/shared";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import { socket } from "@/app/socket";
 import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizModal";
@@ -18,6 +20,10 @@ import styles from "./styles.module.css";
 
 export default function Home() {
   const router = useRouter();
+
+  useEffect(() => {
+    socket.connect();
+  }, []);
 
   const {
     isOpen: isCreateQuizRoomModalOpen,
@@ -31,10 +37,10 @@ export default function Home() {
     onClose: onJoinRoomModalClose,
   } = useDisclosure({ id: "JoinRoomModalOpen" });
 
-  function handleSuccessfulQuizRoomJoin() {
+  function handleSuccessfulQuizRoomJoin(quizRoom: QuizRoomState) {
     onJoinRoomModalClose();
     onCreateQuizRoomModalClose();
-    router.replace("/quiz-room");
+    router.replace(`/quiz-room/${quizRoom.roomId}`);
   }
 
   function handleJoinQuizRoomSubmit(values: JoinQuizRoomEventData) {
@@ -58,18 +64,26 @@ export default function Home() {
       <Heading as="h1" size="2xl" color="blackAlpha.500">
         Start Playing Quiz
       </Heading>
-      <Stack spacing={2} direction="row">
+      <Stack
+        spacing={2}
+        direction="row"
+        wrap="wrap"
+        alignItems="center"
+        justifyContent="space-between"
+      >
         <Button
           onClick={onCreateQuizRoomModalOpen}
           colorScheme="orange"
           leftIcon={<AddIcon />}
+          width="100%"
         >
           Create a quiz room
         </Button>
         <Button
           onClick={onJoinRoomModalOpen}
           colorScheme="blackAlpha"
-          rightIcon={<ArrowForwardIcon />}
+          leftIcon={<ArrowForwardIcon />}
+          width="100%"
         >
           Join a quiz room
         </Button>

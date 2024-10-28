@@ -66,6 +66,11 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
 
+    if (quizRoom.hasAllPlayersJoined) {
+      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
+      quizRoom.startSendingQues(client);
+    }
+
     this.logger.log(
       `QuizRoom: ${quizRoom.roomId} have maxAllowed players: ${data.maxPlayersAllowed} and currently ${quizRoom.players.size} Players have joined`,
     );
@@ -79,17 +84,12 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const quizRoom = this.quizRoomManager.addPlayerToQuizRoom(client, data);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
 
+    if (quizRoom.hasAllPlayersJoined) {
+      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
+      quizRoom.startSendingQues(client);
+    }
+
     this.logger.log(`Player joined the QuizRoom: ${quizRoom.roomId}`);
-  }
-
-  @SubscribeMessage<QuizRoomClientToServerEvent>('StartQuizGame')
-  handleStartQuizGameEvent(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    this.logger.log(`StartQuizGame event received from client id: ${client.id}`);
-
-    const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
-
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizStartingInSomeTime', quizRoom.state);
-    quizRoom.startSendingQues();
   }
 
   @SubscribeMessage<QuizRoomClientToServerEvent>('GetQuizRoomState')
@@ -100,6 +100,9 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage<QuizRoomClientToServerEvent>('SelectedAnswer')
   handleAnswer(@MessageBody() data: SelectedAnswerEventData, @ConnectedSocket() client: Socket) {
+    this.logger.log(`SelectedAnswer event received from client id: ${client.id}`);
+    this.logger.log(`SelectedAnswer is: ${data.selectedAns}`);
+
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
     quizRoom.updateSelectedAns(client, data);
   }

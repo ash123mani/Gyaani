@@ -1,6 +1,6 @@
 .page {
     height: 100vh;
-    margin: 0 180px;
+    margin: 0 10%;
     padding: 12px 24px;
     display: flex;
     flex-direction: column;

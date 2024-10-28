@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, Fragment } from "react";
 import {
   QuizRoomClientToServerEvent,
   QuizRoomServerToClientEvents,
   QuizRoomState,
 } from "@qj/shared";
-import { Skeleton, Stack } from "@chakra-ui/react";
+import { Skeleton, Spinner, Stack } from "@chakra-ui/react";
 
 import { socket } from "@/app/socket";
 import {
@@ -15,6 +15,7 @@ import {
 } from "@/app/quiz-room/components/QuizQues";
 import { QuizGameFinished } from "@/app/quiz-room/components/QuizGameFinished";
 import { StartQuizCountDown } from "@/app/quiz-room/components/StartQuizCountDown";
+import { WaitingPlayersToJoinContent } from "@/app/quiz-room/components/WaitingPlayersToJoinContent";
 
 export default function QuizGamePage() {
   const [quizRoomState, setQuizRoomState] = useState<
@@ -22,6 +23,8 @@ export default function QuizGamePage() {
   >();
 
   useEffect(() => {
+    socket.emit<QuizRoomClientToServerEvent>("GetQuizRoomState");
+
     socket.on<QuizRoomServerToClientEvents>(
       "QuizRoomState",
       handleQuizRoomState,
@@ -39,7 +42,19 @@ export default function QuizGamePage() {
     });
   }, []);
 
-  if (!quizRoomState?.quizGame.hasStarted) {
+  if (
+    !quizRoomState?.hasAllPlayersJoined &&
+    quizRoomState?.roomId &&
+    !quizRoomState?.quizGame.hasStarted
+  ) {
+    return <WaitingPlayersToJoinContent roomId={quizRoomState.roomId} />;
+  }
+
+  if (
+    quizRoomState?.hasAllPlayersJoined &&
+    quizRoomState?.roomId &&
+    !quizRoomState?.quizGame.hasStarted
+  ) {
     return <StartQuizCountDown />;
   }
 
@@ -62,10 +77,16 @@ export default function QuizGamePage() {
     );
   }
 
+  if (!quizRoomState) {
+    return <Spinner />;
+  }
+
   return (
-    <QuizQuesView
-      ques={quizRoomState!.quizGame.currentQues}
-      onAnsChange={handleAnswerSelection}
-    />
+    <Fragment>
+      <QuizQuesView
+        ques={quizRoomState.quizGame.currentQues}
+        onAnsChange={handleAnswerSelection}
+      />
+    </Fragment>
   );
 }
