@@ -1,5 +1,6 @@
 import {
   Button,
+  Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -25,6 +26,8 @@ import {
   CreateQuizRoomEventData,
   CreateQuizRoomEventDataSchema,
 } from "@qj/shared";
+
+import { QuizRoomIcon } from "@/app/icons";
 
 import styles from "./styles.module.css";
 
@@ -70,9 +73,10 @@ export function CreateQuizModal({
         className={styles.createQuizRoomForm}
       >
         <ModalHeader>Create a new Quiz Room</ModalHeader>
+        <Divider />
         <ModalCloseButton />
 
-        <ModalBody>
+        <ModalBody py={4}>
           <Stack direction="column" spacing={4}>
             <FormControl isInvalid={!!errors.userName}>
               <FormLabel htmlFor="userName">Your Player Name</FormLabel>
@@ -81,7 +85,6 @@ export function CreateQuizModal({
                 placeholder="Your Player Name"
                 colorScheme="red"
                 {...register("userName")}
-                size="lg"
               />
               {errors.userName?.message && (
                 <FormErrorMessage>
@@ -97,7 +100,6 @@ export function CreateQuizModal({
                 id="maxPlayersAllowed"
                 inputMode="numeric"
                 min={1}
-                size="lg"
                 onChange={(valueAsString, valueAsNumber) => {
                   setValue(
                     "maxPlayersAllowed",
@@ -122,8 +124,10 @@ export function CreateQuizModal({
           </Stack>
         </ModalBody>
 
-        <ModalFooter>
-          <Button type="submit" width="100%" size="lg">
+        <Divider />
+
+        <ModalFooter py={4}>
+          <Button type="submit" leftIcon={<QuizRoomIcon />}>
             Creat Quiz Room
           </Button>
         </ModalFooter>

@@ -45,7 +45,7 @@ export class QuizRoomService {
     this.players.delete(player.id);
     if (this.hostSocketId === player.id) {
       this.hostSocketId = null;
-      this.quizGame.endGame();
+      // this.quizGame.endGame();
     }
   }
 

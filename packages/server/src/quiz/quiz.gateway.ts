@@ -13,7 +13,9 @@ import { Server, Socket } from 'socket.io';
 import {
   CreateQuizRoomEventData,
   JoinQuizRoomEventData,
+  LeaveRoomEventData,
   QuizRoomClientToServerEvent,
+  QuizRoomServerToClientEvents,
   QuizRoomState,
   SelectedAnswerEventData,
 } from '@qj/shared';
@@ -105,5 +107,12 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
     quizRoom.updateSelectedAns(client, data);
+  }
+
+  @SubscribeMessage<QuizRoomClientToServerEvent>('LeaveQuizRoom')
+  handleLeaveQuizRoom(@MessageBody() data: LeaveRoomEventData, @ConnectedSocket() client: Socket) {
+    const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
+    quizRoom.removePlayerFromQuizRoom(client);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
   }
 }

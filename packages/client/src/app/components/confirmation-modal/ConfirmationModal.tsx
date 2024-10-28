@@ -6,6 +6,8 @@ import {
   AlertDialogHeader,
   AlertDialogBody,
   AlertDialogFooter,
+  Divider,
+  Text,
 } from "@chakra-ui/react";
 import { useRef } from "react";
 
@@ -41,11 +43,22 @@ export const ConfirmationModal = ({
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             {title}
           </AlertDialogHeader>
+          <Divider />
 
-          <AlertDialogBody>{description}</AlertDialogBody>
+          <AlertDialogBody py={4}>
+            <Text size="2xl" colorScheme="blackAlpha">
+              {description}
+            </Text>
+          </AlertDialogBody>
 
-          <AlertDialogFooter>
-            <Button ref={cancelRef.current!} onClick={onClose}>
+          <Divider />
+
+          <AlertDialogFooter py={4}>
+            <Button
+              ref={cancelRef.current!}
+              onClick={onClose}
+              variant="outline"
+            >
               {cancelBtnText}
             </Button>
             <Button colorScheme="red" onClick={onConfirm} ml={3}>

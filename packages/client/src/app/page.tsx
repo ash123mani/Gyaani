@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { socket } from "@/app/socket";
 import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizModal";
 import { JoinQuizRoomModal } from "@/app/components/join-quiz-room-modal/JoinQuizRoomModal";
+import { AddPlayerIcon, QuizRoomIcon } from "@/app/icons";
 
 import styles from "./styles.module.css";
 
@@ -74,15 +75,15 @@ export default function Home() {
         <Button
           onClick={onCreateQuizRoomModalOpen}
           colorScheme="orange"
-          leftIcon={<AddIcon />}
+          leftIcon={<QuizRoomIcon />}
           width="100%"
         >
           Create a quiz room
         </Button>
         <Button
           onClick={onJoinRoomModalOpen}
-          colorScheme="blackAlpha"
-          leftIcon={<ArrowForwardIcon />}
+          colorScheme="cyan"
+          leftIcon={<AddPlayerIcon />}
           width="100%"
         >
           Join a quiz room

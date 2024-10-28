@@ -8,6 +8,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Stack,
   Text,
   useClipboard,
 } from "@chakra-ui/react";
@@ -28,20 +29,20 @@ export function WaitingPlayersToJoinContent({
   }
 
   return (
-    <Box maxWidth="80%">
-      <Box>
-        <Text fontSize="2xl" align="center" fontWeight="bold" color="gray.500">
+    <Stack gap={8} justifyContent="center" alignItems="center">
+      <Box maxWidth="80%">
+        <Text fontSize="3xl" align="center" fontWeight="bold" color="gray.500">
           Quiz will automatically start once all the players will join the rom.
         </Text>
       </Box>
 
-      <FormControl>
+      <FormControl maxWidth="80%">
         <FormLabel>Room Code</FormLabel>
         <InputGroup>
           <InputRightElement width="auto">
             <Button onClick={onCopy}>{hasCopied ? "Copied!" : "Copy"}</Button>
           </InputRightElement>
-          <Input placeholder={roomId} value={value} ml={2} />
+          <Input placeholder={roomId} defaultValue={value} ml={2} />
         </InputGroup>
         <FormHelperText color="green">
           Share it with your friends to join the room and play.
@@ -57,6 +58,6 @@ export function WaitingPlayersToJoinContent({
       >
         Do not Close!
       </Text>
-    </Box>
+    </Stack>
   );
 }

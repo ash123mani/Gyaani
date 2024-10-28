@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -20,6 +21,7 @@ import { JoinQuizRoomEventData, JoinQuizRoomEventDataSchema } from "@qj/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import styles from "@/app/components/create-quiz-modal/styles.module.css";
+import { AddPlayerIcon } from "@/app/icons/AddPlayerIcon";
 
 interface JoinQuizRoomModalProps {
   onClose: UseModalProps["onClose"];
@@ -60,9 +62,11 @@ export function JoinQuizRoomModal({
       >
         <ModalContent>
           <ModalHeader>Join Existing Quiz Room</ModalHeader>
+          <Divider />
+
           <ModalCloseButton />
 
-          <ModalBody>
+          <ModalBody py={4}>
             <Stack direction="column" spacing={4}>
               <FormControl isInvalid={!!errors.userName}>
                 <FormLabel htmlFor="userName">Room Code</FormLabel>
@@ -95,8 +99,16 @@ export function JoinQuizRoomModal({
             </Stack>
           </ModalBody>
 
-          <ModalFooter>
-            <Button type="submit">Join Room</Button>
+          <Divider />
+
+          <ModalFooter py={4}>
+            <Button
+              type="submit"
+              colorScheme="cyan"
+              leftIcon={<AddPlayerIcon />}
+            >
+              Join Room
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Box>

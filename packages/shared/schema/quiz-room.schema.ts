@@ -71,3 +71,7 @@ export const SelectedAnswerEventDataSchema = z.object({
   selectedAns: z.number(),
   quesId: z.string().min(2, {}),
 });
+
+export const LeaveRoomEventDataSchema = z.object({
+  roomId: z.string(),
+});
