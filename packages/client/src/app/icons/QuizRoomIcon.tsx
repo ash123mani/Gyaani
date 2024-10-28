@@ -1,7 +1,7 @@
 import { Icon } from "@chakra-ui/react";
 
 export const QuizRoomIcon = (props: object) => (
-  <Icon fill="white" viewBox="0 0 128 128" {...props}>
+  <Icon fill="currentColor" viewBox="0 0 128 128" {...props}>
     <g>
       <ellipse
         transform="matrix(0.9659 -0.2588 0.2588 0.9659 -11.4851 7.6134)"

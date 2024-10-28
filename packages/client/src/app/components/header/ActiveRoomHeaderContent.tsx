@@ -62,18 +62,18 @@ export const ActiveRoomHeaderContent = () => {
 
       <Popover>
         <PopoverTrigger>
-          <Button variant="ghost" leftIcon={<PlayerIcon />}>
-            {pluralize("Player", users.length, true)} in the room
+          <Button variant="ghost" leftIcon={<PlayerIcon />} colorScheme="cyan">
+            {pluralize("player", users.length, true)} in the room
           </Button>
         </PopoverTrigger>
-        <PopoverContent color="white" bg="gray.600" borderColor="blue.800">
-          <PopoverArrow bg="gray.600" />
+        <PopoverContent color="cyan.800" bg="cyan.300">
+          <PopoverArrow bg="cyan.300" />
           <PopoverCloseButton />
           <PopoverBody>
             <UnorderedList>
               {users.map((user, index) => {
                 return (
-                  <ListItem key={index} fontSize="md" color="white">
+                  <ListItem key={index} fontSize="md" color="blackAlpha.900">
                     {user}
                   </ListItem>
                 );

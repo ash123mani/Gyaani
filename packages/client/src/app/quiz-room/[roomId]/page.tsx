@@ -7,6 +7,7 @@ import {
   QuizRoomState,
 } from "@qj/shared";
 import { Skeleton, Spinner, Stack } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
 import { socket } from "@/app/socket";
 import {
@@ -18,11 +19,15 @@ import { StartQuizCountDown } from "@/app/quiz-room/components/StartQuizCountDow
 import { WaitingPlayersToJoinContent } from "@/app/quiz-room/components/WaitingPlayersToJoinContent";
 
 export default function QuizGamePage() {
+  const router = useRouter();
+
   const [quizRoomState, setQuizRoomState] = useState<
     QuizRoomState | undefined
   >();
 
   useEffect(() => {
+    if (!socket.connected) router.push("/");
+
     socket.emit<QuizRoomClientToServerEvent>("GetQuizRoomState");
 
     socket.on<QuizRoomServerToClientEvents>(
