@@ -17,11 +17,15 @@ import {
   type UseModalProps,
 } from "@chakra-ui/react";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { JoinQuizRoomEventData, JoinQuizRoomEventDataSchema } from "@qj/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import styles from "@/app/components/create-quiz-modal/styles.module.css";
+import styles from "@/app/quiz-room/components/create-quiz-modal/styles.module.css";
 import { AddPlayerIcon } from "@/app/icons/AddPlayerIcon";
+
+import {
+  JoinQuizRoomEventData,
+  JoinQuizRoomEventDataSchema,
+} from "../../../../../shared";
 
 interface JoinQuizRoomModalProps {
   onClose: UseModalProps["onClose"];

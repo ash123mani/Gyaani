@@ -13,8 +13,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { socket } from "@/app/socket";
-import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizModal";
-import { JoinQuizRoomModal } from "@/app/components/join-quiz-room-modal/JoinQuizRoomModal";
+import { CreateQuizModal } from "@/app/quiz-room/components/create-quiz-modal/CreateQuizModal";
+import { JoinQuizRoomModal } from "@/app/quiz-room/components/JoinQuizRoomModal";
 import { AddPlayerIcon, QuizRoomIcon } from "@/app/icons";
 
 import styles from "./styles.module.css";
