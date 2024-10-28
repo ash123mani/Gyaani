@@ -27,10 +27,7 @@ export function Header() {
         {isQuizRoomActive ? (
           <ActiveRoomHeaderContent />
         ) : (
-          <Link
-            href="/"
-            _hover={{ textDecoration: "none", colorScheme: "orange" }}
-          >
+          <Link href="/" _hover={{ textDecoration: "none" }}>
             <AppLogo />
           </Link>
         )}

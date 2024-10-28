@@ -45,8 +45,8 @@ export function StartQuizCountDown({
       >
         Game will start in {timeLeftToStartTheGame} seconds
       </Heading>
-      <CircularProgress value={progressPercent} size="120px" color="orange">
-        <CircularProgressLabel color="orange" fontSize="16px" fontWeight="bold">
+      <CircularProgress value={progressPercent} size="120px">
+        <CircularProgressLabel fontSize="16px" fontWeight="bold">
           {timeLeftToStartTheGame} secs
         </CircularProgressLabel>
       </CircularProgress>

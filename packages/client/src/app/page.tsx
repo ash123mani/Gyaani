@@ -74,7 +74,6 @@ export default function Home() {
       >
         <Button
           onClick={onCreateQuizRoomModalOpen}
-          colorScheme="orange"
           leftIcon={<QuizRoomIcon />}
           width="100%"
         >

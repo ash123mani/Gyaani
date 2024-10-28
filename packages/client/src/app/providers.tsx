@@ -20,7 +20,7 @@ const overrides = {
 
 const theme = extendTheme(
   overrides,
-  withDefaultColorScheme({ colorScheme: "orange" }),
+  withDefaultColorScheme({ colorScheme: "pink" }),
 );
 
 export function Providers({ children }: { children: ReactNode }) {
