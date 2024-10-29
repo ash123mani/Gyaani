@@ -15,7 +15,6 @@ import {
   JoinQuizRoomEventData,
   LeaveRoomEventData,
   QuizRoomClientToServerEvent,
-  QuizRoomServerToClientEvents,
   QuizRoomState,
   SelectedAnswerEventData,
 } from '@qj/shared';

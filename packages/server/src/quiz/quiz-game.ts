@@ -1,4 +1,4 @@
-import { QuizRoomService } from '@/src/quiz/quiz-room.service';
+import { QuizRoom } from '@/src/quiz/quiz-room';
 import { QuizQues } from '@qj/shared';
 
 export class QuizGame {
@@ -8,7 +8,7 @@ export class QuizGame {
   public answers: Map<string, number> = new Map();
   public currentQuestionIndex: number = -1;
 
-  constructor(private readonly quizRoom: QuizRoomService) {
+  constructor(private readonly quizRoom: QuizRoom) {
     this.initializeQuizGame();
   }
 

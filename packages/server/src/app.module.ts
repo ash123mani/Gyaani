@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { QuizModule } from './quiz/quiz.module';
-import { QuizRoomService } from './quiz/quiz-room.service';
-import { ScheduleModule } from '@nestjs/schedule';
+import { QuizRoom } from './quiz/quiz-room';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), QuizModule],
+  imports: [QuizModule],
   controllers: [AppController],
-  providers: [AppService, QuizRoomService],
+  providers: [AppService, QuizRoom],
 })
 export class AppModule {}

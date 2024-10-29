@@ -1,4 +1,4 @@
-import { QuizRoomService } from '@/src/quiz/quiz-room.service';
+import { QuizRoom } from '@/src/quiz/quiz-room';
 import { Server, Socket } from 'socket.io';
 import { CreateQuizRoomEventData, JoinQuizRoomEventData } from '@qj/shared/dist/types';
 import { Injectable } from '@nestjs/common';
@@ -8,16 +8,16 @@ import { ERRORS } from '@qj/shared';
 @Injectable()
 export class QuizRoomManagerService {
   public server: Server;
-  private readonly quizRooms: Map<QuizRoomService['roomId'], QuizRoomService> = new Map();
-  private readonly quizRoomHosts: Map<QuizRoomService['roomId'], Socket> = new Map();
+  private readonly quizRooms: Map<QuizRoom['roomId'], QuizRoom> = new Map();
+  private readonly quizRoomHosts: Map<QuizRoom['roomId'], Socket> = new Map();
 
   public terminateSocket(player: Socket): void {
     const playerQuizRoom = this.getPlayerQuizRoom(player);
     playerQuizRoom?.removePlayerFromQuizRoom(player);
   }
 
-  public createQuizRoom(player: Socket, createQuizRoomEventData: CreateQuizRoomEventData): QuizRoomService {
-    const quizRoom = new QuizRoomService(this.server, createQuizRoomEventData.maxPlayersAllowed);
+  public createQuizRoom(player: Socket, createQuizRoomEventData: CreateQuizRoomEventData): QuizRoom {
+    const quizRoom = new QuizRoom(this.server, createQuizRoomEventData.maxPlayersAllowed);
     quizRoom.host = player;
     this.quizRoomHosts.set(quizRoom.roomId, player);
     this.quizRooms.set(quizRoom.roomId, quizRoom);
@@ -25,7 +25,7 @@ export class QuizRoomManagerService {
     return quizRoom;
   }
 
-  public addPlayerToQuizRoom(player: Socket, data: JoinQuizRoomEventData): QuizRoomService {
+  public addPlayerToQuizRoom(player: Socket, data: JoinQuizRoomEventData): QuizRoom {
     const quizRoom = this.quizRooms.get(data.quizRoomId);
 
     if (!quizRoom) throw new WsException(ERRORS.QUIZ_ROOM_NOT_FOUND);

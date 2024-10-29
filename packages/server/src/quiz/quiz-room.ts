@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-import { QuizGame } from '@/src/quiz/quiz-game.service';
+import { QuizGame } from '@/src/quiz/quiz-game';
 import {
   JoinQuizRoomEventData,
   QuizRoomState,
@@ -13,7 +13,7 @@ import {
 import { mapToArrayValues } from '@/src/utils/map-to-array';
 
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring
-export class QuizRoomService {
+export class QuizRoom {
   public readonly roomId: string = uuidv4();
   public readonly createdAt: Date = new Date();
   public readonly players: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
@@ -47,6 +47,9 @@ export class QuizRoomService {
       this.hostSocketId = null;
       // this.quizGame.endGame();
     }
+
+    // Note: This should not be here
+    if (this.players.size === 0) this.quizGame.endGame();
   }
 
   public startQuizGame() {
