@@ -9,8 +9,8 @@ import {
 import { useRouter } from "next/navigation";
 
 import { AddPlayerIcon, QuizRoomIcon } from "@/app/icons";
-import { CreateQuizModal } from "@/app/quiz-room/components/create-quiz-modal/CreateQuizModal";
-import { JoinQuizRoomModal } from "@/app/quiz-room/components/JoinQuizRoomModal";
+import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizModal";
+import { JoinQuizRoomModal } from "@/app/components/JoinQuizRoomModal";
 import { socket } from "@/app/socket";
 
 export const PlayWithFriendsSection = () => {

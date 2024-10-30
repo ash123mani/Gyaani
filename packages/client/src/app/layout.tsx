@@ -1,8 +1,8 @@
 import { type ReactNode } from "react";
 import { Box } from "@chakra-ui/react";
 import { type Metadata } from "next";
+import { Inter, Roboto_Mono } from "next/font/google";
 
-import { geistMono, geistSans } from "@/app/fonts";
 import { Footer } from "@/app/reusable/footer/Footer";
 import styles from "@/app/styles.module.css";
 import { Header } from "@/app/reusable/header/Header";
@@ -18,10 +18,22 @@ interface RootLayoutProps {
   children: ReactNode;
 }
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const roboto_mono = Roboto_Mono({
+  subsets: ["latin"],
+  variable: "--font-roboto-mono",
+  display: "swap",
+});
+
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${roboto_mono.variable}`}>
+      <body>
         <Providers>
           <Box className={styles.page} borderRadius="md">
             <Header />

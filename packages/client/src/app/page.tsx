@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Divider, Spinner, Stack } from "@chakra-ui/react";
+import { Box, Spinner, Stack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { QuizGameCardsType } from "@qj/shared";
 

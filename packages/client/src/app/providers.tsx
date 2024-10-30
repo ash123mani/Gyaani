@@ -3,6 +3,7 @@
 import {
   ChakraProvider,
   extendTheme,
+  ModalOverlay,
   withDefaultColorScheme,
 } from "@chakra-ui/react";
 import { type ReactNode } from "react";
@@ -16,6 +17,19 @@ const borders = {
 
 const overrides = {
   borders,
+  fonts: {
+    body: "var(--font-roboto-mono)",
+    heading: "var(--font-roboto-mono)",
+  },
+  components: {
+    Modal: {
+      baseStyle: {
+        overlay: {
+          backgroundColor: "var(--chakra-colors-blackAlpha-800)",
+        },
+      },
+    },
+  },
 };
 
 const theme = extendTheme(
