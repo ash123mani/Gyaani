@@ -6,7 +6,6 @@ import {
   Heading,
   Stack,
   Text,
-  Box,
 } from "@chakra-ui/react";
 import { QuizGameCardsType } from "@qj/shared";
 
