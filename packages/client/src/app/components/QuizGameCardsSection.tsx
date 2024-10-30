@@ -17,11 +17,11 @@ export const QuizGameCardsSection = ({
   quizGameCards,
 }: QuizGameCardsSectionProps) => {
   return (
-    <Stack gap={4}>
-      <Heading as="h4" color="alphaBlack.500">
+    <Stack spacing={8} alignItems="center" width="100%" height="100%">
+      <Heading as="h4" color="gray.500">
         Play with friends or solo
       </Heading>
-      <Stack direction="row" gap={4} width="100%" wrap="wrap">
+      <Stack direction="row" spacing={8} width="100%" wrap="wrap">
         {quizGameCards.map((quizCard) => (
           <Card
             direction={{ base: "column", sm: "row" }}
@@ -30,23 +30,22 @@ export const QuizGameCardsSection = ({
             key={quizCard.id}
             bgColor="gray.100"
             minWidth="200px"
-            alignItems="center"
             flex="1"
           >
             <Stack
               direction="row"
               justifyContent="space-between"
-              spacing={2}
+              spacing={4}
               flex="1"
             >
-              <CardBody py={2}>
+              <CardBody p={4}>
                 <Heading size="md">{quizCard.subject}</Heading>
 
                 <Text py="2">{quizCard.topic}</Text>
               </CardBody>
 
-              <CardFooter py={2}>
-                <Button variant="solid" colorScheme="teal">
+              <CardFooter p={4}>
+                <Button variant="solid" colorScheme="blackAlpha">
                   Play
                 </Button>
               </CardFooter>

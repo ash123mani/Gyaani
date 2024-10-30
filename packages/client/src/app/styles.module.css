@@ -4,6 +4,8 @@
     padding: 12px 24px;
     display: flex;
     flex-direction: column;
+    background-color: #000;
+
 }
 
 .layoutContainer {

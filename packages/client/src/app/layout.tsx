@@ -23,11 +23,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-          <Box className={styles.page}>
+          <Box className={styles.page} borderRadius="md">
             <Header />
             <Box
               className={styles.layoutContainer}
-              border="thickDark"
+              borderTop="thinLight"
+              borderBottom="thinLight"
               borderRadius="md"
               overflow="auto"
               as="main"

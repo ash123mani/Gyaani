@@ -1,4 +1,4 @@
-import { Button, Heading, Stack, useDisclosure, Box } from "@chakra-ui/react";
+import { Button, Heading, Stack, useDisclosure } from "@chakra-ui/react";
 import {
   CreateQuizRoomEventData,
   JoinQuizRoomEventData,
@@ -51,21 +51,16 @@ export const PlayWithFriendsSection = () => {
   }
 
   return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      justifyContent="space-between"
-      width="100%"
-    >
-      <Heading as="h4" color="alphaBlack.500">
+    <Stack alignItems="center" width="100%" height="100%" spacing={8}>
+      <Heading as="h4" color="gray.500">
         Play with online players
       </Heading>
       <Stack
-        spacing={2}
         direction="row"
         wrap="wrap"
         alignItems="center"
-        justifyContent="space-between"
+        justifyContent="center"
+        maxWidth="400px"
       >
         <Button
           onClick={onCreateQuizRoomModalOpen}

@@ -36,7 +36,6 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
       ques?.options.map((option: string, index: number) => (
         <Checkbox
           size="lg"
-          colorScheme="orange"
           value={index}
           key={option}
           isChecked={index === selectedAnswer}
