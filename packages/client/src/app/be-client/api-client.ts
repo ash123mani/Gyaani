@@ -10,10 +10,7 @@ class ApiClient extends HttpClient {
 
   get quizGameCms() {
     return {
-      getQuizGameCards: () => this.get("/cms"),
-      // delete: (id) => this.delete(`/users/${id}`),
-      // create: (user) => this.post("/users", user),
-      // update: (user) => this.put(`/users/${user.id}`, user),
+      getQuizGameCards: () => this.get("/api/cms/allQuizCards"),
     };
   }
 }
