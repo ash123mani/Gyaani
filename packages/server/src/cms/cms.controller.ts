@@ -4,11 +4,13 @@ import { CmsService } from '@/src/cms/cms.service';
 
 import { QuizGameCardsSuccessResponseType } from '@qj/shared';
 
-@Controller('cms')
+@Controller({
+  path: 'cms',
+})
 export class CmsController {
   constructor(private readonly cmsService: CmsService) {}
 
-  @Get()
+  @Get('allQuizCards')
   async getAllTheQuizCards(): Promise<QuizGameCardsSuccessResponseType> {
     return await this.cmsService.allQuizCards();
   }

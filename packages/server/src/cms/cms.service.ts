@@ -29,6 +29,7 @@ export class CmsService {
       id: item.sys.id,
     }));
 
+    // Note: success property should be added by the middleware
     return {
       success: true,
       quizGameCards,

@@ -1,7 +1,6 @@
 "use client";
 
 import { Box, Button, Heading, Stack, useDisclosure } from "@chakra-ui/react";
-import { AddIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import {
   CreateQuizRoomEventData,
   JoinQuizRoomEventData,
@@ -16,6 +15,7 @@ import { socket } from "@/app/socket";
 import { CreateQuizModal } from "@/app/quiz-room/components/create-quiz-modal/CreateQuizModal";
 import { JoinQuizRoomModal } from "@/app/quiz-room/components/JoinQuizRoomModal";
 import { AddPlayerIcon, QuizRoomIcon } from "@/app/icons";
+import apiClient from "@/app/be-client/api-client";
 
 import styles from "./styles.module.css";
 
@@ -24,6 +24,9 @@ export default function Home() {
 
   useEffect(() => {
     socket.connect();
+    (async () => {
+      await apiClient.quizGameCms.getQuizGameCards();
+    })();
   }, []);
 
   const {
