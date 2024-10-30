@@ -30,5 +30,7 @@ export const QuizGameCardsSchema = z.object({
 
 export const QuizGameCardsSuccessResponseSchema = z.object({
   success: z.boolean(),
-  quizGameCards: z.array(QuizGameCardsSchema),
+  data: z.object({
+    quizGameCards: z.array(QuizGameCardsSchema),
+  }),
 });
