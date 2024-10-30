@@ -5,8 +5,8 @@ import { Link } from "@chakra-ui/next-js";
 import { useParams, useRouter } from "next/navigation";
 import { Fragment } from "react";
 
-import { AppLogo } from "@/app/components/icons/AppLogo";
-import { ActiveRoomHeaderContent } from "@/app/components/header/ActiveRoomHeaderContent";
+import { AppLogo } from "@/app/reusable/icons/AppLogo";
+import { ActiveRoomHeaderContent } from "@/app/reusable/header/ActiveRoomHeaderContent";
 
 import styles from "./styles.module.css";
 

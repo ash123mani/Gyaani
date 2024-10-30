@@ -3,9 +3,9 @@ import { Box } from "@chakra-ui/react";
 import { type Metadata } from "next";
 
 import { geistMono, geistSans } from "@/app/fonts";
-import { Footer } from "@/app/components/footer/Footer";
+import { Footer } from "@/app/reusable/footer/Footer";
 import styles from "@/app/styles.module.css";
-import { Header } from "@/app/components/header/Header";
+import { Header } from "@/app/reusable/header/Header";
 
 import { Providers } from "./providers";
 
@@ -29,6 +29,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               className={styles.layoutContainer}
               border="thickDark"
               borderRadius="md"
+              overflow="auto"
               as="main"
             >
               {children}

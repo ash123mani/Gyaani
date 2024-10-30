@@ -1,3 +1,5 @@
+import { QuizGameCardsSuccessResponseType } from "@qj/shared";
+
 import HttpClient from "../utils/http-client";
 
 class ApiClient extends HttpClient {
@@ -10,7 +12,8 @@ class ApiClient extends HttpClient {
 
   get quizGameCms() {
     return {
-      getQuizGameCards: () => this.get("/api/cms/allQuizCards"),
+      getQuizGameCards: () =>
+        this.get<QuizGameCardsSuccessResponseType>("/api/cms/allQuizCards"),
     };
   }
 }

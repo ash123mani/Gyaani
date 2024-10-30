@@ -11,7 +11,7 @@ export class CmsController {
   constructor(private readonly cmsService: CmsService) {}
 
   @Get('allQuizCards')
-  async getAllTheQuizCards(): Promise<QuizGameCardsSuccessResponseType['data']['quizGameCards']> {
+  async getAllTheQuizCards(): Promise<QuizGameCardsSuccessResponseType['data']> {
     return await this.cmsService.allQuizCards();
   }
 }

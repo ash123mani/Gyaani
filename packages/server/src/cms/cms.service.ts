@@ -10,7 +10,7 @@ export class CmsService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  async allQuizCards(): Promise<QuizGameCardsSuccessResponseType['data']['quizGameCards']> {
+  async allQuizCards(): Promise<QuizGameCardsSuccessResponseType['data']> {
     const { data } = await firstValueFrom(
       this.httpService
         .get<ContentfulEntriesByContentTypeType>(
@@ -24,11 +24,13 @@ export class CmsService {
         ),
     );
 
-    return data?.items.map((item) => ({
-      topic: item.fields.topic,
-      subject: item.fields.subject,
-      questionsCount: item.fields.questionsCount,
-      id: item.sys.id,
-    }));
+    return {
+      quizGameCards: data?.items.map((item) => ({
+        topic: item.fields.topic,
+        subject: item.fields.subject,
+        questionsCount: item.fields.questionsCount,
+        id: item.sys.id,
+      })),
+    };
   }
 }

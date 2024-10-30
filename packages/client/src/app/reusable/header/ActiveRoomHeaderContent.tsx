@@ -20,7 +20,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 
 import { socket } from "@/app/socket";
-import { ConfirmationModal } from "@/app/components/confirmation-modal/ConfirmationModal";
+import { ConfirmationModal } from "@/app/reusable/confirmation-modal/ConfirmationModal";
 import { ExitIcon, PlayerIcon } from "@/app/icons";
 
 export const ActiveRoomHeaderContent = () => {

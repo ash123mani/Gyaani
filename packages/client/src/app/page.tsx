@@ -1,106 +1,51 @@
 "use client";
 
-import { Box, Button, Heading, Stack, useDisclosure } from "@chakra-ui/react";
-import {
-  CreateQuizRoomEventData,
-  JoinQuizRoomEventData,
-  QuizRoomClientToServerEvent,
-  QuizRoomServerToClientEvents,
-  QuizRoomState,
-} from "@qj/shared";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { Box, Divider, Spinner, Stack, Center } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { QuizGameCardsType } from "@qj/shared";
 
 import { socket } from "@/app/socket";
-import { CreateQuizModal } from "@/app/quiz-room/components/create-quiz-modal/CreateQuizModal";
-import { JoinQuizRoomModal } from "@/app/quiz-room/components/JoinQuizRoomModal";
-import { AddPlayerIcon, QuizRoomIcon } from "@/app/icons";
+import { PlayWithFriendsSection } from "@/app/components/PlayOnlineSection";
 import apiClient from "@/app/be-client/api-client";
+import { QuizGameCardsSection } from "@/app/components/QuizGameCardsSection";
 
 import styles from "./styles.module.css";
 
 export default function Home() {
-  const router = useRouter();
+  const [quizGameCards, setQuizGameCards] = useState<
+    QuizGameCardsType[] | null
+  >(null);
 
   useEffect(() => {
     socket.connect();
     (async () => {
-      await apiClient.quizGameCms.getQuizGameCards();
+      const resp = await apiClient.quizGameCms.getQuizGameCards();
+      console.log("resp", resp);
+      setQuizGameCards(resp!.data.quizGameCards);
     })();
   }, []);
 
-  const {
-    isOpen: isCreateQuizRoomModalOpen,
-    onOpen: onCreateQuizRoomModalOpen,
-    onClose: onCreateQuizRoomModalClose,
-  } = useDisclosure({ id: "CreateQuizRoomModalOpen" });
-
-  const {
-    isOpen: isJoinRoomModalOpen,
-    onOpen: onJoinRoomModalOpen,
-    onClose: onJoinRoomModalClose,
-  } = useDisclosure({ id: "JoinRoomModalOpen" });
-
-  function handleSuccessfulQuizRoomJoin(quizRoom: QuizRoomState) {
-    onJoinRoomModalClose();
-    onCreateQuizRoomModalClose();
-    router.replace(`/quiz-room/${quizRoom.roomId}`);
-  }
-
-  function handleJoinQuizRoomSubmit(values: JoinQuizRoomEventData) {
-    socket.emit<QuizRoomClientToServerEvent>("JoinQuizRoom", values);
-    socket.on<QuizRoomServerToClientEvents>(
-      "SuccessfullyJoinedQuizRoom",
-      handleSuccessfulQuizRoomJoin,
-    );
-  }
-
-  function handleCreateQuizRoomSubmit(values: CreateQuizRoomEventData) {
-    socket.emit<QuizRoomClientToServerEvent>("CreateQuizRoom", values);
-    socket.on<QuizRoomServerToClientEvents>(
-      "SuccessfullyJoinedQuizRoom",
-      handleSuccessfulQuizRoomJoin,
-    );
-  }
+  console.log("quizGameCards", quizGameCards);
 
   return (
-    <Box className={styles.main}>
-      <Heading as="h1" size="2xl" color="blackAlpha.500">
-        Start Playing Quiz
-      </Heading>
-      <Stack
-        spacing={2}
-        direction="row"
-        wrap="wrap"
+    <Stack gap={4} wrap="wrap">
+      <Box
+        flex="1"
+        m={4}
+        display="flex"
+        justifyContent="center"
         alignItems="center"
-        justifyContent="space-between"
       >
-        <Button
-          onClick={onCreateQuizRoomModalOpen}
-          leftIcon={<QuizRoomIcon />}
-          width="100%"
-        >
-          Create a quiz room
-        </Button>
-        <Button
-          onClick={onJoinRoomModalOpen}
-          colorScheme="cyan"
-          leftIcon={<AddPlayerIcon />}
-          width="100%"
-        >
-          Join a quiz room
-        </Button>
+        <PlayWithFriendsSection />
+      </Box>
+      <Divider backgroundColor="red" color="red" />
+      <Stack flex="1" m={4} minWidth="50%">
+        {quizGameCards ? (
+          <QuizGameCardsSection quizGameCards={quizGameCards} />
+        ) : (
+          <Spinner />
+        )}
       </Stack>
-      <CreateQuizModal
-        onClose={onCreateQuizRoomModalClose}
-        isOpen={isCreateQuizRoomModalOpen}
-        onCreateQuizRoomSubmit={handleCreateQuizRoomSubmit}
-      />
-      <JoinQuizRoomModal
-        isOpen={isJoinRoomModalOpen}
-        onClose={onJoinRoomModalClose}
-        onJoinQuizRoomSubmit={handleJoinQuizRoomSubmit}
-      />
-    </Box>
+    </Stack>
   );
 }
