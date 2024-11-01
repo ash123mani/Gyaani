@@ -3,7 +3,6 @@
 import {
   ChakraProvider,
   extendTheme,
-  ModalOverlay,
   withDefaultColorScheme,
 } from "@chakra-ui/react";
 import { type ReactNode } from "react";

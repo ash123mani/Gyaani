@@ -20,6 +20,7 @@ import {
 } from '@qj/shared';
 import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
 import { CustomWsExceptionFilter } from '@/src/errors/ws-exception-filter';
+import { CmsService } from '@/src/cms/cms.service';
 
 @WebSocketGateway({
   cors: {
@@ -32,7 +33,10 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @WebSocketServer() io: Server;
 
-  constructor(private readonly quizRoomManager: QuizRoomManagerService) {}
+  constructor(
+    private readonly quizRoomManager: QuizRoomManagerService,
+    private readonly cmsService: CmsService,
+  ) {}
 
   afterInit(server: Server) {
     this.quizRoomManager.server = server;
@@ -57,11 +61,12 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   // TODO: This should fail with proper error message when CreateQuizRoomEventData is not in proper format (use zod validation pipe)
   @SubscribeMessage<QuizRoomClientToServerEvent>('CreateQuizRoom')
-  handleCreateQuizRoomEvent(@MessageBody() data: CreateQuizRoomEventData, @ConnectedSocket() client: Socket) {
+  async handleCreateQuizRoomEvent(@MessageBody() data: CreateQuizRoomEventData, @ConnectedSocket() client: Socket) {
     this.logger.log(`CreateQuizRoom event received from client id: ${client.id}`);
     this.logger.debug(`Payload: ${typeof data}`);
 
-    const quizRoom = this.quizRoomManager.createQuizRoom(client, data);
+    const quizRoomConfig = await this.cmsService.quizGameConfig();
+    const quizRoom = this.quizRoomManager.createQuizRoom(client, data, quizRoomConfig);
     quizRoom.addPlayerToQuizRoom(client, data);
 
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);

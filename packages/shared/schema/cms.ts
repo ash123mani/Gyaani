@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ContentfulEntriesByContentTypeSchema = z.object({
+export const ContentfulEntryQuizGameContentSchema = z.object({
   sys: z.object({
     type: z.literal("Array"),
   }),
@@ -13,6 +13,16 @@ export const ContentfulEntriesByContentTypeSchema = z.object({
         topic: z.string(),
         subject: z.string(),
         questionsCount: z.number(),
+        correctAnswerPoints: z.number(),
+        incorrectAnswerPoints: z.number(),
+        unattemptedAnswerPoints: z.number(),
+        questions: z.array(
+          z.object({
+            type: z.string(),
+            linkType: z.string(),
+            id: z.string(),
+          }),
+        ),
       }),
       sys: z.object({
         id: z.string(),

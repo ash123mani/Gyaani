@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 import {
-  ContentfulEntriesByContentTypeSchema,
+  ContentfulEntryQuizGameContentSchema,
   QuizGameCardsSchema,
   QuizGameCardsSuccessResponseSchema,
 } from "../schema";
 
-export type ContentfulEntriesByContentTypeType = z.infer<
-  typeof ContentfulEntriesByContentTypeSchema
+export type ContentfulEntryQuizGameContentType = z.infer<
+  typeof ContentfulEntryQuizGameContentSchema
 >;
 
 export type QuizGameCardsType = z.infer<typeof QuizGameCardsSchema>;

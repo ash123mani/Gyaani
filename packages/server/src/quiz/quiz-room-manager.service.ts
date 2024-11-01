@@ -3,7 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { CreateQuizRoomEventData, JoinQuizRoomEventData } from '@qj/shared/dist/types';
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { ERRORS } from '@qj/shared';
+import { ContentfulEntryQuizGameContentType, ERRORS } from '@qj/shared';
 
 @Injectable()
 export class QuizRoomManagerService {
@@ -16,12 +16,15 @@ export class QuizRoomManagerService {
     playerQuizRoom?.removePlayerFromQuizRoom(player);
   }
 
-  public createQuizRoom(player: Socket, createQuizRoomEventData: CreateQuizRoomEventData): QuizRoom {
-    const quizRoom = new QuizRoom(this.server, createQuizRoomEventData.maxPlayersAllowed);
+  public createQuizRoom(
+    player: Socket,
+    createQuizRoomEventData: CreateQuizRoomEventData,
+    quizRoomConfig: ContentfulEntryQuizGameContentType,
+  ): QuizRoom {
+    const quizRoom = new QuizRoom(this.server, quizRoomConfig, createQuizRoomEventData.maxPlayersAllowed);
     quizRoom.host = player;
     this.quizRoomHosts.set(quizRoom.roomId, player);
     this.quizRooms.set(quizRoom.roomId, quizRoom);
-
     return quizRoom;
   }
 

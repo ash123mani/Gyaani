@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { catchError, firstValueFrom } from 'rxjs';
-import { ContentfulEntriesByContentTypeType, QuizGameCardsSuccessResponseType } from '@qj/shared';
+import { ContentfulEntryQuizGameContentType, QuizGameCardsSuccessResponseType } from '@qj/shared';
 import type { AxiosError } from 'axios';
 import { HttpService } from '@nestjs/axios';
 
@@ -13,7 +13,7 @@ export class CmsService {
   async allQuizCards(): Promise<QuizGameCardsSuccessResponseType['data']> {
     const { data } = await firstValueFrom(
       this.httpService
-        .get<ContentfulEntriesByContentTypeType>(
+        .get<ContentfulEntryQuizGameContentType>(
           `https://cdn.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENVIROMENT_ID}/entries?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}&content_type=quizGame&select=fields.topic,fields.subject,fields.questionsCount,sys.id`,
         )
         .pipe(
@@ -32,5 +32,22 @@ export class CmsService {
         id: item.sys.id,
       })),
     };
+  }
+
+  async quizGameConfig(): Promise<ContentfulEntryQuizGameContentType> {
+    const { data } = await firstValueFrom(
+      this.httpService
+        .get<ContentfulEntryQuizGameContentType>(
+          `https://cdn.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENVIROMENT_ID}/entries/2b3A5RhQjjmUqsQHGDahws?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}&content_type=quizGame&select=fields.topic,fields.subject,fields.questionsCount,sys.id`,
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw 'An error happened!';
+          }),
+        ),
+    );
+
+    return data;
   }
 }

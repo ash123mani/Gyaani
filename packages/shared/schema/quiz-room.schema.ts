@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { Socket } from "socket.io";
+import { ContentfulEntryQuizGameContentType } from "../types";
+import { ContentfulEntryQuizGameContentSchema } from "./cms";
 
 export const QuizRoomClientToServerEventsEnum = z.enum([
   "CreateQuizRoom",
@@ -37,6 +39,7 @@ export const QuiRoomStateSchema = z.object({
   roomId: z.string().min(2, { message: "Required" }),
   hasAllPlayersJoined: z.boolean(),
   hostSocketId: z.custom<Socket["id"]>(),
+  newQuizQues: ContentfulEntryQuizGameContentSchema,
   quizGame: z.object({
     hasStarted: z.boolean(),
     hasFinished: z.boolean(),
