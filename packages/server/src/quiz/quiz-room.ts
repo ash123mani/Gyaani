@@ -9,7 +9,8 @@ import {
   QuizQues,
   QUIZ_QUES_GAP_MILLISECONDS,
   WAIT_TIME_BEFORE_QUIZ_STOP_MILLISECONDS,
-  ContentfulEntryQuizGameContentType,
+  ContentfulQuizGameContentModelType,
+  ContentfulQuizQuestionContentModelType,
 } from '@qj/shared';
 import { mapToArrayValues } from '@/src/utils/map-to-array';
 
@@ -18,7 +19,7 @@ export class QuizRoom {
   public readonly roomId: string = uuidv4();
   public readonly createdAt: Date = new Date();
   public readonly players: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
-  public readonly quizGame: QuizGame = new QuizGame(this.quizRoomConfig);
+  public readonly quizGame: QuizGame = new QuizGame(this.quizRoomConfig, this.quizQuestions);
   public readonly usersNames: Map<Socket['id'], string> = new Map();
   private queue = Array.from(this.quizGame.quizQues);
   private notRunning: boolean = true;
@@ -27,7 +28,8 @@ export class QuizRoom {
 
   constructor(
     private readonly server: Server,
-    public readonly quizRoomConfig: ContentfulEntryQuizGameContentType,
+    public readonly quizRoomConfig: ContentfulQuizGameContentModelType,
+    public readonly quizQuestions: ContentfulQuizQuestionContentModelType[],
     public readonly maxPlayersAllowed: number = 1,
   ) {}
 
@@ -104,7 +106,8 @@ export class QuizRoom {
       roomId: this.roomId,
       hasAllPlayersJoined: this.hasAllPlayersJoined,
       hostSocketId: this.hostSocketId,
-      newQuizQues: this.quizGame.newQuizQues,
+      quizRoomConfig: this.quizGame.newQuizRoomConfig,
+      newQuizQues: this.quizGame.newQuizQuestions,
       quizGame: {
         hasStarted: this.quizGame.hasStarted,
         currentQues: this.quizGame.currentQues,

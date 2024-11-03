@@ -1,4 +1,4 @@
-import { ContentfulEntryQuizGameContentType, QuizQues } from '@qj/shared';
+import { ContentfulQuizGameContentModelType, ContentfulQuizQuestionContentModelType, QuizQues } from '@qj/shared';
 
 export class QuizGame {
   public hasStarted: boolean = false;
@@ -6,11 +6,16 @@ export class QuizGame {
   public quizQues: QuizQues[] = [];
   public answers: Map<string, number> = new Map();
   public currentQuestionIndex: number = -1;
-  public newQuizQues: ContentfulEntryQuizGameContentType;
+  public newQuizRoomConfig: ContentfulQuizGameContentModelType;
+  public newQuizQuestions: ContentfulQuizQuestionContentModelType[];
 
-  constructor(private readonly quizRoomConfig: ContentfulEntryQuizGameContentType) {
+  constructor(
+    private readonly quizRoomConfig: ContentfulQuizGameContentModelType,
+    public readonly quizQuestions: ContentfulQuizQuestionContentModelType[],
+  ) {
     this.initializeQuizGame();
-    this.newQuizQues = quizRoomConfig;
+    this.newQuizRoomConfig = quizRoomConfig;
+    this.newQuizQuestions = quizQuestions;
   }
 
   public startGame() {

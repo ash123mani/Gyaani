@@ -1,9 +1,9 @@
 import { QuizRoom } from '@/src/quiz/quiz-room';
 import { Server, Socket } from 'socket.io';
-import { CreateQuizRoomEventData, JoinQuizRoomEventData } from '@qj/shared/dist/types';
+import { ContentfulQuizQuestionContentModelType } from '@qj/shared';
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { ContentfulEntryQuizGameContentType, ERRORS } from '@qj/shared';
+import { ERRORS, ContentfulQuizGameContentModelType, CreateQuizRoomEventData, JoinQuizRoomEventData } from '@qj/shared';
 
 @Injectable()
 export class QuizRoomManagerService {
@@ -19,9 +19,15 @@ export class QuizRoomManagerService {
   public createQuizRoom(
     player: Socket,
     createQuizRoomEventData: CreateQuizRoomEventData,
-    quizRoomConfig: ContentfulEntryQuizGameContentType,
+    quizRoomConfig: ContentfulQuizGameContentModelType,
+    quizQuestions: ContentfulQuizQuestionContentModelType[],
   ): QuizRoom {
-    const quizRoom = new QuizRoom(this.server, quizRoomConfig, createQuizRoomEventData.maxPlayersAllowed);
+    const quizRoom = new QuizRoom(
+      this.server,
+      quizRoomConfig,
+      quizQuestions,
+      createQuizRoomEventData.maxPlayersAllowed,
+    );
     quizRoom.host = player;
     this.quizRoomHosts.set(quizRoom.roomId, player);
     this.quizRooms.set(quizRoom.roomId, quizRoom);

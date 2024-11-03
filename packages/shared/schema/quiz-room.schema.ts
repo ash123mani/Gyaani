@@ -1,7 +1,10 @@
 import { z } from "zod";
 import { Socket } from "socket.io";
-import { ContentfulEntryQuizGameContentType } from "../types";
-import { ContentfulEntryQuizGameContentSchema } from "./cms";
+import {
+  ContentfulQuizQuestionContentModelSchema,
+  ContentfulQuizRoomContentModelSchema,
+} from "./cms";
+import { ContentfulQuizQuestionContentModelType } from "../types";
 
 export const QuizRoomClientToServerEventsEnum = z.enum([
   "CreateQuizRoom",
@@ -25,6 +28,7 @@ export const CreateQuizRoomEventDataSchema = z.object({
     message:
       "Player Name should be minimum of 2 characters. Please enter 2 or more characters.",
   }),
+  quizGameId: z.string(),
   maxPlayersAllowed: z.number().int().min(1, { message: "Required" }),
 });
 
@@ -39,7 +43,8 @@ export const QuiRoomStateSchema = z.object({
   roomId: z.string().min(2, { message: "Required" }),
   hasAllPlayersJoined: z.boolean(),
   hostSocketId: z.custom<Socket["id"]>(),
-  newQuizQues: ContentfulEntryQuizGameContentSchema,
+  quizRoomConfig: ContentfulQuizRoomContentModelSchema,
+  newQuizQues: z.array(ContentfulQuizQuestionContentModelSchema),
   quizGame: z.object({
     hasStarted: z.boolean(),
     hasFinished: z.boolean(),

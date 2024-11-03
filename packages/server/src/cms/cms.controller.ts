@@ -2,7 +2,11 @@ import { Controller, Get } from '@nestjs/common';
 
 import { CmsService } from '@/src/cms/cms.service';
 
-import { ContentfulEntryQuizGameContentType, QuizGameCardsSuccessResponseType } from '@qj/shared';
+import {
+  ContentfulQuizGameContentModelType,
+  ContentfulQuizQuestionContentModelType,
+  QuizGameCardsSuccessResponseType,
+} from '@qj/shared';
 
 @Controller({
   path: 'cms',
@@ -16,7 +20,12 @@ export class CmsController {
   }
 
   @Get('quizGameConfig')
-  async getQuizGameConfig(): Promise<ContentfulEntryQuizGameContentType> {
-    return await this.cmsService.quizGameConfig();
+  async getQuizGameConfig(quizGameId: string): Promise<ContentfulQuizGameContentModelType> {
+    return await this.cmsService.quizGameConfig(quizGameId);
+  }
+
+  @Get('quizQuesConfig')
+  async getQuizQuesConfig(quesId: string): Promise<ContentfulQuizQuestionContentModelType> {
+    return await this.cmsService.quizGameQuesConfig(quesId);
   }
 }
