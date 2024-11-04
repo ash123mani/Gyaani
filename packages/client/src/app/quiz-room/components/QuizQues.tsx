@@ -1,6 +1,6 @@
 import { Box, Checkbox, Heading, Progress, Stack } from "@chakra-ui/react";
 import { ChangeEvent, memo, useMemo, useRef, useState } from "react";
-import { QuizQues } from "@qj/shared";
+import { ContentfulQuizQuestionContentModelType, QuizQues } from "@qj/shared";
 import { QUIZ_QUES_GAP_SECS } from "@qj/shared/config";
 
 import { useCountDownTimer } from "@/app/hooks";
@@ -14,16 +14,18 @@ export type OnAnswerChange = ({
 }) => void;
 
 interface QizQuesProps {
-  ques: QuizQues;
+  ques: ContentfulQuizQuestionContentModelType;
   onAnsChange: OnAnswerChange;
 }
 
 function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
-  const prevQuesRef = useRef<QuizQues | null>(ques);
+  const prevQuesRef = useRef<ContentfulQuizQuestionContentModelType | null>(
+    ques,
+  );
   const [startCountDownAt, resetCountDownAt] = useCountDownTimer({});
   const [selectedAnswer, setSelectedAnswer] = useState<number>(-1);
 
-  if (prevQuesRef.current?.id !== ques.id) {
+  if (prevQuesRef.current?.sys?.id !== ques.sys.id) {
     prevQuesRef.current = ques;
     resetCountDownAt();
     setSelectedAnswer(-1);
@@ -33,7 +35,7 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
 
   const renderOptions = useMemo(
     () =>
-      ques?.options.map((option: string, index: number) => (
+      ques?.fields.options.map((option: string, index: number) => (
         <Checkbox
           size="lg"
           value={index}
@@ -42,15 +44,15 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
             setSelectedAnswer(Number(event.target.value));
             onAnsChange({
-              quesId: ques.id,
-              selectedAns: Number(event.target.value),
+              quesId: ques.sys.id,
+              selectedAns: Number(event.target.value) + 1,
             });
           }}
         >
           {option}
         </Checkbox>
       )),
-    [ques?.options, onAnsChange, selectedAnswer, ques.id],
+    [ques?.fields, onAnsChange, selectedAnswer],
   );
 
   return (
@@ -58,7 +60,7 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
       <Box margin="auto">
         <Stack direction="column" gap={4}>
           <Heading as="h3" size="2xl">
-            {ques?.ques}
+            {ques?.fields.quesTitle}
           </Heading>
           <Stack direction="column" gap={4}>
             {renderOptions}
@@ -70,7 +72,7 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
         value={progressPercent}
         size="xs"
         color="red.200"
-        key={ques.id}
+        key={ques.sys.id}
       />
     </Box>
   );

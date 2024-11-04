@@ -16,6 +16,7 @@ export default function QuizRoomLayout({
       height="100%"
       justifyContent="center"
       alignItems="center"
+      color="gray.50"
     >
       {children}
     </Flex>

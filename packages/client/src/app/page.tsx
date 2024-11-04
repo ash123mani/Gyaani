@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Spinner, Stack } from "@chakra-ui/react";
+import { Spinner, Stack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
   CreateQuizRoomEventData,
@@ -12,7 +12,6 @@ import {
 import { useRouter } from "next/navigation";
 
 import { socket } from "@/app/socket";
-import { PlayWithFriendsSection } from "@/app/components/PlayOnlineSection";
 import apiClient from "@/app/be-client/api-client";
 import { QuizGameCardsSection } from "@/app/components/QuizGameCardsSection";
 import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizModal";
@@ -60,17 +59,17 @@ export default function Home() {
   const isCreateQuizRoomModalOpen = !!selectedQuizGameId;
   return (
     <Stack wrap="wrap" height="inherit">
-      <Box
-        flex="1"
-        p={4}
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        borderBottom="thinLight"
-        borderRadius="md"
-      >
-        <PlayWithFriendsSection />
-      </Box>
+      {/*<Box*/}
+      {/*  flex="1"*/}
+      {/*  p={4}*/}
+      {/*  display="flex"*/}
+      {/*  justifyContent="center"*/}
+      {/*  alignItems="center"*/}
+      {/*  borderBottom="thinLight"*/}
+      {/*  borderRadius="md"*/}
+      {/*>*/}
+      {/*  <PlayWithFriendsSection />*/}
+      {/*</Box>*/}
       <Stack flex="1" spacing={4} p={4} borderTop="thinLight" borderRadius="md">
         {quizGameCards ? (
           <QuizGameCardsSection
