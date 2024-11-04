@@ -53,6 +53,7 @@ export function CreateQuizModal({
     defaultValues: {
       maxPlayersAllowed: 1,
       userName: "",
+      quizGameId: "2b3A5RhQjjmUqsQHGDahws",
     },
   });
   const maxPlayersAllowed = watch("maxPlayersAllowed");
@@ -77,6 +78,20 @@ export function CreateQuizModal({
         <ModalCloseButton />
 
         <ModalBody py={4}>
+          <FormControl
+            isInvalid={!!errors.userName}
+            visibility="hidden"
+            height="0"
+            width="0"
+          >
+            <FormLabel htmlFor="quizGameId">Your Player Name</FormLabel>
+            <Input
+              id="quizGameId"
+              placeholder="Quiz Game Id"
+              colorScheme="red"
+              {...register("quizGameId")}
+            />
+          </FormControl>
           <Stack direction="column" spacing={4}>
             <FormControl isInvalid={!!errors.userName}>
               <FormLabel htmlFor="userName">Your Player Name</FormLabel>
