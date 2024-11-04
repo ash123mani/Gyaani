@@ -1,9 +1,10 @@
 "use client";
 
-import { Spinner, Stack } from "@chakra-ui/react";
+import { Box, Spinner, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
   CreateQuizRoomEventData,
+  JoinQuizRoomEventData,
   QuizGameCardsType,
   QuizRoomClientToServerEvent,
   QuizRoomServerToClientEvents,
@@ -15,9 +16,16 @@ import { socket } from "@/app/socket";
 import apiClient from "@/app/be-client/api-client";
 import { QuizGameCardsSection } from "@/app/components/QuizGameCardsSection";
 import { CreateQuizModal } from "@/app/components/create-quiz-modal/CreateQuizModal";
+import { JoinQuizRoomModal } from "@/app/components/JoinQuizRoomModal";
 
 export default function Home() {
   const router = useRouter();
+
+  const {
+    isOpen: isJoinRoomModalOpen,
+    onOpen: onJoinRoomModalOpen,
+    onClose: onJoinRoomModalClose,
+  } = useDisclosure({ id: "JoinRoomModalOpen" });
 
   const [quizGameCards, setQuizGameCards] = useState<
     QuizGameCardsType[] | null
@@ -56,6 +64,14 @@ export default function Home() {
     setSelectedQuizGameId(null);
   }
 
+  function handleJoinQuizRoomSubmit(values: JoinQuizRoomEventData) {
+    socket.emit<QuizRoomClientToServerEvent>("JoinQuizRoom", values);
+    socket.on<QuizRoomServerToClientEvents>(
+      "SuccessfullyJoinedQuizRoom",
+      handleSuccessfulQuizRoomJoin,
+    );
+  }
+
   const isCreateQuizRoomModalOpen = !!selectedQuizGameId;
   return (
     <Stack wrap="wrap" height="inherit">
@@ -75,9 +91,20 @@ export default function Home() {
           <QuizGameCardsSection
             quizGameCards={quizGameCards}
             onQuizGameCardClick={handleQuizGameCardClick}
+            onJoinRoomClick={onJoinRoomModalOpen}
           />
         ) : (
-          <Spinner />
+          <Stack
+            margin="auto"
+            alignItems="center"
+            justifyContent="center"
+            spacing={4}
+          >
+            <Spinner color="gray.50" size="xl" />
+            <Text color="gray.50" fontSize="2xl">
+              Loading Quizzes
+            </Text>
+          </Stack>
         )}
       </Stack>
       <CreateQuizModal
@@ -85,6 +112,11 @@ export default function Home() {
         isOpen={isCreateQuizRoomModalOpen}
         onCreateQuizRoomSubmit={handleCreateQuizRoomSubmit}
         quizGameId={selectedQuizGameId!}
+      />
+      <JoinQuizRoomModal
+        isOpen={isJoinRoomModalOpen}
+        onClose={onJoinRoomModalClose}
+        onJoinQuizRoomSubmit={handleJoinQuizRoomSubmit}
       />
     </Stack>
   );

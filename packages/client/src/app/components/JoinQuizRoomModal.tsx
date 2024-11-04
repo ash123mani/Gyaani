@@ -48,7 +48,6 @@ export function JoinQuizRoomModal({
 
   return (
     <Modal
-      isCentered
       onClose={onClose}
       isOpen={isOpen}
       motionPreset="slideInBottom"

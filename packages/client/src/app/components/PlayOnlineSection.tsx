@@ -82,6 +82,7 @@ export const PlayWithFriendsSection = () => {
         onClose={onCreateQuizRoomModalClose}
         isOpen={isCreateQuizRoomModalOpen}
         onCreateQuizRoomSubmit={handleCreateQuizRoomSubmit}
+        quizGameId={""}
       />
       <JoinQuizRoomModal
         isOpen={isJoinRoomModalOpen}

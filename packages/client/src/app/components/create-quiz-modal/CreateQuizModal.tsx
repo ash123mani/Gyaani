@@ -67,7 +67,6 @@ export function CreateQuizModal({
 
   return (
     <Modal
-      isCentered
       onClose={onClose}
       isOpen={isOpen}
       motionPreset="slideInBottom"

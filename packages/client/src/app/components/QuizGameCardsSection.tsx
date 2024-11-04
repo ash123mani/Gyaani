@@ -3,26 +3,48 @@ import {
   Card,
   CardBody,
   CardFooter,
+  Divider,
   Heading,
   Stack,
   Text,
 } from "@chakra-ui/react";
 import { QuizGameCardsType } from "@qj/shared";
 
+import { AddPlayerIcon, QuizRoomIcon } from "@/app/icons";
+
 interface QuizGameCardsSectionProps {
   quizGameCards: QuizGameCardsType[];
   onQuizGameCardClick: (quizGameId: string) => void;
+  onJoinRoomClick: () => void;
 }
 
 export const QuizGameCardsSection = ({
   quizGameCards,
   onQuizGameCardClick,
+  onJoinRoomClick,
 }: QuizGameCardsSectionProps) => {
   return (
     <Stack spacing={8} alignItems="center" width="100%" height="100%">
-      <Heading as="h4" color="gray.500">
-        Play with friends or solo
-      </Heading>
+      <Stack
+        direction="row"
+        spacing={8}
+        borderTop="thin"
+        width="100%"
+        justifyContent="space-between"
+      >
+        <Heading as="h4" color="gray.500">
+          Play with friends or solo
+        </Heading>
+        <Button
+          onClick={onJoinRoomClick}
+          colorScheme="cyan"
+          leftIcon={<AddPlayerIcon />}
+          width="fit-content"
+        >
+          Join a quiz room
+        </Button>
+      </Stack>
+
       <Stack direction="row" spacing={8} width="100%" wrap="wrap">
         {quizGameCards.map((quizCard) => (
           <Card
@@ -50,6 +72,7 @@ export const QuizGameCardsSection = ({
                 <Button
                   variant="solid"
                   colorScheme="blackAlpha"
+                  leftIcon={<QuizRoomIcon />}
                   onClick={() => {
                     onQuizGameCardClick(quizCard.id);
                   }}
