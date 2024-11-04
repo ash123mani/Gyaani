@@ -18,14 +18,10 @@ import {
 } from "@chakra-ui/react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { JoinQuizRoomEventData, JoinQuizRoomEventDataSchema } from "@qj/shared";
 
 import styles from "@/app/components/create-quiz-modal/styles.module.css";
 import { AddPlayerIcon } from "@/app/icons/AddPlayerIcon";
-
-import {
-  JoinQuizRoomEventData,
-  JoinQuizRoomEventDataSchema,
-} from "../../../../shared";
 
 interface JoinQuizRoomModalProps {
   onClose: UseModalProps["onClose"];

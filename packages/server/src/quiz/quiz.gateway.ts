@@ -66,7 +66,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.debug(`Payload: ${typeof data}`);
 
     const quizRoomConfig = await this.cmsService.quizGameConfig(data.quizGameId);
-    const quizQuestionsIds = quizRoomConfig.fields.questions?.map((ques) => ques.sys.id);
+    const quizQuestionsIds = quizRoomConfig.fields?.questions?.map((ques) => ques.sys.id);
     const quizQuestions = await this.cmsService.allQuizGameQuesConfig(quizQuestionsIds);
     const quizRoom = this.quizRoomManager.createQuizRoom(client, data, quizRoomConfig, quizQuestions);
     quizRoom.addPlayerToQuizRoom(client, data);

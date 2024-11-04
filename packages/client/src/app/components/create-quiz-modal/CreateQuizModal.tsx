@@ -35,12 +35,14 @@ interface CreateQuizModalProps {
   onClose: UseModalProps["onClose"];
   isOpen: UseModalProps["isOpen"];
   onCreateQuizRoomSubmit: SubmitHandler<CreateQuizRoomEventData>;
+  quizGameId: string;
 }
 
 export function CreateQuizModal({
   onClose,
   isOpen,
   onCreateQuizRoomSubmit,
+  quizGameId,
 }: CreateQuizModalProps) {
   const {
     handleSubmit,
@@ -48,15 +50,20 @@ export function CreateQuizModal({
     formState: { errors },
     setValue,
     watch,
+    getValues,
   } = useForm<CreateQuizRoomEventData>({
     resolver: zodResolver(CreateQuizRoomEventDataSchema),
     defaultValues: {
       maxPlayersAllowed: 1,
       userName: "",
-      quizGameId: "2b3A5RhQjjmUqsQHGDahws",
+      quizGameId,
     },
   });
   const maxPlayersAllowed = watch("maxPlayersAllowed");
+
+  if (getValues("quizGameId") !== quizGameId) {
+    setValue("quizGameId", quizGameId);
+  }
 
   return (
     <Modal

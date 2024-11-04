@@ -28,7 +28,7 @@ export const CreateQuizRoomEventDataSchema = z.object({
     message:
       "Player Name should be minimum of 2 characters. Please enter 2 or more characters.",
   }),
-  quizGameId: z.string(),
+  quizGameId: z.string().min(1),
   maxPlayersAllowed: z.number().int().min(1, { message: "Required" }),
 });
 
@@ -48,7 +48,7 @@ export const QuiRoomStateSchema = z.object({
   quizGame: z.object({
     hasStarted: z.boolean(),
     hasFinished: z.boolean(),
-    currentQues: QuizQuesSchema,
+    currentQues: ContentfulQuizQuestionContentModelSchema,
     hasNextQues: z.boolean(),
     totalScore: z.number(),
     scores: z.array(

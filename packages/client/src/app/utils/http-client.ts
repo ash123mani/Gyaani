@@ -37,10 +37,10 @@ class HttpClient {
   //   return this;
   // }
 
-  setBearerAuth(token: string) {
-    this._headers.Authorization = `Bearer ${token}`;
-    return this;
-  }
+  // setBearerAuth(token: string) {
+  //   this._headers.Authorization = `Bearer ${token}`;
+  //   return this;
+  // }
 
   get<Resp>(endpoint: string, options = {}): Promise<Resp | undefined> {
     return this._fetchJSON(endpoint, {

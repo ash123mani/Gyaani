@@ -21,7 +21,7 @@ export class QuizRoom {
   public readonly players: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
   public readonly quizGame: QuizGame = new QuizGame(this.quizRoomConfig, this.quizQuestions);
   public readonly usersNames: Map<Socket['id'], string> = new Map();
-  private queue = Array.from(this.quizGame.quizQues);
+  private queue = Array.from(this.quizGame.newQuizQuestions || []);
   private notRunning: boolean = true;
   public hostSocketId: Socket['id'];
   public selectedAns: Map<Socket['id'], Map<QuizQues['id'], number>> = new Map();
@@ -73,9 +73,9 @@ export class QuizRoom {
       let inCorrectQuesCount = 0;
       let unAttemptedQuesCount = 0;
 
-      this.quizGame.quizQues.map((ques) => {
-        const correctAns = this.quizGame.answers.get(ques.id);
-        const selectedAns = (this.selectedAns.get(playerId) || new Map()).get(ques.id);
+      this.quizGame.newQuizQuestions.map((ques) => {
+        const correctAns = this.quizGame.answers.get(ques.sys.id);
+        const selectedAns = (this.selectedAns.get(playerId) || new Map()).get(ques.sys.id);
 
         if (!selectedAns) {
           unAttemptedQuesCount = unAttemptedQuesCount + 1;
@@ -114,7 +114,7 @@ export class QuizRoom {
         hasFinished: this.quizGame.hasFinished,
         hasNextQues: this.quizGame.hasNextQues,
         scores: this.scores(),
-        totalScore: this.quizGame.quizQues.length * 10,
+        totalScore: this.quizGame.newQuizQuestions.length * 10,
       },
     };
   }

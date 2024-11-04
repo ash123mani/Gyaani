@@ -11,10 +11,12 @@ import { QuizGameCardsType } from "@qj/shared";
 
 interface QuizGameCardsSectionProps {
   quizGameCards: QuizGameCardsType[];
+  onQuizGameCardClick: (quizGameId: string) => void;
 }
 
 export const QuizGameCardsSection = ({
   quizGameCards,
+  onQuizGameCardClick,
 }: QuizGameCardsSectionProps) => {
   return (
     <Stack spacing={8} alignItems="center" width="100%" height="100%">
@@ -45,7 +47,13 @@ export const QuizGameCardsSection = ({
               </CardBody>
 
               <CardFooter p={4}>
-                <Button variant="solid" colorScheme="blackAlpha">
+                <Button
+                  variant="solid"
+                  colorScheme="blackAlpha"
+                  onClick={() => {
+                    onQuizGameCardClick(quizCard.id);
+                  }}
+                >
                   Play
                 </Button>
               </CardFooter>
