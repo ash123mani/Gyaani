@@ -71,7 +71,6 @@ export const QuizGameCardsSection = ({
               <CardFooter p={4}>
                 <Button
                   variant="solid"
-                  colorScheme="blackAlpha"
                   leftIcon={<QuizRoomIcon />}
                   onClick={() => {
                     onQuizGameCardClick(quizCard.id);
