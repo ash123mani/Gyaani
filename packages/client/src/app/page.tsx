@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Spinner, Stack, Text, useDisclosure } from "@chakra-ui/react";
+import { Spinner, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
   CreateQuizRoomEventData,
