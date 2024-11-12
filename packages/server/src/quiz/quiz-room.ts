@@ -25,6 +25,16 @@ export class QuizRoom {
   private notRunning: boolean = true;
   public hostSocketId: Socket['id'];
   public selectedAns: Map<Socket['id'], Map<QuizQues['id'], number>> = new Map();
+  public playerScores: Map<
+    Socket['id'],
+    {
+      playerName: string;
+      playerId: string;
+      correctQuesCount: number;
+      inCorrectQuesCount: number;
+      score: number;
+    }
+  > = new Map();
 
   constructor(
     private readonly server: Server,
@@ -41,6 +51,14 @@ export class QuizRoom {
     this.players.set(player.id, player);
     this.usersNames.set(player.id, data.userName);
     player.join(this.roomId);
+
+    this.playerScores.set(player.id, {
+      playerName: this.usersNames.get(player.id),
+      playerId: player.id,
+      correctQuesCount: 0,
+      inCorrectQuesCount: 0,
+      score: 0,
+    });
   }
 
   public removePlayerFromQuizRoom(player: Socket) {
@@ -64,44 +82,28 @@ export class QuizRoom {
 
   public updateSelectedAns(player: Socket, data: SelectedAnswerEventData) {
     this.selectedAns.set(player.id, (this.selectedAns.get(player.id) || new Map()).set(data.quesId, data.selectedAns));
+    this.updatePlayerScores(player.id, data);
   }
 
-  public scores() {
-    const scores: QuizRoomState['quizGame']['scores'] = [];
-    for (const [playerId] of this.players) {
-      let correctQuesCount = 0;
-      let inCorrectQuesCount = 0;
-      let unAttemptedQuesCount = 0;
+  public updatePlayerScores(playerId: string, data: SelectedAnswerEventData) {
+    const correctAns = this.quizGame.answers.get(data.quesId);
+    const selectedAns = data.selectedAns;
 
-      if (this.quizGame.hasStarted && !this.quizGame.hasFinished) {
-        this.quizGame.newQuizQuestions.forEach((ques) => {
-          const correctAns = this.quizGame.answers.get(ques.sys.id);
-          const selectedAns = (this.selectedAns.get(playerId) || new Map()).get(ques.sys.id);
-
-          if (selectedAns && correctAns === selectedAns) {
-            correctQuesCount = correctQuesCount + 1;
-          } else if (selectedAns) {
-            inCorrectQuesCount = inCorrectQuesCount + 1;
-          }
-        });
-
-        unAttemptedQuesCount = this.quizGame.currentQuestionIndex - (correctQuesCount + inCorrectQuesCount);
-      } else {
-        unAttemptedQuesCount = this.quizGame.newQuizQuestions.length - (correctQuesCount + inCorrectQuesCount);
-      }
-
-      const scorePayload: QuizRoomState['quizGame']['scores'][0] = {
-        playerName: this.usersNames.get(playerId),
-        playerId: playerId,
-        correctQuesCount: correctQuesCount,
-        inCorrectQuesCount: inCorrectQuesCount,
-        unAttemptedQuesCount,
-        score: correctQuesCount * 10,
-      };
-      scores.push(scorePayload);
+    if (correctAns === selectedAns) {
+      this.playerScores.set(playerId, {
+        ...this.playerScores.get(playerId),
+        correctQuesCount: this.playerScores.get(playerId).correctQuesCount + 1,
+      });
+      this.playerScores.set(playerId, {
+        ...this.playerScores.get(playerId),
+        score: this.playerScores.get(playerId).score + 10,
+      });
+    } else {
+      this.playerScores.set(playerId, {
+        ...this.playerScores.get(playerId),
+        inCorrectQuesCount: this.playerScores.get(playerId).inCorrectQuesCount + 1,
+      });
     }
-
-    return scores;
   }
 
   public get state(): QuizRoomState {
@@ -118,7 +120,7 @@ export class QuizRoom {
         currentQues: this.quizGame.currentQues,
         hasFinished: this.quizGame.hasFinished,
         hasNextQues: this.quizGame.hasNextQues,
-        scores: this.scores(),
+        scores: mapToArrayValues(this.playerScores),
         totalScore: this.quizGame.newQuizQuestions.length * 10,
         totalQues: this.quizGame.newQuizQuestions.length,
         currentQuesIndex: this.quizGame.currentQuestionIndex + 1,

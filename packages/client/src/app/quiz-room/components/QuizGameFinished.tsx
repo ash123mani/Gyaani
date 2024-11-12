@@ -14,9 +14,13 @@ import { QuizRoomState } from "@qj/shared";
 
 interface QuizGameFinishedProps {
   scores: QuizRoomState["quizGame"]["scores"];
+  totalQuestions: number;
 }
 
-export function QuizGameFinished({ scores }: QuizGameFinishedProps) {
+export function QuizGameFinished({
+  scores,
+  totalQuestions,
+}: QuizGameFinishedProps) {
   return (
     <Box
       display="flex"
@@ -47,7 +51,11 @@ export function QuizGameFinished({ scores }: QuizGameFinishedProps) {
                   <Td>{playerScore.playerName}</Td>
                   <Td isNumeric>{playerScore.correctQuesCount}</Td>
                   <Td isNumeric>{playerScore.inCorrectQuesCount}</Td>
-                  <Td isNumeric>{playerScore.unAttemptedQuesCount}</Td>
+                  <Td isNumeric>
+                    {totalQuestions -
+                      (playerScore.correctQuesCount +
+                        playerScore.inCorrectQuesCount)}
+                  </Td>
                   <Td isNumeric>{playerScore.score}</Td>
                 </Tr>
               );

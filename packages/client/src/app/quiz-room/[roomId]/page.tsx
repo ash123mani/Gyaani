@@ -75,7 +75,12 @@ export default function QuizGamePage() {
   }
 
   if (quizRoomState?.quizGame.hasFinished) {
-    return <QuizGameFinished scores={quizRoomState.quizGame.scores} />;
+    return (
+      <QuizGameFinished
+        scores={quizRoomState.quizGame.scores}
+        totalQuestions={quizRoomState.quizGame.totalQues}
+      />
+    );
   }
 
   if (

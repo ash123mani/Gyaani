@@ -44,7 +44,7 @@ export const PlayerScoreSchema = z.object({
   score: z.number(),
   inCorrectQuesCount: z.number(),
   correctQuesCount: z.number(),
-  unAttemptedQuesCount: z.number(),
+  // unAttemptedQuesCount: z.number(),
 });
 
 export const QuiRoomStateSchema = z.object({
