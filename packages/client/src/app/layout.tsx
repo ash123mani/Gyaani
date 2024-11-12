@@ -1,11 +1,11 @@
 import { type ReactNode } from "react";
 import { Box } from "@chakra-ui/react";
 import { type Metadata } from "next";
-import { Inter, Roboto_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 
-import { Footer } from "@/app/reusable/footer/Footer";
+import { Footer } from "@/app/components/footer/Footer";
 import styles from "@/app/styles.module.css";
-import { Header } from "@/app/reusable/header/Header";
+import { Header } from "@/app/components/header/Header";
 
 import { Providers } from "./providers";
 
@@ -18,21 +18,16 @@ interface RootLayoutProps {
   children: ReactNode;
 }
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const roboto_mono = Roboto_Mono({
-  subsets: ["latin"],
-  variable: "--font-roboto-mono",
-  display: "swap",
+  variable: "--font-poppins",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={`${inter.variable} ${roboto_mono.variable}`}>
+    <html lang="en" className={`${poppins.variable}`}>
       <body>
         <Providers>
           <Box className={styles.page}>

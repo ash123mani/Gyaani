@@ -54,6 +54,7 @@ export const QuiRoomStateSchema = z.object({
   hostSocketId: z.custom<Socket["id"]>(),
   quizRoomConfig: ContentfulQuizRoomContentModelSchema,
   newQuizQues: z.array(ContentfulQuizQuestionContentModelSchema),
+  maxPlayersAllowed: z.number(),
   quizGame: z.object({
     hasStarted: z.boolean(),
     hasFinished: z.boolean(),
@@ -61,6 +62,8 @@ export const QuiRoomStateSchema = z.object({
     hasNextQues: z.boolean(),
     totalScore: z.number(),
     scores: z.array(PlayerScoreSchema),
+    totalQues: z.number(),
+    currentQuesIndex: z.number(),
   }),
 });
 

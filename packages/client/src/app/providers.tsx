@@ -17,8 +17,8 @@ const borders = {
 const overrides = {
   borders,
   fonts: {
-    body: "var(--font-roboto-mono)",
-    heading: "var(--font-roboto-mono)",
+    body: "var(--font-poppins), sans-serif",
+    heading: "var(--font-poppins), sans-serif",
   },
   components: {
     Modal: {

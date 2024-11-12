@@ -112,6 +112,7 @@ export class QuizRoom {
       hostSocketId: this.hostSocketId,
       quizRoomConfig: this.quizGame.newQuizRoomConfig,
       newQuizQues: this.quizGame.newQuizQuestions,
+      maxPlayersAllowed: this.maxPlayersAllowed,
       quizGame: {
         hasStarted: this.quizGame.hasStarted,
         currentQues: this.quizGame.currentQues,
@@ -119,6 +120,8 @@ export class QuizRoom {
         hasNextQues: this.quizGame.hasNextQues,
         scores: this.scores(),
         totalScore: this.quizGame.newQuizQuestions.length * 10,
+        totalQues: this.quizGame.newQuizQuestions.length,
+        currentQuesIndex: this.quizGame.currentQuestionIndex + 1,
       },
     };
   }
