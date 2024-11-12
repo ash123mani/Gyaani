@@ -56,13 +56,13 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
   );
 
   return (
-    <Box display="flex" flexDirection="column" width="100%" height="100%">
-      <Box margin="auto">
-        <Stack direction="column" gap={4}>
+    <Box display="flex" flexDirection="column" w="100%" h="100%">
+      <Box m={6} h="100%">
+        <Stack direction="column" gap={8}>
           <Heading as="h3" size="2xl">
             {ques?.fields.quesTitle}
           </Heading>
-          <Stack direction="column" gap={4}>
+          <Stack direction="column" gap={8}>
             {renderOptions}
           </Stack>
         </Stack>
@@ -70,7 +70,7 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
 
       <Progress
         value={progressPercent}
-        size="xs"
+        size="sm"
         color="red.200"
         key={ques.sys.id}
       />

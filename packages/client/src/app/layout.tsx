@@ -35,12 +35,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" className={`${inter.variable} ${roboto_mono.variable}`}>
       <body>
         <Providers>
-          <Box className={styles.page} borderRadius="md">
+          <Box className={styles.page}>
             <Header />
             <Box
               className={styles.layoutContainer}
-              borderTop="thinLight"
-              borderBottom="thinLight"
+              border="thinLight"
               borderRadius="md"
               overflow="auto"
               as="main"

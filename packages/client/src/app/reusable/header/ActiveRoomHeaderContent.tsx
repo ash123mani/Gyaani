@@ -59,7 +59,7 @@ export const ActiveRoomHeaderContent = () => {
         Leave Room
       </Button>
 
-      <Popover trigger="hover" placement="bottom-end">
+      <Popover trigger="click" placement="bottom-end" closeOnBlur={false}>
         <PopoverTrigger>
           <Button variant="ghost" leftIcon={<PlayerIcon />}>
             {pluralize("player", users.length, true)} in the room

@@ -86,7 +86,7 @@ export default function Home() {
       {/*>*/}
       {/*  <PlayWithFriendsSection />*/}
       {/*</Box>*/}
-      <Stack flex="1" spacing={4} p={4} borderTop="thinLight" borderRadius="md">
+      <Stack flex="1" spacing={4} p={4}>
         {quizGameCards ? (
           <QuizGameCardsSection
             quizGameCards={quizGameCards}
