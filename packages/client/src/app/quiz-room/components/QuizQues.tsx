@@ -1,4 +1,11 @@
-import { Box, Checkbox, Heading, Progress, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Checkbox,
+  Heading,
+  Progress,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { ChangeEvent, memo, useMemo, useRef, useState } from "react";
 import { ContentfulQuizQuestionContentModelType, QuizQues } from "@qj/shared";
 import { QUIZ_QUES_GAP_SECS } from "@qj/shared/config";
@@ -16,9 +23,16 @@ export type OnAnswerChange = ({
 interface QizQuesProps {
   ques: ContentfulQuizQuestionContentModelType;
   onAnsChange: OnAnswerChange;
+  currentQuesIndex: number;
+  totalQuestions: number;
 }
 
-function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
+function QuizQuesView({
+  ques,
+  onAnsChange,
+  currentQuesIndex,
+  totalQuestions,
+}: QizQuesProps) {
   const prevQuesRef = useRef<ContentfulQuizQuestionContentModelType | null>(
     ques,
   );
@@ -69,6 +83,10 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
           </Stack>
         </Stack>
       </Box>
+
+      <Text fontSize="md" textAlign="center" my={1} fontStyle="italic">
+        Question {currentQuesIndex} of {totalQuestions}
+      </Text>
 
       <Progress
         value={progressPercent}

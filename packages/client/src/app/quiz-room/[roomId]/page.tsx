@@ -102,6 +102,8 @@ export default function QuizGamePage() {
       <QuizQuesView
         ques={quizRoomState.quizGame.currentQues}
         onAnsChange={handleAnswerSelection}
+        currentQuesIndex={quizRoomState.quizGame.currentQuesIndex}
+        totalQuestions={quizRoomState.quizGame.totalQues}
       />
       <PlayerScores playerScores={quizRoomState.quizGame.scores} />
     </Fragment>
