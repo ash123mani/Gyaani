@@ -39,7 +39,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <Header />
             <Box
               className={styles.layoutContainer}
-              border="thinLight"
+              border="thickLight"
               borderRadius="md"
               overflow="auto"
               as="main"

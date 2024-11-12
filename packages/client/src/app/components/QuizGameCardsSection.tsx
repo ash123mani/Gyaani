@@ -31,7 +31,7 @@ export const QuizGameCardsSection = ({
         width="100%"
         justifyContent="space-between"
       >
-        <Heading as="h4" color="gray.500">
+        <Heading as="h4" color="gray.500" mb={8}>
           Play with friends or solo
         </Heading>
         <Button

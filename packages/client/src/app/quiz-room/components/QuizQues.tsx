@@ -38,6 +38,7 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
       ques?.fields.options.map((option: string, index: number) => (
         <Checkbox
           size="lg"
+          py={2}
           value={index}
           key={option}
           isChecked={index === selectedAnswer}
@@ -48,6 +49,7 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
               selectedAns: Number(event.target.value) + 1,
             });
           }}
+          fontWeight="bold"
         >
           {option}
         </Checkbox>
@@ -62,7 +64,7 @@ function QuizQuesView({ ques, onAnsChange }: QizQuesProps) {
           <Heading as="h3" size="2xl">
             {ques?.fields.quesTitle}
           </Heading>
-          <Stack direction="column" gap={8}>
+          <Stack direction="column" gap={4}>
             {renderOptions}
           </Stack>
         </Stack>
