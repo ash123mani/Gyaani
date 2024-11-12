@@ -38,6 +38,15 @@ export const QuizQuesSchema = z.object({
   id: z.string(),
 });
 
+export const PlayerScoreSchema = z.object({
+  playerId: z.string().min(2, { message: "Required" }),
+  playerName: z.string().min(2, { message: "Required" }),
+  score: z.number(),
+  inCorrectQuesCount: z.number(),
+  correctQuesCount: z.number(),
+  unAttemptedQuesCount: z.number(),
+});
+
 export const QuiRoomStateSchema = z.object({
   users: z.array(z.string().min(2, { message: "Required" })),
   roomId: z.string().min(2, { message: "Required" }),
@@ -51,16 +60,7 @@ export const QuiRoomStateSchema = z.object({
     currentQues: ContentfulQuizQuestionContentModelSchema,
     hasNextQues: z.boolean(),
     totalScore: z.number(),
-    scores: z.array(
-      z.object({
-        playerId: z.string().min(2, { message: "Required" }),
-        playerName: z.string().min(2, { message: "Required" }),
-        score: z.number(),
-        inCorrectQuesCount: z.number(),
-        correctQuesCount: z.number(),
-        unAttemptedQuesCount: z.number(),
-      }),
-    ),
+    scores: z.array(PlayerScoreSchema),
   }),
 });
 

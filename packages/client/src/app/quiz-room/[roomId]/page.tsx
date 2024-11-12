@@ -17,6 +17,7 @@ import {
 import { QuizGameFinished } from "@/app/quiz-room/components/QuizGameFinished";
 import { StartQuizCountDown } from "@/app/quiz-room/components/StartQuizCountDown";
 import { WaitingPlayersToJoinContent } from "@/app/quiz-room/components/WaitingPlayersToJoinContent";
+import { PlayerScores } from "@/app/quiz-room/components/PlayerScores";
 
 export default function QuizGamePage() {
   const router = useRouter();
@@ -52,7 +53,12 @@ export default function QuizGamePage() {
     quizRoomState?.roomId &&
     !quizRoomState?.quizGame.hasStarted
   ) {
-    return <WaitingPlayersToJoinContent roomId={quizRoomState.roomId} />;
+    return (
+      <Fragment>
+        <WaitingPlayersToJoinContent roomId={quizRoomState.roomId} />
+        <PlayerScores playerScores={quizRoomState.quizGame.scores} />
+      </Fragment>
+    );
   }
 
   if (
@@ -60,7 +66,12 @@ export default function QuizGamePage() {
     quizRoomState?.roomId &&
     !quizRoomState?.quizGame.hasStarted
   ) {
-    return <StartQuizCountDown />;
+    return (
+      <Fragment>
+        <StartQuizCountDown />
+        <PlayerScores playerScores={quizRoomState.quizGame.scores} />
+      </Fragment>
+    );
   }
 
   if (quizRoomState?.quizGame.hasFinished) {
@@ -92,6 +103,7 @@ export default function QuizGamePage() {
         ques={quizRoomState.quizGame.currentQues}
         onAnsChange={handleAnswerSelection}
       />
+      <PlayerScores playerScores={quizRoomState.quizGame.scores} />
     </Fragment>
   );
 }

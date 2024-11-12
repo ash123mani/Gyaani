@@ -35,6 +35,8 @@ export function StartQuizCountDown({
       justifyContent="center"
       alignItems="center"
       gap="8"
+      w="100%"
+      h="100%"
     >
       <Heading
         as="h2"

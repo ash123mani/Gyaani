@@ -73,25 +73,29 @@ export class QuizRoom {
       let inCorrectQuesCount = 0;
       let unAttemptedQuesCount = 0;
 
-      this.quizGame.newQuizQuestions.map((ques) => {
-        const correctAns = this.quizGame.answers.get(ques.sys.id);
-        const selectedAns = (this.selectedAns.get(playerId) || new Map()).get(ques.sys.id);
+      if (this.quizGame.hasStarted && !this.quizGame.hasFinished) {
+        this.quizGame.newQuizQuestions.forEach((ques) => {
+          const correctAns = this.quizGame.answers.get(ques.sys.id);
+          const selectedAns = (this.selectedAns.get(playerId) || new Map()).get(ques.sys.id);
 
-        if (!selectedAns) {
-          unAttemptedQuesCount = unAttemptedQuesCount + 1;
-        } else if (correctAns === selectedAns) {
-          correctQuesCount = correctQuesCount + 1;
-        } else {
-          inCorrectQuesCount = inCorrectQuesCount + 1;
-        }
-      });
+          if (selectedAns && correctAns === selectedAns) {
+            correctQuesCount = correctQuesCount + 1;
+          } else if (selectedAns) {
+            inCorrectQuesCount = inCorrectQuesCount + 1;
+          }
+        });
+
+        unAttemptedQuesCount = this.quizGame.currentQuestionIndex - (correctQuesCount + inCorrectQuesCount);
+      } else {
+        unAttemptedQuesCount = this.quizGame.newQuizQuestions.length - (correctQuesCount + inCorrectQuesCount);
+      }
 
       const scorePayload: QuizRoomState['quizGame']['scores'][0] = {
         playerName: this.usersNames.get(playerId),
         playerId: playerId,
         correctQuesCount: correctQuesCount,
         inCorrectQuesCount: inCorrectQuesCount,
-        unAttemptedQuesCount: unAttemptedQuesCount,
+        unAttemptedQuesCount,
         score: correctQuesCount * 10,
       };
       scores.push(scorePayload);

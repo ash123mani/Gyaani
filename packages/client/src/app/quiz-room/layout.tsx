@@ -8,7 +8,7 @@ export default function QuizRoomLayout({
 }) {
   return (
     <Flex
-      direction="column"
+      direction="row"
       mx="auto"
       as="section"
       gap={8}
