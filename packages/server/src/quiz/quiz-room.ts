@@ -77,6 +77,7 @@ export class QuizRoom {
       this.quizGame.newQuizQuestions.map((ques) => {
         const correctAns = this.quizGame.answers.get(ques.sys.id);
         const selectedAns = (this.selectedAns.get(playerId) || new Map()).get(ques.sys.id);
+
         if (!selectedAns) {
           unAttemptedQuesCount = unAttemptedQuesCount + 1;
         } else if (correctAns === selectedAns) {

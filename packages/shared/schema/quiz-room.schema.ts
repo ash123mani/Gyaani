@@ -11,6 +11,7 @@ export const QuizRoomClientToServerEventsEnum = z.enum([
   "JoinQuizRoom",
   "LeaveQuizRoom",
   "GetQuizRoomState",
+  "PlayAgain",
 
   "SelectedAnswer",
 
@@ -85,4 +86,9 @@ export const SelectedAnswerEventDataSchema = z.object({
 
 export const LeaveRoomEventDataSchema = z.object({
   roomId: z.string(),
+});
+
+export const PlayAgainEventDataSchema = z.object({
+  currentRoomId: z.string(),
+  quizGameId: z.string().min(1),
 });

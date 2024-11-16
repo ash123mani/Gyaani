@@ -53,4 +53,34 @@ export class QuizRoomManagerService {
       }
     }
   }
+
+  public playAgain(currentRoomId: string, quizGameId: string) {
+    const currentRoomHost = this.quizRoomHosts.get(currentRoomId);
+    const currentQuizRoom = this.quizRooms.get(currentRoomId);
+
+    const newQuizRoom = this.createQuizRoom(
+      currentRoomHost,
+      {
+        userName: currentQuizRoom.usersNames.get(currentRoomHost.id),
+        maxPlayersAllowed: currentQuizRoom.players.size,
+        quizGameId: quizGameId,
+      },
+      currentQuizRoom.quizRoomConfig,
+      currentQuizRoom.quizQuestions,
+    );
+
+    for (const [playerSocketId, playerSocket] of currentQuizRoom.players) {
+      this.addPlayerToQuizRoom(playerSocket, {
+        quizRoomId: newQuizRoom.roomId,
+        userName: currentQuizRoom.usersNames.get(playerSocketId),
+      });
+
+      currentQuizRoom.removePlayerFromQuizRoom(playerSocket);
+    }
+
+    this.quizRooms.delete(currentRoomId);
+    this.quizRoomHosts.delete(currentRoomId);
+
+    return newQuizRoom;
+  }
 }

@@ -3,6 +3,7 @@ import {
   CreateQuizRoomEventDataSchema,
   JoinQuizRoomEventDataSchema,
   LeaveRoomEventDataSchema,
+  PlayAgainEventDataSchema,
   PlayerScoreSchema,
   QuiRoomStateSchema,
   QuizQuesSchema,
@@ -34,5 +35,7 @@ export type SelectedAnswerEventData = z.infer<
 >;
 
 export type LeaveRoomEventData = z.infer<typeof LeaveRoomEventDataSchema>;
+
+export type PlayAgainEventData = z.infer<typeof PlayAgainEventDataSchema>;
 
 export type PlayerScoreType = z.infer<typeof PlayerScoreSchema>;

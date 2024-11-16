@@ -14,6 +14,7 @@ import {
   CreateQuizRoomEventData,
   JoinQuizRoomEventData,
   LeaveRoomEventData,
+  PlayAgainEventData,
   QuizRoomClientToServerEvent,
   QuizRoomState,
   SelectedAnswerEventData,
@@ -120,5 +121,10 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
     quizRoom?.removePlayerFromQuizRoom(client);
     quizRoom?.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
+  }
+
+  @SubscribeMessage<QuizRoomClientToServerEvent>('PlayAgain')
+  handlePlayAgain(@MessageBody() data: PlayAgainEventData) {
+    this.quizRoomManager.playAgain(data.currentRoomId, data.quizGameId);
   }
 }
