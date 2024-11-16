@@ -12,12 +12,14 @@ import {
 } from "@chakra-ui/react";
 import { QuizRoomState } from "@qj/shared";
 
+import { socket } from "@/app/socket";
+
 interface QuizGameFinishedProps {
   scores: QuizRoomState["quizGame"]["scores"];
   totalQuestions: number;
 }
 
-export function QuizGameFinished({
+export function PlayerScoresAfterGameFinishTable({
   scores,
   totalQuestions,
 }: QuizGameFinishedProps) {
@@ -45,18 +47,23 @@ export function QuizGameFinished({
             </Tr>
           </Thead>
           <Tbody>
-            {scores.map((playerScore) => {
+            {scores.map((player) => {
+              const isCurrentUser = player.playerId === socket.id;
+
               return (
-                <Tr key={playerScore.playerId}>
-                  <Td>{playerScore.playerName}</Td>
-                  <Td isNumeric>{playerScore.correctQuesCount}</Td>
-                  <Td isNumeric>{playerScore.inCorrectQuesCount}</Td>
+                <Tr key={player.playerId}>
+                  <Td>
+                    {isCurrentUser
+                      ? `You (${player.playerName})`
+                      : player.playerName}
+                  </Td>
+                  <Td isNumeric>{player.correctQuesCount}</Td>
+                  <Td isNumeric>{player.inCorrectQuesCount}</Td>
                   <Td isNumeric>
                     {totalQuestions -
-                      (playerScore.correctQuesCount +
-                        playerScore.inCorrectQuesCount)}
+                      (player.correctQuesCount + player.inCorrectQuesCount)}
                   </Td>
-                  <Td isNumeric>{playerScore.score}</Td>
+                  <Td isNumeric>{player.score}</Td>
                 </Tr>
               );
             })}

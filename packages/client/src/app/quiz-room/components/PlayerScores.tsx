@@ -1,5 +1,7 @@
-import { Box, Heading, Stack, Text } from "@chakra-ui/react";
+import { Heading, Stack, Text } from "@chakra-ui/react";
 import { PlayerScoreType } from "@qj/shared";
+
+import { socket } from "@/app/socket";
 
 interface PlayerScoresProps {
   playerScores: PlayerScoreType[];
@@ -7,6 +9,7 @@ interface PlayerScoresProps {
 
 interface PlayerScoreProps {
   playerScore: PlayerScoreType;
+  playerId: string;
 }
 
 export function PlayerScores({ playerScores }: PlayerScoresProps) {
@@ -23,19 +26,26 @@ export function PlayerScores({ playerScores }: PlayerScoresProps) {
         Players
       </Heading>
       {playerScores.map((score) => (
-        <PlayerScore playerScore={score} key={score.playerId} />
+        <PlayerScore
+          playerScore={score}
+          key={score.playerId}
+          playerId={score.playerId}
+        />
       ))}
     </Stack>
   );
 }
 
-function PlayerScore({ playerScore }: PlayerScoreProps) {
+function PlayerScore({ playerScore, playerId }: PlayerScoreProps) {
+  const isCurrentUser = playerId === socket.id;
   return (
     <Stack direction="row" spacing={4} justifyContent="space-between">
       <Text fontSize="2xl" color="orange" fontWeight="extrabold">
-        {playerScore.playerName}
+        {isCurrentUser
+          ? `You (${playerScore.playerName.toLowerCase()})`
+          : playerScore.playerName.toLowerCase()}
       </Text>
-      <Text fontSize="2xl" color="green">
+      <Text fontSize="2xl" color="green" fontWeight="extrabold">
         {playerScore.score}
       </Text>
     </Stack>

@@ -14,7 +14,7 @@ import {
   OnAnswerChange,
   QuizQuesView,
 } from "@/app/quiz-room/components/QuizQues";
-import { QuizGameFinished } from "@/app/quiz-room/components/QuizGameFinished";
+import { PlayerScoresAfterGameFinishTable } from "@/app/quiz-room/components/PlayerScoresAfterGameFinishTable";
 import { StartQuizCountDown } from "@/app/quiz-room/components/StartQuizCountDown";
 import { WaitingPlayersToJoinContent } from "@/app/quiz-room/components/WaitingPlayersToJoinContent";
 import { PlayerScores } from "@/app/quiz-room/components/PlayerScores";
@@ -76,7 +76,7 @@ export default function QuizGamePage() {
 
   if (quizRoomState?.quizGame.hasFinished) {
     return (
-      <QuizGameFinished
+      <PlayerScoresAfterGameFinishTable
         scores={quizRoomState.quizGame.scores}
         totalQuestions={quizRoomState.quizGame.totalQues}
       />

@@ -7,7 +7,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { ChangeEvent, memo, useMemo, useRef, useState } from "react";
-import { ContentfulQuizQuestionContentModelType, QuizQues } from "@qj/shared";
+import { ContentfulQuizQuestionContentModelType } from "@qj/shared";
 import { QUIZ_QUES_GAP_SECS } from "@qj/shared/config";
 
 import { useCountDownTimer } from "@/app/hooks";
