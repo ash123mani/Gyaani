@@ -6,11 +6,13 @@ import { FinalScoreTable } from "@/app/quiz-room/components/FinalScoreTable";
 interface GameEndedScreenProps {
   scores: QuizRoomState["quizGame"]["scores"];
   totalQuestions: number;
+  onPlayAgain: () => void;
 }
 
 export function GameEndedScreen({
   scores,
   totalQuestions,
+  onPlayAgain,
 }: GameEndedScreenProps) {
   return (
     <Box
@@ -24,7 +26,9 @@ export function GameEndedScreen({
         Quiz Finished
       </Heading>
       <FinalScoreTable scores={scores} totalQuestions={totalQuestions} />
-      <Button>Play Again</Button>
+      <Button onClick={onPlayAgain} colorScheme="whiteAlpha">
+        Play Again
+      </Button>
     </Box>
   );
 }

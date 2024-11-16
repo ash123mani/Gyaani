@@ -48,6 +48,13 @@ export default function QuizGamePage() {
     });
   }, []);
 
+  function handlePlayAgainClick() {
+    socket.emit<QuizRoomClientToServerEvent>("PlayAgain", {
+      currentRoomId: quizRoomState!.roomId,
+      quizGameId: quizRoomState!.quizRoomConfig.sys.id,
+    });
+  }
+
   if (
     !quizRoomState?.hasAllPlayersJoined &&
     quizRoomState?.roomId &&
@@ -79,6 +86,7 @@ export default function QuizGamePage() {
       <GameEndedScreen
         scores={quizRoomState.quizGame.scores}
         totalQuestions={quizRoomState.quizGame.totalQues}
+        onPlayAgain={handlePlayAgainClick}
       />
     );
   }

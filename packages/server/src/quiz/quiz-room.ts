@@ -129,7 +129,7 @@ export class QuizRoom {
     return this.players.size === this.maxPlayersAllowed;
   }
 
-  private sendQues(player: Socket) {
+  private sendQues() {
     if (this.queue.length > 0) {
       // TODO: Clear timeout after need
 
@@ -143,22 +143,22 @@ export class QuizRoom {
         this.quizGame.moveToNextQues();
 
         this.queue.shift();
-        this.sendQues(player);
+        this.sendQues();
       }, gap);
     } else {
       setTimeout(() => {
         this.notRunning = true;
         this.quizGame.endGame();
         this.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', this.state);
-        this.removePlayerFromQuizRoom(player);
+        // this.removePlayerFromQuizRoom(player);
       }, QUIZ_QUES_GAP_MILLISECONDS);
     }
   }
 
-  public startSendingQues(player: Socket): void {
+  public startSendingQues(): void {
     if (this.notRunning) {
       this.notRunning = false;
-      this.sendQues(player);
+      this.sendQues();
     }
   }
 }
