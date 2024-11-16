@@ -1,12 +1,11 @@
 import { Fragment } from "react";
 import { Button, useDisclosure } from "@chakra-ui/react";
 import { useParams, useRouter } from "next/navigation";
+import { QuizRoomClientToServerEvent } from "@qj/shared";
 
 import { socket } from "@/app/socket";
 import { ConfirmationModal } from "@/app/components/ConfirmationModal";
 import { ExitIcon } from "@/app/icons";
-
-import { QuizRoomClientToServerEvent } from "../../../../../shared";
 
 export const ActiveRoomHeaderContent = () => {
   const router = useRouter();
