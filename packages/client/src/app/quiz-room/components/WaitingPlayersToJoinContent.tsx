@@ -56,7 +56,7 @@ export function WaitingPlayersToJoinContent({
         color="red.400"
         width="100%"
       >
-        Do not Close!
+        Please, Do not refresh!
       </Text>
     </Stack>
   );
