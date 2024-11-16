@@ -65,6 +65,7 @@ export const QuizGameCardsSection = ({
                 <Heading size="md">{quizCard.subject}</Heading>
 
                 <Text py="2">{quizCard.topic}</Text>
+                <Text py="2">Total Questions: {quizCard.questionsCount}</Text>
               </CardBody>
 
               <CardFooter p={4}>

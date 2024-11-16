@@ -19,7 +19,7 @@ export class CmsService {
     const { data } = await firstValueFrom(
       this.httpService
         .get<ContentfulEntryQuizGameContentType>(
-          `https://cdn.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENVIROMENT_ID}/entries?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}&content_type=quizGame&select=fields.topic,fields.subject,fields.questionsCount,sys.id`,
+          `https://cdn.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENVIROMENT_ID}/entries?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}&content_type=quizGame&select=fields.topic,fields.subject,fields.questionsCount,sys.id,fields.questions`,
         )
         .pipe(
           catchError((error: AxiosError) => {
@@ -33,7 +33,7 @@ export class CmsService {
       quizGameCards: data?.items.map((item) => ({
         topic: item.fields.topic,
         subject: item.fields.subject,
-        questionsCount: item.fields.questionsCount,
+        questionsCount: item.fields.questions.length,
         id: item.sys.id,
       })),
     };
