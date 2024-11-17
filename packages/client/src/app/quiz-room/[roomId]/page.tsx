@@ -7,7 +7,7 @@ import {
   QuizRoomState,
 } from "@qj/shared";
 import { Skeleton, Spinner, Stack } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 import { socket } from "@/app/socket";
 import {
@@ -21,6 +21,8 @@ import { PlayerScores } from "@/app/quiz-room/components/PlayerScores";
 
 export default function QuizGamePage() {
   const router = useRouter();
+  const params = useParams<{ roomId: string }>();
+  console.log("params", params);
 
   const [quizRoomState, setQuizRoomState] = useState<
     QuizRoomState | undefined
@@ -38,6 +40,11 @@ export default function QuizGamePage() {
   }, []);
 
   function handleQuizRoomState(quizRoom: QuizRoomState) {
+    // When Play again is opted, all players will go into a new room!
+    if (quizRoom?.roomId && params.roomId !== quizRoom?.roomId) {
+      router.replace(`/quiz-room/${quizRoom?.roomId}`);
+    }
+
     setQuizRoomState(quizRoom);
   }
 
