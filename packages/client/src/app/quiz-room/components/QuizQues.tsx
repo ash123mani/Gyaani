@@ -7,7 +7,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { ChangeEvent, memo, useMemo, useRef, useState } from "react";
-import { ContentfulQuizQuestionContentModelType } from "@qj/shared";
+import {
+  ContentfulQuizQuestionContentModelType,
+  QUIZ_QUES_GAP_MILLISECONDS,
+} from "@qj/shared";
 import { QUIZ_QUES_GAP_SECS } from "@qj/shared/config";
 
 import { useCountDownTimer } from "@/app/hooks";
@@ -36,12 +39,14 @@ function QuizQuesView({
   const prevQuesRef = useRef<ContentfulQuizQuestionContentModelType | null>(
     ques,
   );
-  const [startCountDownAt, resetCountDownAt] = useCountDownTimer({});
+  const [startCountDownAt, resetCountDownAt] = useCountDownTimer({
+    countDownSecs: QUIZ_QUES_GAP_MILLISECONDS / 1000,
+  });
   const [selectedAnswer, setSelectedAnswer] = useState<number>(-1);
 
   if (prevQuesRef.current?.sys?.id !== ques.sys.id) {
     prevQuesRef.current = ques;
-    resetCountDownAt();
+    resetCountDownAt(QUIZ_QUES_GAP_MILLISECONDS / 1000);
     setSelectedAnswer(-1);
   }
 
@@ -90,7 +95,7 @@ function QuizQuesView({
 
       <Progress
         value={progressPercent}
-        size="sm"
+        size="md"
         color="red.200"
         key={ques.sys.id}
       />

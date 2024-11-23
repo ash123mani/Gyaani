@@ -8,25 +8,12 @@ import { WAIT_TIME_BEFORE_QUIZ_START_SECS } from "@qj/shared/config";
 
 import { useCountDownTimer } from "@/app/hooks";
 
-interface StartQuizCountDownProps {
-  onCountDownStart?: () => void;
-  onCountDownEnd?: () => void;
-}
-
-export function StartQuizCountDown({
-  onCountDownStart,
-  onCountDownEnd,
-}: StartQuizCountDownProps) {
-  const [startCountDownAt] = useCountDownTimer({
-    onCountDownStart,
-    onCountDownEnd,
+export function StartQuizCountDown() {
+  const [timeLeft] = useCountDownTimer({
     countDownSecs: WAIT_TIME_BEFORE_QUIZ_START_SECS,
   });
 
-  const progressPercent =
-    (startCountDownAt / WAIT_TIME_BEFORE_QUIZ_START_SECS) * 100;
-  const timeLeftToStartTheGame =
-    WAIT_TIME_BEFORE_QUIZ_START_SECS - startCountDownAt;
+  const progressPercent = (timeLeft / WAIT_TIME_BEFORE_QUIZ_START_SECS) * 100;
 
   return (
     <Box
@@ -45,11 +32,11 @@ export function StartQuizCountDown({
         textAlign="center"
         colorScheme="orange"
       >
-        Game will start in {timeLeftToStartTheGame} seconds
+        Game will start in {timeLeft} seconds
       </Heading>
-      <CircularProgress value={progressPercent} size="120px">
+      <CircularProgress value={progressPercent} size="160px">
         <CircularProgressLabel fontSize="16px" fontWeight="bold">
-          {timeLeftToStartTheGame} secs
+          {timeLeft} secs
         </CircularProgressLabel>
       </CircularProgress>
     </Box>

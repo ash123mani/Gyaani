@@ -4,38 +4,31 @@ import { QUIZ_QUES_GAP_MILLISECONDS } from "@qj/shared/config";
 interface UseCountDownTimerProps {
   onCountDownStart?: () => void;
   onCountDownEnd?: () => void;
-  countDownSecs?: number;
+  countDownSecs: number;
 }
 
 export function useCountDownTimer(
   props: UseCountDownTimerProps,
-): [number, () => void] {
-  const {
-    onCountDownStart,
-    onCountDownEnd,
-    countDownSecs = QUIZ_QUES_GAP_MILLISECONDS / 1000,
-  } = props;
-  const [startCountDownAt, setStartCountDownAt] = useState<number>(0);
+): [number, (timeLeft: number) => void] {
+  const { onCountDownEnd, countDownSecs } = props;
+  const [timeLeft, setTimeLeft] = useState(countDownSecs);
 
   useEffect(() => {
-    onCountDownStart?.();
+    if (timeLeft < 0) {
+      onCountDownEnd?.();
+      return;
+    }
 
-    const interval = setInterval(() => {
-      setStartCountDownAt((prev) => {
-        if (prev + 1 === countDownSecs) {
-          onCountDownEnd?.();
-          clearInterval(interval);
-        }
-        return prev >= countDownSecs ? 0 : prev + 1;
-      });
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [props, countDownSecs]);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
 
-  function resetCountDownAt() {
-    setStartCountDownAt(0);
+  function resetCountDownAt(timeLeft: number = 0) {
+    setTimeLeft(timeLeft);
   }
 
-  return [startCountDownAt, resetCountDownAt];
+  return [timeLeft, resetCountDownAt];
 }
