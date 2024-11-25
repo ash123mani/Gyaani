@@ -14,3 +14,12 @@
 - Show proper error messages Errors and Exceptions raised by server
 - Responsive UI
 - Add the UI to show attempted answers by the users.
+
+### Refactoring
+
+- Take the ideas from here to add validations, CASL Authorization, Gauards
+  etc https://www.delightfulengineering.com/blog/nest-websockets/basics
+- Refactor quiz module as per the design
+  read https://stackoverflow.com/questions/7102521/database-design-for-developing-quiz-web-application-using-php-and-mysql,
+- https://chatgpt.com/share/6744007b-6688-8001-987f-b3bd8d77f1f1
+- System design by ChatGpt https://chatgpt.com/share/674400dc-3de0-8001-9e79-de92f7cb8124
