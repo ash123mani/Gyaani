@@ -31,8 +31,8 @@ import { CmsService } from '@/src/cms/cms.service';
 @UseFilters(new CustomWsExceptionFilter())
 export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(QuizGateway.name);
-
-  @WebSocketServer() io: Server;
+  @WebSocketServer()
+  private readonly io;
 
   constructor(
     private readonly quizRoomManager: QuizRoomManagerService,
@@ -40,7 +40,6 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   ) {}
 
   afterInit(server: Server) {
-    this.quizRoomManager.server = server;
     this.logger.log('Quiz Room Server is running');
   }
 
@@ -119,12 +118,12 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage<QuizRoomClientToServerEvent>('LeaveQuizRoom')
   handleLeaveQuizRoom(@MessageBody() data: LeaveRoomEventData, @ConnectedSocket() client: Socket) {
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
-    quizRoom?.removePlayerFromQuizRoom(client);
+    quizRoom?.removePlayerFromQuizRoom(client.id, client);
     quizRoom?.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
   }
 
   @SubscribeMessage<QuizRoomClientToServerEvent>('PlayAgain')
-  handlePlayAgain(@MessageBody() data: PlayAgainEventData, @ConnectedSocket() client: Socket) {
+  handlePlayAgain(@MessageBody() data: PlayAgainEventData) {
     const newQuizRoom = this.quizRoomManager.playAgain(data.currentRoomId, data.quizGameId);
 
     newQuizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', newQuizRoom.state);

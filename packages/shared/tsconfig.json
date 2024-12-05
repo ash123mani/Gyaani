@@ -11,5 +11,10 @@
     "outDir": "./dist",
     "skipLibCheck": true
     /* Skip type checking all .d.ts files. */
-  }
+  },
+  "include": [
+    "schema/**/*",
+    "types/**/*",
+    "index.ts"
+  ]
 }

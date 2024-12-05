@@ -11,6 +11,8 @@ import {
   WAIT_TIME_BEFORE_QUIZ_STOP_MILLISECONDS,
   ContentfulQuizGameContentModelType,
   ContentfulQuizQuestionContentModelType,
+  UserId,
+  User,
 } from '@qj/shared';
 import { mapToArrayValues } from '@/src/utils/map-to-array';
 
@@ -25,6 +27,8 @@ export class QuizRoom {
   private notRunning: boolean = true;
   public hostSocketId: Socket['id'];
   public selectedAns: Map<Socket['id'], Map<QuizQues['id'], number>> = new Map();
+
+  public _players: Map<UserId, User> = new Map();
 
   constructor(
     private readonly server: Server,
@@ -43,11 +47,11 @@ export class QuizRoom {
     player.join(this.roomId);
   }
 
-  public removePlayerFromQuizRoom(player: Socket) {
+  public removePlayerFromQuizRoom(userId: UserId, player: Socket) {
     player.leave(this.roomId);
-    this.usersNames.delete(player.id);
-    this.players.delete(player.id);
-    if (this.hostSocketId === player.id) {
+    this.usersNames.delete(userId);
+    this.players.delete(userId);
+    if (this.hostSocketId === userId) {
       this.hostSocketId = null;
       // this.quizGame.endGame();
     }
