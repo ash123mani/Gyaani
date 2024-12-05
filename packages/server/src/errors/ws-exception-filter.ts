@@ -15,23 +15,17 @@ export class CustomWsExceptionFilter implements WsExceptionFilter {
   catch(exception: WsException, host: ArgumentsHost) {
     const client = host.switchToWs().getClient<Socket>();
     const error = exception.getError(); // Get the error message or object
-    let response: ServerErrorResponse;
 
     const errorTimeStamp = {
       timestamp: new Date(),
     };
 
-    if (isCustomErrorDetails(error)) {
-      response = {
-        status: 'error',
-        error: Object.assign(errorTimeStamp, error),
-      };
-    } else {
-      response = {
-        status: 'error',
-        error: Object.assign(errorTimeStamp, ERRORS.WS_INTERNAL_SERVER_ERROR),
-      };
-    }
+    const response: ServerErrorResponse = {
+      status: 'error',
+      error: isCustomErrorDetails(error)
+        ? Object.assign(errorTimeStamp, error)
+        : Object.assign(errorTimeStamp, ERRORS.WS_INTERNAL_SERVER_ERROR),
+    };
 
     client.emit('WS_SERVER_ERROR', response);
   }

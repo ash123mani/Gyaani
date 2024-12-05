@@ -10,9 +10,10 @@ import { QuizRoom } from './quiz/quiz-room';
 import { CmsService } from '@/src/cms/cms.service';
 import { SuccessResponseMiddleware } from '@/src/middlewares';
 import { CmsModule } from '@/src/cms/cms.module';
+import { UserModule } from '@/src/user/user.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), HttpModule, QuizModule, CmsModule],
+  imports: [ConfigModule.forRoot(), HttpModule, QuizModule, CmsModule, UserModule],
   controllers: [AppController, CmsController],
   providers: [AppService, CmsService, QuizRoom],
 })

@@ -91,7 +91,7 @@ export class CmsService {
       // Return the combined results
       return responses.map((response) => response.data);
     } catch (error) {
-      throw new Error(`Error fetching data from APIs: ${error.message}`);
+      throw new Error(`Error fetching data from APIs`);
     }
   }
 }
