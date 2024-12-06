@@ -1,11 +1,13 @@
 import { SocketId, User as IUser, UserId, UserName } from '@qj/shared';
 
 export class User implements IUser {
-  constructor(attrs: IUser) {
-    Object.assign(this, attrs);
-  }
+  public userId: UserId;
+  public userName: UserName;
+  public socketId: SocketId;
 
-  userId: UserId;
-  socketId: SocketId;
-  userName: UserName;
+  constructor(attrs: IUser) {
+    this.userId = attrs.userId;
+    this.socketId = attrs.socketId;
+    this.userName = attrs.userName;
+  }
 }
