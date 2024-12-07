@@ -5,7 +5,7 @@ import {
   ContentfulQuizGameContentModelType,
   ContentfulQuizQuestionContentModelType,
   QuizGameCardsSuccessResponseType,
-} from '@qj/shared';
+} from '../../../../shared';
 import type { AxiosError } from 'axios';
 import { HttpService } from '@nestjs/axios';
 

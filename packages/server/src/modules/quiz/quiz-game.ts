@@ -1,4 +1,4 @@
-import { ContentfulQuizGameContentModelType, ContentfulQuizQuestionContentModelType } from '@qj/shared';
+import { ContentfulQuizGameContentModelType, ContentfulQuizQuestionContentModelType } from '../../../../shared';
 
 export class QuizGame {
   public hasStarted: boolean = false;

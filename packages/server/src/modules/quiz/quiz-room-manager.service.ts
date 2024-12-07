@@ -1,7 +1,7 @@
-import { QuizRoom } from '@/src/quiz/quiz-room';
+import { QuizRoom } from '@/src/modules/quiz/quiz-room';
 import { Server, Socket } from 'socket.io';
-import { ContentfulQuizQuestionContentModelType } from '@qj/shared';
-import { Injectable } from '@nestjs/common';
+import { ContentfulQuizQuestionContentModelType } from '../../../../shared';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { WebSocketServer, WsException } from '@nestjs/websockets';
 import {
   ERRORS,
@@ -9,8 +9,8 @@ import {
   CreateQuizRoomEventData,
   JoinQuizRoomEventData,
   User,
-} from '@qj/shared';
-import { UserService } from '@/src/user/user.service';
+} from '../../../../shared';
+import { UserService } from '@/src/modules/user/user.service';
 
 @Injectable()
 export class QuizRoomManagerService {
@@ -62,16 +62,31 @@ export class QuizRoomManagerService {
         return quizRoom;
       }
     }
+
+    throw new NotFoundException({
+      title: 'User Not Found',
+      status: HttpStatus.NOT_FOUND,
+      detail: `User with id '${player.id}' was not found`,
+    });
   }
 
+  // here new host will the one who requested the playAgain
   public playAgain(currentRoomId: string, quizGameId: string) {
-    const currentRoomHost = this.quizRoomHosts.get(currentRoomId);
+    const currentRoomHost = this.quizRoomHosts.get(currentRoomId) || this.quizRoomHosts.values()[0]; // this should be handled by method inside QuizRoom
     const currentQuizRoom = this.quizRooms.get(currentRoomId);
+
+    if (!currentQuizRoom) {
+      throw new NotFoundException({
+        title: 'User Not Found',
+        status: HttpStatus.NOT_FOUND,
+        detail: `QuizRoom with id '${currentRoomId}' was not found`,
+      });
+    }
 
     const newQuizRoom = this.createQuizRoom(
       currentRoomHost,
       {
-        userName: currentQuizRoom.usersNames.get(currentRoomHost.id),
+        userName: currentQuizRoom.usersNames.get(currentRoomHost.id)!,
         maxPlayersAllowed: currentQuizRoom.players.size,
         quizGameId: quizGameId,
       },
@@ -82,7 +97,7 @@ export class QuizRoomManagerService {
     for (const [playerSocketId, playerSocket] of currentQuizRoom.players) {
       this.addPlayerToQuizRoom(playerSocket, {
         quizRoomId: newQuizRoom.roomId,
-        userName: currentQuizRoom.usersNames.get(playerSocketId),
+        userName: currentQuizRoom.usersNames.get(playerSocketId)!,
       });
 
       currentQuizRoom.removePlayerFromQuizRoom(playerSocket.id, playerSocket);

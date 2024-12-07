@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, WsExceptionFilter } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpStatus, WsExceptionFilter } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { ErrorDetails, ServerErrorResponse } from '@qj/shared/dist/types';
@@ -10,8 +10,6 @@ function isCustomErrorDetails(error: any): error is Exclude<ErrorDetails, 'times
 
 @Catch(WsException)
 export class CustomWsExceptionFilter implements WsExceptionFilter {
-  error: object;
-
   catch(exception: WsException, host: ArgumentsHost) {
     const client = host.switchToWs().getClient<Socket>();
     const error = exception.getError(); // Get the error message or object
@@ -25,6 +23,7 @@ export class CustomWsExceptionFilter implements WsExceptionFilter {
       error: isCustomErrorDetails(error)
         ? Object.assign(errorTimeStamp, error)
         : Object.assign(errorTimeStamp, ERRORS.WS_INTERNAL_SERVER_ERROR),
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
     };
 
     client.emit('WS_SERVER_ERROR', response);

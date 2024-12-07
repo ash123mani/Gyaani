@@ -18,10 +18,10 @@ import {
   QuizRoomClientToServerEvent,
   QuizRoomState,
   SelectedAnswerEventData,
-} from '@qj/shared';
-import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
-import { CustomWsExceptionFilter } from '@/src/common/errors/ws-exception-filter';
-import { CmsService } from '@/src/cms/cms.service';
+} from '../../../../shared';
+import { QuizRoomManagerService } from '@/src/modules/quiz/quiz-room-manager.service';
+import { CustomWsExceptionFilter } from '@/src/common/exception-filters/ws-exception-filter';
+import { CmsService } from '@/src/modules/cms/cms.service';
 
 @WebSocketGateway({
   cors: {
@@ -40,7 +40,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   ) {}
 
   afterInit(server: Server) {
-    this.logger.log('Quiz Room Server is running');
+    this.logger.log('Quiz Room Server is running', server.sockets.name);
   }
 
   handleConnection(client: Socket) {
@@ -69,7 +69,10 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const quizQuestionsIds = quizRoomConfig.fields?.questions?.map((ques) => ques.sys.id);
     const quizQuestions = await this.cmsService.allQuizGameQuesConfig(quizQuestionsIds);
     const quizRoom = this.quizRoomManager.createQuizRoom(client, data, quizRoomConfig, quizQuestions);
-    quizRoom.addPlayerToQuizRoom(client, data);
+    quizRoom.addPlayerToQuizRoom(client, {
+      userName: data.userName,
+      quizRoomId: data.quizGameId,
+    });
 
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);

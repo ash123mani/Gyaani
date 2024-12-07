@@ -1,4 +1,4 @@
-import { SocketId, User as IUser, UserId, UserName } from '@qj/shared';
+import { SocketId, User as IUser, UserId, UserName } from '../../../../../shared';
 
 export class User implements IUser {
   public userId: UserId;
