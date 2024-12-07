@@ -26,6 +26,5 @@
 
 ### Error Handling
 
-- https://www.dhiwise.com/post/typescript-error-handling-pitfalls-and-how-to-avoid-them
 - https://engineering.udacity.com/handling-errors-like-a-pro-in-typescript-d7a314ad4991
 - https://www.ayoubkhial.com/blog/api-error-handling-done-right-nestjs

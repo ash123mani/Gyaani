@@ -20,7 +20,7 @@ import {
   SelectedAnswerEventData,
 } from '@qj/shared';
 import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
-import { CustomWsExceptionFilter } from '@/src/errors/ws-exception-filter';
+import { CustomWsExceptionFilter } from '@/src/common/errors/ws-exception-filter';
 import { CmsService } from '@/src/cms/cms.service';
 
 @WebSocketGateway({
