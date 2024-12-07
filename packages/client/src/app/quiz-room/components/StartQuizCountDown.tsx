@@ -4,9 +4,10 @@ import {
   Heading,
   CircularProgressLabel,
 } from "@chakra-ui/react";
-import { WAIT_TIME_BEFORE_QUIZ_START_SECS } from "@qj/shared/config";
 
 import { useCountDownTimer } from "@/app/hooks";
+
+import { WAIT_TIME_BEFORE_QUIZ_START_SECS } from "../../../../../shared/src/config";
 
 export function StartQuizCountDown() {
   const [timeLeft] = useCountDownTimer({

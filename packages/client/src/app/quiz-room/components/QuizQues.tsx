@@ -11,9 +11,10 @@ import {
   ContentfulQuizQuestionContentModelType,
   QUIZ_QUES_GAP_MILLISECONDS,
 } from "@qj/shared";
-import { QUIZ_QUES_GAP_SECS } from "@qj/shared/config";
 
 import { useCountDownTimer } from "@/app/hooks";
+
+import { QUIZ_QUES_GAP_SECS } from "../../../../../shared/src/config";
 
 export type OnAnswerChange = ({
   quesId,

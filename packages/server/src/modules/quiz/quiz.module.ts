@@ -4,10 +4,10 @@ import { HttpModule } from '@nestjs/axios';
 import { QuizGateway } from './quiz.gateway';
 import { QuizRoomManagerService } from '@/src/modules/quiz/quiz-room-manager.service';
 import { CmsService } from '@/src/modules/cms/cms.service';
-import { UserService } from '@/src/modules/user/user.service';
+import { UserModule } from '@/src/modules/user/user.module';
 
 @Module({
-  imports: [HttpModule, UserService],
+  imports: [UserModule, HttpModule],
   providers: [QuizGateway, QuizRoomManagerService, CmsService],
 })
 export class QuizModule {}
