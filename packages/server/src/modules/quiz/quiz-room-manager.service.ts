@@ -1,6 +1,5 @@
 import { QuizRoom } from '@/src/modules/quiz/quiz-room';
 import { Server, Socket } from 'socket.io';
-import { ContentfulQuizQuestionContentModelType } from '../../../../shared';
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { WebSocketServer, WsException } from '@nestjs/websockets';
 import {
@@ -9,7 +8,8 @@ import {
   CreateQuizRoomEventData,
   JoinQuizRoomEventData,
   User,
-} from '../../../../shared';
+  ContentfulQuizQuestionContentModelType,
+} from '@qj/shared';
 import { UserService } from '@/src/modules/user/user.service';
 
 @Injectable()

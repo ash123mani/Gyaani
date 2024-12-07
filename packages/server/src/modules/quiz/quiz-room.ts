@@ -13,7 +13,7 @@ import {
   ContentfulQuizQuestionContentModelType,
   UserId,
   User,
-} from '../../../../shared';
+} from '@qj/shared';
 import { mapToArrayValues } from '@/src/utils/map-to-array.util';
 
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring

@@ -6,7 +6,7 @@ import {
   ContentfulQuizGameContentModelType,
   ContentfulQuizQuestionContentModelType,
   QuizGameCardsSuccessResponseType,
-} from '../../../../shared';
+} from '@qj/shared';
 
 @Controller({
   path: 'cms',

@@ -1,8 +1,7 @@
 import { ArgumentsHost, Catch, HttpStatus, WsExceptionFilter } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { ErrorDetails, ServerErrorResponse } from '@qj/shared/dist/types';
-import { ERRORS } from '../../../../shared';
+import { ERRORS, ErrorDetails, ServerErrorResponse } from '@qj/shared';
 
 function isCustomErrorDetails(error: any): error is Exclude<ErrorDetails, 'timestamp'> {
   return !!error.code && !!error.message && !!error.details;
