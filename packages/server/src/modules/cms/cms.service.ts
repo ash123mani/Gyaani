@@ -23,8 +23,8 @@ export class CmsService {
         )
         .pipe(
           catchError((error: AxiosError) => {
-            this.logger.error(error.response.data);
-            throw 'An error happened!';
+            this.logger.error(error.response?.data || 'Error occurred while getting quiz game cards');
+            throw error;
           }),
         ),
     );
@@ -47,8 +47,10 @@ export class CmsService {
         )
         .pipe(
           catchError((error: AxiosError) => {
-            this.logger.error(error.response.data);
-            throw 'An error happened!';
+            this.logger.error(
+              error.response?.data || `Error while loading QuizGame configuration for gameId ${gameId}`,
+            );
+            throw error;
           }),
         ),
     );
@@ -64,7 +66,9 @@ export class CmsService {
         )
         .pipe(
           catchError((error: AxiosError) => {
-            this.logger.error(error.response.data);
+            this.logger.error(
+              error.response?.data || `Error while loading QuizGame Question configuration for quesId ${quesId}`,
+            );
             throw 'An error happened!';
           }),
         ),
@@ -91,7 +95,8 @@ export class CmsService {
       // Return the combined results
       return responses.map((response) => response.data);
     } catch (error) {
-      throw new Error(`Error fetching data from APIs`);
+      this.logger.error(`Error while loading QuizGame Questions configuration for quesId ${JSON.stringify(quesIds)}`);
+      throw error;
     }
   }
 }

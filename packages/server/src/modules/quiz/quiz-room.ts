@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-import { QuizGame } from '@/src/quiz/quiz-game';
+import { QuizGame } from '@/src/modules/quiz/quiz-game';
 import {
   JoinQuizRoomEventData,
   QuizRoomState,
@@ -11,8 +11,10 @@ import {
   WAIT_TIME_BEFORE_QUIZ_STOP_MILLISECONDS,
   ContentfulQuizGameContentModelType,
   ContentfulQuizQuestionContentModelType,
+  UserId,
+  User,
 } from '@qj/shared';
-import { mapToArrayValues } from '@/src/utils/map-to-array';
+import { mapToArrayValues } from '@/src/utils/map-to-array.util';
 
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring
 export class QuizRoom {
@@ -23,8 +25,10 @@ export class QuizRoom {
   public readonly usersNames: Map<Socket['id'], string> = new Map();
   private queue = Array.from(this.quizGame.newQuizQuestions || []);
   private notRunning: boolean = true;
-  public hostSocketId: Socket['id'];
+  public hostSocketId: Socket['id'] | null = null;
   public selectedAns: Map<Socket['id'], Map<QuizQues['id'], number>> = new Map();
+
+  public _players: Map<UserId, User> = new Map();
 
   constructor(
     private readonly server: Server,
@@ -43,11 +47,11 @@ export class QuizRoom {
     player.join(this.roomId);
   }
 
-  public removePlayerFromQuizRoom(player: Socket) {
+  public removePlayerFromQuizRoom(userId: UserId, player: Socket) {
     player.leave(this.roomId);
-    this.usersNames.delete(player.id);
-    this.players.delete(player.id);
-    if (this.hostSocketId === player.id) {
+    this.usersNames.delete(userId);
+    this.players.delete(userId);
+    if (this.hostSocketId === userId) {
       this.hostSocketId = null;
       // this.quizGame.endGame();
     }
@@ -87,7 +91,7 @@ export class QuizRoom {
         }
       });
       const scorePayload: QuizRoomState['quizGame']['scores'][0] = {
-        playerName: this.usersNames.get(playerId),
+        playerName: this.usersNames.get(playerId)!,
         playerId: playerId,
         correctQuesCount: correctQuesCount,
         inCorrectQuesCount: inCorrectQuesCount,
@@ -104,7 +108,7 @@ export class QuizRoom {
       users: mapToArrayValues(this.usersNames),
       roomId: this.roomId,
       hasAllPlayersJoined: this.hasAllPlayersJoined,
-      hostSocketId: this.hostSocketId,
+      hostSocketId: this.hostSocketId!,
       quizRoomConfig: this.quizGame.newQuizRoomConfig,
       newQuizQues: this.quizGame.newQuizQuestions,
       maxPlayersAllowed: this.maxPlayersAllowed,

@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 
-import { CmsService } from '@/src/cms/cms.service';
+import { CmsService } from '@/src/modules/cms/cms.service';
 
 import {
   ContentfulQuizGameContentModelType,
