@@ -40,6 +40,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   ) {}
 
   afterInit(server: Server) {
+    this.quizRoomManager.server = server;
     this.logger.log('Quiz Room Server is running', server.sockets.name);
   }
 
