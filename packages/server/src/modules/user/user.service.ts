@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UserId } from '@qj/shared';
 
@@ -15,7 +15,15 @@ export class UserService {
   }
 
   getUserById(userId: UserId): User {
-    return this.users.get(userId);
+    const user = this.users.get(userId);
+
+    if (user) return user;
+
+    throw new NotFoundException({
+      title: 'User Not Found',
+      status: HttpStatus.NOT_FOUND,
+      detail: `User with id '${userId}' was not found`,
+    });
   }
 
   removeUserById(userId: UserId): void {

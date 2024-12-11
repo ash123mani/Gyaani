@@ -19,9 +19,9 @@ import {
   QuizRoomState,
   SelectedAnswerEventData,
 } from '@qj/shared';
-import { QuizRoomManagerService } from '@/src/quiz/quiz-room-manager.service';
-import { CustomWsExceptionFilter } from '@/src/errors/ws-exception-filter';
-import { CmsService } from '@/src/cms/cms.service';
+import { QuizRoomManagerService } from '@/src/modules/quiz/quiz-room-manager.service';
+import { CustomWsExceptionFilter } from '@/src/common/exception-filters/ws-exception-filter';
+import { CmsService } from '@/src/modules/cms/cms.service';
 
 @WebSocketGateway({
   cors: {
@@ -31,8 +31,8 @@ import { CmsService } from '@/src/cms/cms.service';
 @UseFilters(new CustomWsExceptionFilter())
 export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(QuizGateway.name);
-
-  @WebSocketServer() io: Server;
+  @WebSocketServer()
+  private readonly io;
 
   constructor(
     private readonly quizRoomManager: QuizRoomManagerService,
@@ -41,7 +41,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit(server: Server) {
     this.quizRoomManager.server = server;
-    this.logger.log('Quiz Room Server is running');
+    this.logger.log('Quiz Room Server is running', server.sockets.name);
   }
 
   handleConnection(client: Socket) {
@@ -70,7 +70,10 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const quizQuestionsIds = quizRoomConfig.fields?.questions?.map((ques) => ques.sys.id);
     const quizQuestions = await this.cmsService.allQuizGameQuesConfig(quizQuestionsIds);
     const quizRoom = this.quizRoomManager.createQuizRoom(client, data, quizRoomConfig, quizQuestions);
-    quizRoom.addPlayerToQuizRoom(client, data);
+    quizRoom.addPlayerToQuizRoom(client, {
+      userName: data.userName,
+      quizRoomId: data.quizGameId,
+    });
 
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
@@ -119,12 +122,12 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage<QuizRoomClientToServerEvent>('LeaveQuizRoom')
   handleLeaveQuizRoom(@MessageBody() data: LeaveRoomEventData, @ConnectedSocket() client: Socket) {
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
-    quizRoom?.removePlayerFromQuizRoom(client);
+    quizRoom?.removePlayerFromQuizRoom(client.id, client);
     quizRoom?.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
   }
 
   @SubscribeMessage<QuizRoomClientToServerEvent>('PlayAgain')
-  handlePlayAgain(@MessageBody() data: PlayAgainEventData, @ConnectedSocket() client: Socket) {
+  handlePlayAgain(@MessageBody() data: PlayAgainEventData) {
     const newQuizRoom = this.quizRoomManager.playAgain(data.currentRoomId, data.quizGameId);
 
     newQuizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', newQuizRoom.state);

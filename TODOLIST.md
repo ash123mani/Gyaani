@@ -23,3 +23,8 @@
   read https://stackoverflow.com/questions/7102521/database-design-for-developing-quiz-web-application-using-php-and-mysql,
 - https://chatgpt.com/share/6744007b-6688-8001-987f-b3bd8d77f1f1
 - System design by ChatGpt https://chatgpt.com/share/674400dc-3de0-8001-9e79-de92f7cb8124
+
+### Error Handling
+
+- https://engineering.udacity.com/handling-errors-like-a-pro-in-typescript-d7a314ad4991
+- https://www.ayoubkhial.com/blog/api-error-handling-done-right-nestjs
