@@ -1,6 +1,5 @@
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-import { QuizGame } from '@/src/modules/quiz/quiz-game';
 import {
   JoinQuizRoomEventData,
   QuizRoomState,
@@ -15,13 +14,16 @@ import {
   User,
 } from '@qj/shared';
 import { mapToArrayValues } from '@/src/utils/map-to-array.util';
+import { Injectable, Optional } from '@nestjs/common';
+import { QuizGameService } from '@/src/modules/quiz-game/quiz-game.service';
 
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring
-export class QuizRoom {
+@Injectable()
+export class QuizRoomService {
   public readonly roomId: string = uuidv4();
   public readonly createdAt: Date = new Date();
   public readonly players: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
-  public readonly quizGame: QuizGame = new QuizGame(this.quizRoomConfig, this.quizQuestions);
+  public readonly quizGame: QuizGameService = new QuizGameService(this.quizRoomConfig, this.quizQuestions);
   public readonly usersNames: Map<Socket['id'], string> = new Map();
   private queue = Array.from(this.quizGame.newQuizQuestions || []);
   private notRunning: boolean = true;
@@ -31,10 +33,10 @@ export class QuizRoom {
   public _players: Map<UserId, User> = new Map();
 
   constructor(
-    private readonly server: Server,
-    public readonly quizRoomConfig: ContentfulQuizGameContentModelType,
-    public readonly quizQuestions: ContentfulQuizQuestionContentModelType[],
-    public readonly maxPlayersAllowed: number = 1,
+    @Optional() private readonly server: Server,
+    @Optional() public readonly quizRoomConfig: ContentfulQuizGameContentModelType,
+    @Optional() public readonly quizQuestions: ContentfulQuizQuestionContentModelType[],
+    @Optional() public readonly maxPlayersAllowed: number = 1,
   ) {}
 
   public set host(player: Socket) {

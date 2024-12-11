@@ -1,6 +1,8 @@
 import { ContentfulQuizGameContentModelType, ContentfulQuizQuestionContentModelType } from '@qj/shared';
+import { Injectable, Optional } from '@nestjs/common';
 
-export class QuizGame {
+@Injectable()
+export class QuizGameService {
   public hasStarted: boolean = false;
   public hasFinished: boolean = false;
   public answers: Map<string, number> = new Map();
@@ -9,8 +11,8 @@ export class QuizGame {
   public newQuizQuestions: ContentfulQuizQuestionContentModelType[] = [];
 
   constructor(
-    private readonly quizRoomConfig: ContentfulQuizGameContentModelType,
-    public readonly quizQuestions: ContentfulQuizQuestionContentModelType[],
+    @Optional() private readonly quizRoomConfig: ContentfulQuizGameContentModelType,
+    @Optional() quizQuestions: ContentfulQuizQuestionContentModelType[],
   ) {
     this.newQuizRoomConfig = quizRoomConfig;
     this.newQuizQuestions = quizQuestions;

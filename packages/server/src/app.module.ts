@@ -6,16 +6,16 @@ import { AppController } from './app.controller';
 import { CmsController } from '@/src/modules/cms/cms.controller';
 import { AppService } from './app.service';
 import { QuizModule } from '@/src/modules/quiz/quiz.module';
-import { QuizRoom } from '@/src/modules/quiz/quiz-room';
 import { CmsService } from '@/src/modules/cms/cms.service';
 import { SuccessResponseMiddleware } from 'src/common/middlewares';
 import { CmsModule } from '@/src/modules/cms/cms.module';
 import { UserModule } from '@/src/modules/user/user.module';
+import { QuizRoomModule } from '@/src/modules/quiz-room/quiz-room.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), HttpModule, QuizModule, CmsModule, UserModule],
+  imports: [ConfigModule.forRoot(), HttpModule, QuizModule, CmsModule, UserModule, QuizRoomModule],
   controllers: [AppController, CmsController],
-  providers: [AppService, CmsService, QuizRoom],
+  providers: [AppService, CmsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {

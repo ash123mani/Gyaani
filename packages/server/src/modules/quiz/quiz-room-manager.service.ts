@@ -1,4 +1,3 @@
-import { QuizRoom } from '@/src/modules/quiz/quiz-room';
 import { Server, Socket } from 'socket.io';
 import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
@@ -11,14 +10,16 @@ import {
   ContentfulQuizQuestionContentModelType,
 } from '@qj/shared';
 import { UserService } from '@/src/modules/user/user.service';
+import { QuizRoomService } from '@/src/modules/quiz-room/quiz-room.service';
 
 @Injectable()
 export class QuizRoomManagerService {
   public server: Server | undefined;
   private readonly logger = new Logger(QuizRoomManagerService.name);
 
-  private readonly quizRooms: Map<QuizRoom['roomId'], QuizRoom> = new Map();
-  private readonly quizRoomHosts: Map<QuizRoom['roomId'], Socket> = new Map();
+  private readonly quizRooms: Map<QuizRoomService['roomId'], QuizRoomService> = new Map();
+  private readonly quizRoomHosts: Map<QuizRoomService['roomId'], Socket> = new Map();
+  private readonly newQuizRooms: Map<QuizRoomService['roomId'], QuizRoomService> = new Map();
 
   constructor(private userService: UserService) {}
 
@@ -40,20 +41,22 @@ export class QuizRoomManagerService {
     createQuizRoomEventData: CreateQuizRoomEventData,
     quizRoomConfig: ContentfulQuizGameContentModelType,
     quizQuestions: ContentfulQuizQuestionContentModelType[],
-  ): QuizRoom {
-    const quizRoom = new QuizRoom(
+  ): QuizRoomService {
+    const quizRoom = new QuizRoomService(
       this.server!,
       quizRoomConfig,
       quizQuestions,
       createQuizRoomEventData.maxPlayersAllowed,
     );
     quizRoom.host = player;
+
     this.quizRoomHosts.set(quizRoom.roomId, player);
     this.quizRooms.set(quizRoom.roomId, quizRoom);
+
     return quizRoom;
   }
 
-  public addPlayerToQuizRoom(player: Socket, data: JoinQuizRoomEventData): QuizRoom {
+  public addPlayerToQuizRoom(player: Socket, data: JoinQuizRoomEventData): QuizRoomService {
     const quizRoom = this.quizRooms.get(data.quizRoomId);
 
     if (!quizRoom) throw new WsException(ERRORS.QUIZ_ROOM_NOT_FOUND);
