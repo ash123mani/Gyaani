@@ -5,7 +5,7 @@ import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { CmsController } from '@/src/modules/cms/cms.controller';
 import { AppService } from './app.service';
-import { QuizModule } from '@/src/modules/quiz/quiz.module';
+import { QuizModule } from '@/src/modules/quiz-game-gateway/quiz.module';
 import { CmsService } from '@/src/modules/cms/cms.service';
 import { SuccessResponseMiddleware } from 'src/common/middlewares';
 import { CmsModule } from '@/src/modules/cms/cms.module';

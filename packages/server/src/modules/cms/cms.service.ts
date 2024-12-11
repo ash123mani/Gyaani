@@ -23,7 +23,7 @@ export class CmsService {
         )
         .pipe(
           catchError((error: AxiosError) => {
-            this.logger.error(error.response?.data || 'Error occurred while getting quiz game cards');
+            this.logger.error(error.response?.data || 'Error occurred while getting quiz-game-gateway game cards');
             throw error;
           }),
         ),

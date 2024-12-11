@@ -11,7 +11,7 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Gyaani Quiz",
-  description: "Real time quiz game on various topics.",
+  description: "Real time quiz-game-gateway game on various topics.",
 };
 
 interface RootLayoutProps {

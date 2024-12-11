@@ -11,7 +11,7 @@ export const ERRORS: Record<
   },
   QUIZ_ROOM_NOT_FOUND: {
     code: "QUIZ_ROOM_NOT_FOUND",
-    message: "No such quiz room exist",
+    message: "No such quiz-game-gateway room exist",
     details: "Try creating a new room",
   },
   QUIZ_ROOM_ALREADY_FULL: {
