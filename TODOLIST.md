@@ -3,6 +3,7 @@
 ## Backend Tasks:-
 
 - Refactor the quiz realted modules to expose the Quiz Game API which which handle room creation, users and game.
+- Update the quiz-room, quiz-room-manager, quiz-game to use entities as users.
 - Add the chat online in the room feature
 - Add play with online players feature
 - After refactoring (i.e. point 1), add the option to view which question user have done correct and what answer did he
