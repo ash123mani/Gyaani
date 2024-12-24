@@ -15,7 +15,7 @@ import {
 } from '@qj/shared';
 import { mapToArrayValues } from '@/src/utils/map-to-array.util';
 import { Injectable, Optional } from '@nestjs/common';
-import { QuizGameService } from '@/src/modules/quiz-game/quiz-game.service';
+import { QuizGameService } from '@/src/modules/quiz-game-gateway/quiz-game/quiz-game.service';
 
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring
 @Injectable()

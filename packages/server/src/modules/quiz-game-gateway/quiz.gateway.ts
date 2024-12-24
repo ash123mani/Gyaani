@@ -19,9 +19,9 @@ import {
   QuizRoomState,
   SelectedAnswerEventData,
 } from '@qj/shared';
-import { QuizRoomManagerService } from '@/src/modules/quiz-room-manager/quiz-room-manager.service';
+import { QuizRoomManagerService } from '@/src/modules/quiz-game-gateway/quiz-room-manager/quiz-room-manager.service';
 import { CustomWsExceptionFilter } from '@/src/common/exception-filters/ws-exception-filter';
-import { CmsService } from '@/src/modules/cms/cms.service';
+import { CmsService } from '@/src/modules/quiz-game-gateway/cms/cms.service';
 
 @WebSocketGateway({
   cors: {

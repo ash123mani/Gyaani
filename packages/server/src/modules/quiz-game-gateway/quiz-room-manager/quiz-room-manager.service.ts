@@ -10,7 +10,7 @@ import {
   ContentfulQuizQuestionContentModelType,
 } from '@qj/shared';
 import { UserService } from '@/src/modules/user/user.service';
-import { QuizRoomService } from '@/src/modules/quiz-room/quiz-room.service';
+import { QuizRoomService } from '@/src/modules/quiz-game-gateway/quiz-room/quiz-room.service';
 
 @Injectable()
 export class QuizRoomManagerService {
