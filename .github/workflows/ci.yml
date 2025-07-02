@@ -24,4 +24,4 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build all packages
-        run: yarn build --workspaces
+        run: yarn build

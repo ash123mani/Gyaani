@@ -7,7 +7,10 @@
     "client": "yarn workspace @qj/client dev",
     "server": "yarn workspace  @qj/server start:dev",
     "shared": "yarn workspace  @qj/shared build",
-    "start": "npm-run-all --parallel client server shared"
+    "start": "npm-run-all --parallel client server shared",
+    "buildClient": "yarn workspace @qj/client build",
+    "buildServer": "yarn workspace  @qj/server build",
+    "build": "npm-run-all --parallel shared buildClient buildServer"
   },
   "author": "",
   "license": "ISC",
