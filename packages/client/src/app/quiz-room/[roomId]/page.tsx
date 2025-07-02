@@ -28,6 +28,18 @@ export default function QuizGamePage() {
     QuizRoomState | undefined
   >();
 
+  const handleQuizRoomState = useCallback(
+    (quizRoom: QuizRoomState) => {
+      // When Play again is opted, all players will go into a new room!
+      if (quizRoom?.roomId && params.roomId !== quizRoom?.roomId) {
+        router.replace(`/quiz-room/${quizRoom?.roomId}`);
+      }
+
+      setQuizRoomState(quizRoom);
+    },
+    [router, params],
+  );
+
   useEffect(() => {
     if (!socket.connected) router.push("/");
 
@@ -37,16 +49,7 @@ export default function QuizGamePage() {
       "QuizRoomState",
       handleQuizRoomState,
     );
-  }, []);
-
-  function handleQuizRoomState(quizRoom: QuizRoomState) {
-    // When Play again is opted, all players will go into a new room!
-    if (quizRoom?.roomId && params.roomId !== quizRoom?.roomId) {
-      router.replace(`/quiz-room/${quizRoom?.roomId}`);
-    }
-
-    setQuizRoomState(quizRoom);
-  }
+  }, [handleQuizRoomState, router]);
 
   const handleAnswerSelection: OnAnswerChange = useCallback((ans) => {
     socket.emit<QuizRoomClientToServerEvent>("SelectedAnswer", {

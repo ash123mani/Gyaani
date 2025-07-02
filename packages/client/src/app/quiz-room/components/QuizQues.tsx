@@ -11,10 +11,9 @@ import {
   ContentfulQuizQuestionContentModelType,
   QUIZ_QUES_GAP_MILLISECONDS,
 } from "@qj/shared";
+import { QUIZ_QUES_GAP_SECS } from "@qj/shared/src/config";
 
 import { useCountDownTimer } from "@/app/hooks";
-
-import { QUIZ_QUES_GAP_SECS } from "../../../../../shared/src/config";
 
 export type OnAnswerChange = ({
   quesId,
@@ -74,7 +73,7 @@ function QuizQuesView({
           {option}
         </Checkbox>
       )),
-    [ques?.fields, onAnsChange, selectedAnswer],
+    [ques?.fields, onAnsChange, selectedAnswer, ques.sys.id],
   );
 
   return (

@@ -22,14 +22,13 @@ import {
 } from "@chakra-ui/react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CreateQuizRoomEventData,
-  CreateQuizRoomEventDataSchema,
-} from "@qj/shared";
+import { CreateQuizRoomEventData, CreateQuizRoomEventDataSchema } from "@qj/shared";
 
 import { QuizRoomIcon } from "@/app/icons";
 
 import styles from "./styles.module.css";
+
+
 
 interface CreateQuizModalProps {
   onClose: UseModalProps["onClose"];

@@ -4,7 +4,7 @@ import {
   ContentfulQuizQuestionContentModelSchema,
   ContentfulQuizRoomContentModelSchema,
 } from "./cms";
-import { ContentfulQuizQuestionContentModelType } from "../types";
+import { UserSchema } from "./user";
 
 export const QuizRoomClientToServerEventsEnum = z.enum([
   "CreateQuizRoom",
@@ -50,6 +50,7 @@ export const PlayerScoreSchema = z.object({
 
 export const QuiRoomStateSchema = z.object({
   users: z.array(z.string().min(2, { message: "Required" })),
+  _users: z.array(UserSchema),
   roomId: z.string().min(2, { message: "Required" }),
   hasAllPlayersJoined: z.boolean(),
   hostSocketId: z.custom<Socket["id"]>(),
