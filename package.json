@@ -6,8 +6,8 @@
   "scripts": {
     "client": "yarn workspace @qj/client dev",
     "server": "yarn workspace  @qj/server start:dev",
-    "shared": "yarn workspace  @qj/shared dev",
-    "start": "npm-run-all --parallel client server shared"
+    "shared": "yarn workspace  @qj/shared build",
+    "start": "npm-run-all --parallel client server shared",
   },
   "author": "",
   "license": "ISC",
