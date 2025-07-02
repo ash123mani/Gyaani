@@ -1,27 +1,40 @@
-name: CI
+name: Monorepo CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'yarn'
-
+          node-version: '20'
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Build all packages
-        run: yarn build
+        run: npm install
+      - name: Determine changed packages
+        id: changed-packages
+        uses: tj-actions/changed-files@v40
+        with:
+          files: |
+            packages/**
+      - name: Build and Test affected packages
+        if: steps.changed-packages.outputs.any_changed == 'true'
+        run: |
+          for package in ${{ steps.changed-packages.outputs.all_changed_files }}; do
+            if [[ $package == packages/* ]]; then
+              package_name=$(echo $package | cut -d '/' -f 2)
+              echo "Building and testing package: $package_name"
+              cd packages/$package_name
+              yarn install
+              yarn run build
+              cd ../..
+            fi
+          done
