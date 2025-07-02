@@ -47,6 +47,7 @@ export class QuizRoomManagerService {
       quizRoomConfig,
       quizQuestions,
       createQuizRoomEventData.maxPlayersAllowed,
+      this.userService,
     );
     quizRoom.host = player;
 

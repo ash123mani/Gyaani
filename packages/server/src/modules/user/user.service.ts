@@ -4,7 +4,7 @@ import { UserId } from '@qj/shared';
 
 @Injectable()
 export class UserService {
-  private users: Map<UserId, User> = new Map();
+  users: Map<UserId, User> = new Map();
 
   addUser(user: User): void {
     const userExists = this.getUserById(user.userId);

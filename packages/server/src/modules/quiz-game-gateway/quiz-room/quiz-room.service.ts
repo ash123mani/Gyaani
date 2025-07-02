@@ -16,6 +16,7 @@ import {
 import { mapToArrayValues } from '@/src/utils/map-to-array.util';
 import { Injectable, Optional } from '@nestjs/common';
 import { QuizGameService } from '@/src/modules/quiz-game-gateway/quiz-game/quiz-game.service';
+import { UserService } from '@/src/modules/user/user.service';
 
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring
 @Injectable()
@@ -37,6 +38,7 @@ export class QuizRoomService {
     @Optional() public readonly quizRoomConfig: ContentfulQuizGameContentModelType,
     @Optional() public readonly quizQuestions: ContentfulQuizQuestionContentModelType[],
     @Optional() public readonly maxPlayersAllowed: number = 1,
+    @Optional() public readonly userService: UserService,
   ) {}
 
   public set host(player: Socket) {
@@ -108,6 +110,7 @@ export class QuizRoomService {
   public get state(): QuizRoomState {
     return {
       users: mapToArrayValues(this.usersNames),
+      _users: mapToArrayValues(this.userService.users),
       roomId: this.roomId,
       hasAllPlayersJoined: this.hasAllPlayersJoined,
       hostSocketId: this.hostSocketId!,
