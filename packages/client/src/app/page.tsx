@@ -75,17 +75,6 @@ export default function Home() {
   const isCreateQuizRoomModalOpen = !!selectedQuizGameId;
   return (
     <Stack wrap="wrap" height="inherit">
-      {/*<Box*/}
-      {/*  flex="1"*/}
-      {/*  p={4}*/}
-      {/*  display="flex"*/}
-      {/*  justifyContent="center"*/}
-      {/*  alignItems="center"*/}
-      {/*  borderBottom="thinLight"*/}
-      {/*  borderRadius="md"*/}
-      {/*>*/}
-      {/*  <PlayWithFriendsSection />*/}
-      {/*</Box>*/}
       <Stack flex="1" spacing={4} p={4}>
         {quizGameCards ? (
           <QuizGameCardsSection
