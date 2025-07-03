@@ -17,10 +17,12 @@ jobs:
         run: yarn install
       - name: Build and push Docker images
         run: |
-          docker build -t mani2721/server:latest ./service-a
+          docker build -t mani2721/server:latest ./server
           docker push mani2721/server:latest
-          docker build -t mani2721/client:latest ./frontend
+          docker build -t mani2721/client:latest ./client
           docker push mani2721/client:latest
+          docker build -t mani2721/shared:latest ./shared
+          docker push mani2721/shared:latest
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
