@@ -9,7 +9,7 @@ COPY . .
 RUN yarn install --frozen-lockfile
 
 # Build frontend and backend (optional if you want prebuild)
-RUN yarn workspace build
+RUN yarn workspaces run build
 
 # Install concurrently to run both apps
 RUN yarn global add concurrently
