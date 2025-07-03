@@ -26,12 +26,12 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          docker build -t mani2721/shared:latest ./packages/shared
-          docker push mani2721/shared:latest
-          docker build -t mani2721/server:latest ./packages/server
-          docker push mani2721/server:latest
-          docker build -t mani2721/client:latest ./packages/client
-          docker push mani2721/client:latest
+          docker build -t mani2721/gyaani-quiz/shared:latest ./packages/shared
+          docker push mani2721/gyaani-quiz/shared:latest
+          docker build -t mani2721/gyaani-quiz/server:latest ./packages/server
+          docker push mani2721/gyaani-quiz/server:latest
+          docker build -t mani2721/gyaani-quiz/client:latest ./packages/client
+          docker push mani2721/gyaani-quiz/client:latest
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
