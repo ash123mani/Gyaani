@@ -22,7 +22,7 @@
       "@/*": [
         "*"
       ],
-      "@qj/shared": ["../shared/src"]
+      "@qj/shared": ["packages/shared/src"]
     }
   },
   "composite": true,
