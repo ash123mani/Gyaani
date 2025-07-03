@@ -19,7 +19,7 @@ jobs:
         run: yarn install
 
       - name: List folder structure
-        run: tree -L 2
+        run: tree -d -L 2
 
       - name: Build and push Docker images
         run: |
