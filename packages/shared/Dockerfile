@@ -6,6 +6,6 @@ COPY . .
 
 RUN yarn install --frozen-lockfile
 
-WORKDIR /app/shared
+WORKDIR /app/packages/shared
 
 RUN yarn build

@@ -6,9 +6,9 @@ COPY . .
 
 RUN yarn install --frozen-lockfile
 
-WORKDIR /app/server
+RUN yarn workspace @qj/server build
 
-RUN yarn build
+WORKDIR /app/packages/server
 
 EXPOSE 5000
 

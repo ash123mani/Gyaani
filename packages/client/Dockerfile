@@ -1,22 +1,22 @@
+# File: Dockerfile.client
+
 FROM node:20-alpine
 
-# Set working directory inside the container
 WORKDIR /app
 
-# Copy everything into the container
+# Copy the whole monorepo
 COPY . .
 
-# Install dependencies from monorepo
+# Install all dependencies across workspaces
 RUN yarn install --frozen-lockfile --ignore-scripts
 
-# Go to client app directory
-WORKDIR /app/client
-
 # Build the client
-RUN yarn build
+RUN yarn workspace @qj/client build
 
-# Expose frontend port (e.g., Next.js runs on 3000)
+# Set working directory to client
+WORKDIR /app/packages/client
+
+# Expose Next.js port
 EXPOSE 3000
 
-# Start the client app
 CMD ["yarn", "start"]
