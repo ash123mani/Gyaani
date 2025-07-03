@@ -35,10 +35,10 @@ jobs:
           docker build -f packages/shared/Dockerfile -t mani2721/shared:latest .
           docker push mani2721/shared:latest
 
-          docker build -f packages/server/Dockerfile -t mani2721/gyaani-quiz/server:latest .
+          docker build -f packages/server/Dockerfile -t mani2721/server:latest .
           docker push mani2721/gyaani-quiz/server:latest
 
-          docker build -f packages/client/Dockerfile -t mani2721/gyaani-quiz/client:latest .
+          docker build -f packages/client/Dockerfile -t mani2721/client:latest .
           docker push mani2721/gyaani-quiz/client:latest
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
