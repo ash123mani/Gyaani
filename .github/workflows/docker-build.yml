@@ -19,7 +19,7 @@ jobs:
         run: yarn install
 
       - name: Build all packages
-        run: yarn workspaces run build
+        run: yarn build
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
