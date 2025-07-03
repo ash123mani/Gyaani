@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
 WORKDIR /app/packages/shared
 

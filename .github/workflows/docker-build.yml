@@ -23,11 +23,11 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          docker build -t mani2721/shared:latest ./packages/shared/Dockerfile .
+          docker build -t mani2721/shared:latest ./packages/shared
           docker push mani2721/shared:latest
-          docker build -t mani2721/server:latest ./packages/server/Dockerfile .
+          docker build -t mani2721/server:latest ./packages/server
           docker push mani2721/server:latest
-          docker build -t mani2721/client:latest ./packages/client/Dockerfile .
+          docker build -t mani2721/client:latest ./packages/client
           docker push mani2721/client:latest
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}

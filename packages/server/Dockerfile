@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
-RUN yarn workspace @qj/server build
+RUN yarn build
 
 WORKDIR /app/packages/server
 
