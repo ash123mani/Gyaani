@@ -4,8 +4,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "npx tsc && node dist/index.js",
-    "build": "npx tsc -p tsconfig.json"
+    "build": "npx tsc && node dist/index.js"
   },
   "dependencies": {
     "zod": "^3.25.71"
