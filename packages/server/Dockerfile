@@ -8,6 +8,6 @@ RUN yarn install --frozen-lockfile
 
 WORKDIR /app/packages/server
 
-EXPOSE 5000
+EXPOSE 3001
 
 CMD ["yarn", "start:prod"]

@@ -10,6 +10,7 @@
     "strict": true,
     "outDir": "./dist",
     "skipLibCheck": true,
+    "composite": true,      // required for project references
     /* Skip type checking all .d.ts files. */
   },
   "include": [

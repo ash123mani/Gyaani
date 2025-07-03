@@ -1,8 +1,8 @@
-version: '3.9'
 services:
   client:
     build:
-      context: ./client
+      context: .
+      dockerfile: packages/client/Dockerfile
     ports:
       - "3000:3000"
     depends_on:
@@ -10,6 +10,7 @@ services:
 
   server:
     build:
-      context: ./server
+      context: .
+      dockerfile: packages/server/Dockerfile
     ports:
-      - "5000:5000"
+      - "3001:3001"
