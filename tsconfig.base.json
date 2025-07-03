@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",              // base from monorepo root
+    "paths": {
+      "@qj/shared": ["packages/shared/src"]
+    }
+  }
+}
