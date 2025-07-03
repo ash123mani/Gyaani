@@ -22,7 +22,6 @@
       "@/*": [
         "*"
       ],
-      "@qj/shared": ["../shared/src"]
     }
   },
   "composite": true,
