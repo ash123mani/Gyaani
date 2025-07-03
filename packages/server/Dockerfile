@@ -4,13 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN yarn install
-
-WORKDIR /app/packages/shared
-RUN yarn build
+RUN yarn install --frozen-lockfile
 
 WORKDIR /app/packages/server
-RUN yarn build
 
 EXPOSE 5000
 

@@ -8,10 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Install all dependencies across workspaces
-RUN yarn install
-
-# Build the client
-RUN yarn build
+RUN yarn install --frozen-lockfile --ignore-scripts
 
 # Set working directory to client
 WORKDIR /app/packages/client

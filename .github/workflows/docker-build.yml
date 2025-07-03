@@ -18,6 +18,9 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Build all packages
+        run: yarn workspaces run build
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -29,11 +32,13 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          docker build -t mani2721/shared:latest ./packages/shared
+          docker build -f packages/shared/Dockerfile -t mani2721/shared:latest .
           docker push mani2721/shared:latest
-          docker build -t mani2721/gyaani-quiz/server:latest ./packages/server
+
+          docker build -f packages/server/Dockerfile -t mani2721/gyaani-quiz/server:latest .
           docker push mani2721/gyaani-quiz/server:latest
-          docker build -t mani2721/gyaani-quiz/client:latest ./packages/client
+
+          docker build -f packages/client/Dockerfile -t mani2721/gyaani-quiz/client:latest .
           docker push mani2721/gyaani-quiz/client:latest
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
