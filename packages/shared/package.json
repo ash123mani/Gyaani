@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && node dist/index.js"
+    "build": "npx tsc && node dist/index.js"
   },
   "dependencies": {
     "socket-io": "^1.0.0",
