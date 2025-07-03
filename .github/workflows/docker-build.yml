@@ -9,20 +9,27 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
+
       - name: Install dependencies
         run: yarn install
+
+      - name: List folder structure
+        run: tree -L 2
+
       - name: Build and push Docker images
         run: |
-          docker build -t mani2721/server:latest ./app/server
+          docker build -t mani2721/server:latest ./packages/server
           docker push mani2721/server:latest
-          docker build -t mani2721/client:latest ./app/client
+          docker build -t mani2721/client:latest ./packages/client
           docker push mani2721/client:latest
-          docker build -t mani2721/shared:latest ./app/shared
+          docker build -t mani2721/shared:latest ./packages/shared
           docker push mani2721/shared:latest
+
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
