@@ -2,9 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-RUN yarn install --frozen-lockfile
-
 COPY . .
+
+RUN yarn install --frozen-lockfile
 
 WORKDIR /app/packages/shared
 
