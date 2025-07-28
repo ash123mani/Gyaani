@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { QUIZ_QUES_GAP_MILLISECONDS } from "../../../../shared/src/config";
-
 interface UseCountDownTimerProps {
   onCountDownStart?: () => void;
   onCountDownEnd?: () => void;
