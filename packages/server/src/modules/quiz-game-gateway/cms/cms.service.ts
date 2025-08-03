@@ -9,6 +9,8 @@ import {
 import type { AxiosError } from 'axios';
 import { HttpService } from '@nestjs/axios';
 
+const QUIZ_CMS_URL = `https://cdn.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENVIROMENT_ID}/entries`;
+
 @Injectable()
 export class CmsService {
   private readonly logger = new Logger(CmsService.name);
@@ -16,10 +18,12 @@ export class CmsService {
   constructor(private readonly httpService: HttpService) {}
 
   async allQuizCards(): Promise<QuizGameCardsSuccessResponseType['data']> {
+    const query =
+      'content_type=quizGame&select=fields.topic,fields.subject,fields.questionsCount,sys.id,fields.questions';
     const { data } = await firstValueFrom(
       this.httpService
         .get<ContentfulEntryQuizGameContentType>(
-          `https://cdn.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENVIROMENT_ID}/entries?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}&content_type=quizGame&select=fields.topic,fields.subject,fields.questionsCount,sys.id,fields.questions`,
+          `${QUIZ_CMS_URL}?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}&${query}`,
         )
         .pipe(
           catchError((error: AxiosError) => {
@@ -40,10 +44,11 @@ export class CmsService {
   }
 
   async quizGameConfig(gameId: string): Promise<ContentfulQuizGameContentModelType> {
+    const query = 'content_type=quizGame&select=fields.topic,fields.subject,fields.questionsCount,sys.id';
     const { data } = await firstValueFrom(
       this.httpService
         .get<ContentfulQuizGameContentModelType>(
-          `https://cdn.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENVIROMENT_ID}/entries/${gameId}?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}&content_type=quizGame&select=fields.topic,fields.subject,fields.questionsCount,sys.id`,
+          `${QUIZ_CMS_URL}/${gameId}?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}&${query}`,
         )
         .pipe(
           catchError((error: AxiosError) => {
@@ -62,7 +67,7 @@ export class CmsService {
     const { data } = await firstValueFrom(
       this.httpService
         .get<ContentfulQuizQuestionContentModelType>(
-          `https://cdn.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENVIROMENT_ID}/entries/${quesId}?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}`,
+          `${QUIZ_CMS_URL}/${quesId}?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}`,
         )
         .pipe(
           catchError((error: AxiosError) => {
@@ -82,9 +87,7 @@ export class CmsService {
       // Map over the array of URLs and create HTTP requests for each one
       const apiRequests = quesIds.map((quesId) =>
         firstValueFrom(
-          this.httpService.get(
-            `https://cdn.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_ENVIROMENT_ID}/entries/${quesId}?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}`,
-          ),
+          this.httpService.get(`${QUIZ_CMS_URL}/${quesId}?access_token=${process.env.CONTENTFUL_ACCESS_TOKEN}`),
         ),
       );
 
