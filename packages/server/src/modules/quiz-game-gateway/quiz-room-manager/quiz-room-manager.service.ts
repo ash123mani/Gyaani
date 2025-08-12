@@ -1,16 +1,10 @@
 import { Server, Socket } from 'socket.io';
 import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import {
-  ERRORS,
-  ContentfulQuizGameContentModelType,
-  CreateQuizRoomEventData,
-  JoinQuizRoomEventData,
-  User,
-  ContentfulQuizQuestionContentModelType,
-} from '@qj/shared';
+import { ERRORS, CreateQuizRoomEventData, JoinQuizRoomEventData, User } from '@qj/shared';
 import { UserService } from '@/src/modules/user/user.service';
 import { QuizRoomService } from '@/src/modules/quiz-game-gateway/quiz-room/quiz-room.service';
+import { CmsService } from '@/src/modules/quiz-game-gateway/cms/cms.service';
 
 @Injectable()
 export class QuizRoomManagerService {
@@ -21,7 +15,10 @@ export class QuizRoomManagerService {
   private readonly quizRoomHosts: Map<QuizRoomService['roomId'], Socket> = new Map();
   private readonly newQuizRooms: Map<QuizRoomService['roomId'], QuizRoomService> = new Map();
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private readonly cmsService: CmsService,
+  ) {}
 
   public addUser(user: User) {
     this.userService.addUser(user);
@@ -36,22 +33,21 @@ export class QuizRoomManagerService {
     }
   }
 
-  public createQuizRoom(
-    player: Socket,
-    createQuizRoomEventData: CreateQuizRoomEventData,
-    quizRoomConfig: ContentfulQuizGameContentModelType,
-    quizQuestions: ContentfulQuizQuestionContentModelType[],
-  ): QuizRoomService {
-    const quizRoom = new QuizRoomService(
-      this.server!,
-      quizRoomConfig,
-      quizQuestions,
-      createQuizRoomEventData.maxPlayersAllowed,
-    );
+  public async _createQuizRoom(player: Socket, data: CreateQuizRoomEventData): Promise<QuizRoomService> {
+    const quizRoomConfig = await this.cmsService.quizGameConfig(data.quizGameId);
+    const quizQuestionsIds = quizRoomConfig.fields?.questions?.map((ques) => ques.sys.id);
+    const quizQuestions = await this.cmsService.allQuizGameQuesConfig(quizQuestionsIds);
+
+    const quizRoom = new QuizRoomService(this.server!, quizRoomConfig, quizQuestions, data.maxPlayersAllowed);
     quizRoom.host = player;
 
     this.quizRoomHosts.set(quizRoom.roomId, player);
     this.quizRooms.set(quizRoom.roomId, quizRoom);
+
+    quizRoom.addPlayerToQuizRoom(player, {
+      userName: data.userName,
+      quizRoomId: data.quizGameId,
+    });
 
     return quizRoom;
   }
@@ -83,7 +79,7 @@ export class QuizRoomManagerService {
   }
 
   // here new host will the one who requested the playAgain
-  public playAgain(currentRoomId: string, quizGameId: string) {
+  public async playAgain(currentRoomId: string, quizGameId: string) {
     const currentRoomHost = this.quizRoomHosts.get(currentRoomId) || this.quizRoomHosts.values()[0]; // this should be handled by method inside QuizRoom
     const currentQuizRoom = this.quizRooms.get(currentRoomId);
 
@@ -95,16 +91,12 @@ export class QuizRoomManagerService {
       });
     }
 
-    const newQuizRoom = this.createQuizRoom(
-      currentRoomHost,
-      {
-        userName: currentQuizRoom.usersNames.get(currentRoomHost.id)!,
-        maxPlayersAllowed: currentQuizRoom.players.size,
-        quizGameId: quizGameId,
-      },
-      currentQuizRoom.quizRoomConfig,
-      currentQuizRoom.quizQuestions,
-    );
+    // TODO: Play Again should not create an new quiz room, rather it should re-start the game in the same room
+    const newQuizRoom = await this._createQuizRoom(currentRoomHost, {
+      userName: currentQuizRoom.usersNames.get(currentRoomHost.id)!,
+      maxPlayersAllowed: currentQuizRoom.players.size,
+      quizGameId: quizGameId,
+    });
 
     for (const [playerSocketId, playerSocket] of currentQuizRoom.players) {
       this.addPlayerToQuizRoom(playerSocket, {

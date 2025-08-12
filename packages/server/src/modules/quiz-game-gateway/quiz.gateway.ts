@@ -66,14 +66,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log(`CreateQuizRoom event received from client id: ${client.id}`);
     this.logger.debug(`Payload: ${typeof data}`);
 
-    const quizRoomConfig = await this.cmsService.quizGameConfig(data.quizGameId);
-    const quizQuestionsIds = quizRoomConfig.fields?.questions?.map((ques) => ques.sys.id);
-    const quizQuestions = await this.cmsService.allQuizGameQuesConfig(quizQuestionsIds);
-    const quizRoom = this.quizRoomManager.createQuizRoom(client, data, quizRoomConfig, quizQuestions);
-    quizRoom.addPlayerToQuizRoom(client, {
-      userName: data.userName,
-      quizRoomId: data.quizGameId,
-    });
+    const quizRoom = await this.quizRoomManager._createQuizRoom(client, data);
 
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);
     quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
@@ -127,8 +120,8 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage<QuizRoomClientToServerEvent>('PlayAgain')
-  handlePlayAgain(@MessageBody() data: PlayAgainEventData) {
-    const newQuizRoom = this.quizRoomManager.playAgain(data.currentRoomId, data.quizGameId);
+  async handlePlayAgain(@MessageBody() data: PlayAgainEventData) {
+    const newQuizRoom = await this.quizRoomManager.playAgain(data.currentRoomId, data.quizGameId);
 
     newQuizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', newQuizRoom.state);
     newQuizRoom.startSendingQues();
