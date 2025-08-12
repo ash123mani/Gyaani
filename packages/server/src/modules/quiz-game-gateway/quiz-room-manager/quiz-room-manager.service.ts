@@ -34,20 +34,21 @@ export class QuizRoomManagerService {
   }
 
   public async _createQuizRoom(player: Socket, data: CreateQuizRoomEventData): Promise<QuizRoomService> {
+    // TODO: These should be inside the Quiz Game
     const quizRoomConfig = await this.cmsService.quizGameConfig(data.quizGameId);
     const quizQuestionsIds = quizRoomConfig.fields?.questions?.map((ques) => ques.sys.id);
     const quizQuestions = await this.cmsService.allQuizGameQuesConfig(quizQuestionsIds);
 
+    // TODO: While create this Quiz Room it should only take the quizGameId and server
     const quizRoom = new QuizRoomService(this.server!, quizRoomConfig, quizQuestions, data.maxPlayersAllowed);
     quizRoom.host = player;
-
     this.quizRoomHosts.set(quizRoom.roomId, player);
     this.quizRooms.set(quizRoom.roomId, quizRoom);
-
     quizRoom.addPlayerToQuizRoom(player, {
       userName: data.userName,
       quizRoomId: data.quizGameId,
     });
+    // TODO: All these above should be inside done while initializing the Quiz Room
 
     return quizRoom;
   }
