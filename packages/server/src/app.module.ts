@@ -10,7 +10,6 @@ import { CmsService } from '@/src/modules/quiz-game-gateway/cms/cms.service';
 import { SuccessResponseMiddleware } from 'src/common/middlewares';
 import { CmsModule } from '@/src/modules/quiz-game-gateway/cms/cms.module';
 import { UserModule } from '@/src/modules/user/user.module';
-import { QuizRoomModule } from '@/src/modules/quiz-game-gateway/quiz-room/quiz-room.module';
 
 @Module({
   imports: [
@@ -21,7 +20,6 @@ import { QuizRoomModule } from '@/src/modules/quiz-game-gateway/quiz-room/quiz-r
     QuizModule,
     CmsModule,
     UserModule,
-    QuizRoomModule,
   ],
   controllers: [AppController, CmsController],
   providers: [AppService, CmsService],

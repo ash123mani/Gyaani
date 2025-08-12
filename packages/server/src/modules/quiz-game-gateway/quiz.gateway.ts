@@ -21,7 +21,6 @@ import {
 } from '@qj/shared';
 import { QuizRoomManagerService } from '@/src/modules/quiz-game-gateway/quiz-room-manager/quiz-room-manager.service';
 import { CustomWsExceptionFilter } from '@/src/common/exception-filters/ws-exception-filter';
-import { CmsService } from '@/src/modules/quiz-game-gateway/cms/cms.service';
 
 @WebSocketGateway({
   cors: {
@@ -34,10 +33,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @WebSocketServer()
   private readonly io;
 
-  constructor(
-    private readonly quizRoomManager: QuizRoomManagerService,
-    private readonly cmsService: CmsService,
-  ) {}
+  constructor(private readonly quizRoomManager: QuizRoomManagerService) {}
 
   afterInit(server: Server) {
     this.quizRoomManager.server = server;
@@ -68,11 +64,11 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     const quizRoom = await this.quizRoomManager._createQuizRoom(client, data);
 
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyCreatedQuizRoom', quizRoom.state);
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState | null>('SuccessfullyCreatedQuizRoom', quizRoom.state);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState | null>('SuccessfullyJoinedQuizRoom', quizRoom.state);
 
     if (quizRoom.hasAllPlayersJoined) {
-      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
+      quizRoom.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', quizRoom.state);
       quizRoom.startSendingQues();
     }
 
@@ -87,10 +83,10 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.debug(`Payload: ${data}`);
 
     const quizRoom = this.quizRoomManager.addPlayerToQuizRoom(client, data);
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('SuccessfullyJoinedQuizRoom', quizRoom.state);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState | null>('SuccessfullyJoinedQuizRoom', quizRoom.state);
 
     if (quizRoom.hasAllPlayersJoined) {
-      quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
+      quizRoom.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', quizRoom.state);
       quizRoom.startSendingQues();
     }
 
@@ -100,7 +96,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage<QuizRoomClientToServerEvent>('GetQuizRoomState')
   handleGetQuizRoomState(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
-    quizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
+    quizRoom.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', quizRoom.state);
   }
 
   @SubscribeMessage<QuizRoomClientToServerEvent>('SelectedAnswer')
@@ -116,14 +112,14 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleLeaveQuizRoom(@MessageBody() data: LeaveRoomEventData, @ConnectedSocket() client: Socket) {
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
     quizRoom?.removePlayerFromQuizRoom(client.id, client);
-    quizRoom?.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', quizRoom.state);
+    quizRoom?.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', quizRoom.state);
   }
 
   @SubscribeMessage<QuizRoomClientToServerEvent>('PlayAgain')
   async handlePlayAgain(@MessageBody() data: PlayAgainEventData) {
     const newQuizRoom = await this.quizRoomManager.playAgain(data.currentRoomId, data.quizGameId);
 
-    newQuizRoom.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', newQuizRoom.state);
+    newQuizRoom.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', newQuizRoom.state);
     newQuizRoom.startSendingQues();
   }
 }
