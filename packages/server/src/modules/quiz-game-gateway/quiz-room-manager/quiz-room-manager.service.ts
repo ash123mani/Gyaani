@@ -29,7 +29,7 @@ export class QuizRoomManagerService {
   }
 
   public async _createQuizRoom(player: Socket, data: CreateQuizRoomEventData): Promise<QuizRoomService> {
-    const _quizRoom = new QuizRoomService(this.server!, player, this.quizGame);
+    const _quizRoom = new QuizRoomService(this.server!, player, data.maxPlayersAllowed, this.quizGame);
     await _quizRoom.initialize(data);
 
     this.quizRoomHosts.set(_quizRoom.roomId, player);

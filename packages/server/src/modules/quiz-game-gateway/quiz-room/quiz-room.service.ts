@@ -28,20 +28,19 @@ export class QuizRoomService {
   private notRunning: boolean = true;
   public hostSocketId: Socket['id'] | null = null;
   public selectedAns: Map<Socket['id'], Map<QuizQues['id'], number>> = new Map();
-  public maxPlayersAllowed: number = 1;
 
   public _players: Map<UserId, User> = new Map();
 
   constructor(
     private readonly server: Server,
     private readonly player: Socket,
+    private readonly maxPlayersAllowed: number,
     private readonly quizGame: QuizGameService,
   ) {}
 
   public async initialize(data: CreateQuizRoomEventData): Promise<QuizRoomService> {
-    this.maxPlayersAllowed = data.maxPlayersAllowed;
     await this.quizGame.initialize(data.quizGameId);
-    this.queue = Array.from(this.quizGame!.newQuizQuestions || []);
+    this.queue = Array.from(this.quizGame.newQuizQuestions || []);
 
     // TODO: While create this Quiz Room it should only take the quizGameId and server
     this.host = this.player;
