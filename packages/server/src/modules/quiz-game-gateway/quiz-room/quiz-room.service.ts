@@ -13,16 +13,16 @@ import {
 } from '@qj/shared';
 import { mapToArrayValues } from '@/src/utils/map-to-array.util';
 import { QuizGameService } from '@/src/modules/quiz-game-gateway/quiz-game/quiz-game.service';
-import { CmsService } from '@/src/modules/quiz-game-gateway/cms/cms.service';
 import { CreateQuizRoomEventData } from '@qj/shared';
 import { ContentfulQuizQuestionContentModelType } from '@qj/shared';
+import { WsException } from '@nestjs/websockets';
+import { ERRORS } from '@qj/shared';
 
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring
 export class QuizRoomService {
   public readonly roomId: string = uuidv4();
   public readonly createdAt: Date = new Date();
   public readonly players: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
-  public quizGame: QuizGameService | undefined;
   public readonly usersNames: Map<Socket['id'], string> = new Map();
   private queue: ContentfulQuizQuestionContentModelType[] = [];
   private notRunning: boolean = true;
@@ -35,20 +35,17 @@ export class QuizRoomService {
   constructor(
     private readonly server: Server,
     private readonly player: Socket,
-    private readonly cmsService: CmsService,
+    private readonly quizGame: QuizGameService,
   ) {}
 
   public async initialize(data: CreateQuizRoomEventData): Promise<QuizRoomService> {
-    const quizRoomConfig = await this.cmsService.quizGameConfig(data.quizGameId);
-    const quizQuestionsIds = quizRoomConfig.fields?.questions?.map((ques) => ques.sys.id);
-    const quizQuestions = await this.cmsService.allQuizGameQuesConfig(quizQuestionsIds);
-    this.quizGame = new QuizGameService(quizRoomConfig, quizQuestions);
-    this.queue = Array.from(this.quizGame!.newQuizQuestions || []);
     this.maxPlayersAllowed = data.maxPlayersAllowed;
+    await this.quizGame.initialize(data.quizGameId);
+    this.queue = Array.from(this.quizGame!.newQuizQuestions || []);
 
     // TODO: While create this Quiz Room it should only take the quizGameId and server
     this.host = this.player;
-    this.addPlayerToQuizRoom(this.player, {
+    this.addPlayer(this.player, {
       userName: data.userName,
       quizRoomId: data.quizGameId,
     });
@@ -60,13 +57,17 @@ export class QuizRoomService {
     this.hostSocketId = player.id;
   }
 
-  public addPlayerToQuizRoom(player: Socket, data: JoinQuizRoomEventData) {
-    this.players.set(player.id, player);
-    this.usersNames.set(player.id, data.userName);
-    player.join(this.roomId);
+  public addPlayer(player: Socket, data: JoinQuizRoomEventData) {
+    if (this.players.size < this.maxPlayersAllowed) {
+      this.players.set(player.id, player);
+      this.usersNames.set(player.id, data.userName);
+      player.join(this.roomId);
+    } else {
+      throw new WsException(ERRORS.QUIZ_ROOM_ALREADY_FULL);
+    }
   }
 
-  public removePlayerFromQuizRoom(userId: UserId, player: Socket) {
+  public removePlayer(userId: UserId, player: Socket) {
     player.leave(this.roomId);
     this.usersNames.delete(userId);
     this.players.delete(userId);
@@ -79,7 +80,7 @@ export class QuizRoomService {
     if (this.players.size === 0) this.quizGame!.endGame();
   }
 
-  public startQuizGame() {
+  public startGame() {
     if (this.players.size === this.maxPlayersAllowed) {
       this.quizGame!.startGame();
     }
@@ -168,7 +169,7 @@ export class QuizRoomService {
 
       setTimeout(() => {
         if (!this.quizGame!.hasStarted) {
-          this.startQuizGame();
+          this.startGame();
         }
         this.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', this.state);
         this.quizGame!.moveToNextQues();

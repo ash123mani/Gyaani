@@ -1,5 +1,7 @@
 import { ContentfulQuizGameContentModelType, ContentfulQuizQuestionContentModelType } from '@qj/shared';
 import { Injectable, Optional } from '@nestjs/common';
+import { CmsService } from '@/src/modules/quiz-game-gateway/cms/cms.service';
+import { CreateQuizRoomEventData } from '@qj/shared/dist';
 
 @Injectable()
 export class QuizGameService {
@@ -7,18 +9,16 @@ export class QuizGameService {
   public hasFinished: boolean = false;
   public answers: Map<string, number> = new Map();
   public currentQuestionIndex: number = -1;
-  public newQuizRoomConfig: ContentfulQuizGameContentModelType;
+  public newQuizRoomConfig!: ContentfulQuizGameContentModelType;
   public newQuizQuestions: ContentfulQuizQuestionContentModelType[] = [];
 
-  constructor(
-    @Optional() private readonly quizRoomConfig: ContentfulQuizGameContentModelType,
-    @Optional() quizQuestions: ContentfulQuizQuestionContentModelType[],
-  ) {
-    this.newQuizRoomConfig = quizRoomConfig;
-    this.newQuizQuestions = quizQuestions;
-    if (this.newQuizQuestions && this.newQuizQuestions.length) {
-      this.initializeAnswers();
-    }
+  constructor(@Optional() private readonly cmsService: CmsService) {}
+
+  public async initialize(quizGameId: CreateQuizRoomEventData['quizGameId']) {
+    this.newQuizRoomConfig = await this.cmsService.quizGameConfig(quizGameId);
+    const quizQuestionsIds = this.newQuizRoomConfig.fields?.questions?.map((ques) => ques.sys.id);
+    this.newQuizQuestions = await this.cmsService.allQuizGameQuesConfig(quizQuestionsIds);
+    this.initializeAnswers();
   }
 
   public startGame() {

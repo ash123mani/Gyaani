@@ -111,7 +111,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage<QuizRoomClientToServerEvent>('LeaveQuizRoom')
   handleLeaveQuizRoom(@MessageBody() data: LeaveRoomEventData, @ConnectedSocket() client: Socket) {
     const quizRoom = this.quizRoomManager.getPlayerQuizRoom(client);
-    quizRoom?.removePlayerFromQuizRoom(client.id, client);
+    quizRoom?.removePlayer(client.id, client);
     quizRoom?.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', quizRoom.state);
   }
 
