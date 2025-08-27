@@ -9,7 +9,6 @@ import {
   QUIZ_QUES_GAP_MILLISECONDS,
   WAIT_TIME_BEFORE_QUIZ_STOP_MILLISECONDS,
   UserId,
-  User,
 } from '@qj/shared';
 import { mapToArrayValues } from '@/src/utils/map-to-array.util';
 import { QuizGameService } from '@/src/modules/quiz-game-gateway/quiz-game/quiz-game.service';
@@ -21,15 +20,11 @@ import { ERRORS } from '@qj/shared';
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring
 export class QuizRoomService {
   public readonly roomId: string = uuidv4();
-  public readonly createdAt: Date = new Date();
-  public readonly players: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
-  public readonly usersNames: Map<Socket['id'], string> = new Map();
-  private queue: ContentfulQuizQuestionContentModelType[] = [];
-  private notRunning: boolean = true;
+  public readonly players: Map<Socket['id'], JoinQuizRoomEventData['userName'] | CreateQuizRoomEventData['userName']> =
+    new Map();
+  private quesQueue: ContentfulQuizQuestionContentModelType[] = [];
   public hostSocketId: Socket['id'] | null = null;
   public selectedAns: Map<Socket['id'], Map<QuizQues['id'], number>> = new Map();
-
-  public _players: Map<UserId, User> = new Map();
 
   constructor(
     private readonly server: Server,
@@ -40,7 +35,7 @@ export class QuizRoomService {
 
   public async initialize(data: CreateQuizRoomEventData): Promise<QuizRoomService> {
     await this.quizGame.initialize(data.quizGameId);
-    this.queue = Array.from(this.quizGame.newQuizQuestions || []);
+    this.quesQueue = Array.from(this.quizGame.newQuizQuestions || []);
 
     // TODO: While create this Quiz Room it should only take the quizGameId and server
     this.host = this.player;
@@ -58,8 +53,7 @@ export class QuizRoomService {
 
   public addPlayer(player: Socket, data: JoinQuizRoomEventData) {
     if (this.players.size < this.maxPlayersAllowed) {
-      this.players.set(player.id, player);
-      this.usersNames.set(player.id, data.userName);
+      this.players.set(player.id, data.userName);
       player.join(this.roomId);
     } else {
       throw new WsException(ERRORS.QUIZ_ROOM_ALREADY_FULL);
@@ -68,7 +62,6 @@ export class QuizRoomService {
 
   public removePlayer(userId: UserId, player: Socket) {
     player.leave(this.roomId);
-    this.usersNames.delete(userId);
     this.players.delete(userId);
     if (this.hostSocketId === userId) {
       this.hostSocketId = null;
@@ -76,12 +69,12 @@ export class QuizRoomService {
     }
 
     // Note: This should not be here
-    if (this.players.size === 0) this.quizGame!.endGame();
+    if (this.players.size === 0) this.quizGame.endGame();
   }
 
   public startGame() {
     if (this.players.size === this.maxPlayersAllowed) {
-      this.quizGame!.startGame();
+      this.quizGame.startGame();
     }
   }
 
@@ -90,10 +83,6 @@ export class QuizRoomService {
   }
 
   public playerScores() {
-    if (!this.quizGame) {
-      return [];
-    }
-
     const scores: QuizRoomState['quizGame']['scores'] = [];
 
     for (const [playerId] of this.players) {
@@ -114,7 +103,7 @@ export class QuizRoomService {
         }
       });
       const scorePayload: QuizRoomState['quizGame']['scores'][0] = {
-        playerName: this.usersNames.get(playerId)!,
+        playerName: this.players.get(playerId)!,
         playerId: playerId,
         correctQuesCount: correctQuesCount,
         inCorrectQuesCount: inCorrectQuesCount,
@@ -132,7 +121,7 @@ export class QuizRoomService {
     }
 
     return {
-      users: mapToArrayValues(this.usersNames),
+      users: mapToArrayValues(this.players),
       roomId: this.roomId,
       hasAllPlayersJoined: this.hasAllPlayersJoined,
       hostSocketId: this.hostSocketId!,
@@ -160,8 +149,8 @@ export class QuizRoomService {
     return this.players.size === this.maxPlayersAllowed;
   }
 
-  private sendQues() {
-    if (this.queue.length > 0) {
+  public sendQuestions() {
+    if (this.quesQueue.length > 0) {
       // TODO: Clear timeout after need
 
       const gap = this.quizGame!.hasStarted ? QUIZ_QUES_GAP_MILLISECONDS : WAIT_TIME_BEFORE_QUIZ_STOP_MILLISECONDS;
@@ -173,23 +162,16 @@ export class QuizRoomService {
         this.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', this.state);
         this.quizGame!.moveToNextQues();
 
-        this.queue.shift();
-        this.sendQues();
+        this.quesQueue.shift();
+        this.sendQuestions();
       }, gap);
     } else {
       setTimeout(() => {
-        this.notRunning = true;
+        // this.notRunning = true;
         this.quizGame!.endGame();
         this.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', this.state);
         // this.removePlayerFromQuizRoom(player);
       }, QUIZ_QUES_GAP_MILLISECONDS);
-    }
-  }
-
-  public startSendingQues(): void {
-    if (this.notRunning) {
-      this.notRunning = false;
-      this.sendQues();
     }
   }
 }

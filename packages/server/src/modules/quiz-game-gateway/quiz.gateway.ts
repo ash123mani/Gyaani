@@ -69,7 +69,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     if (quizRoom.hasAllPlayersJoined) {
       quizRoom.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', quizRoom.state);
-      quizRoom.startSendingQues();
+      quizRoom.sendQuestions();
     }
 
     this.logger.log(
@@ -87,7 +87,7 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     if (quizRoom.hasAllPlayersJoined) {
       quizRoom.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', quizRoom.state);
-      quizRoom.startSendingQues();
+      quizRoom.sendQuestions();
     }
 
     this.logger.log(`Player joined the QuizRoom: ${quizRoom.roomId}`);
@@ -120,6 +120,6 @@ export class QuizGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const newQuizRoom = await this.quizRoomManager.playAgain(data.currentRoomId, data.quizGameId);
 
     newQuizRoom.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', newQuizRoom.state);
-    newQuizRoom.startSendingQues();
+    newQuizRoom.sendQuestions();
   }
 }
