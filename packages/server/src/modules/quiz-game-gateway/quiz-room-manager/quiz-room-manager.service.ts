@@ -1,16 +1,10 @@
 import { Server, Socket } from 'socket.io';
 import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import {
-  ERRORS,
-  ContentfulQuizGameContentModelType,
-  CreateQuizRoomEventData,
-  JoinQuizRoomEventData,
-  User,
-  ContentfulQuizQuestionContentModelType,
-} from '@qj/shared';
+import { ERRORS, CreateQuizRoomEventData, JoinQuizRoomEventData, User } from '@qj/shared';
 import { UserService } from '@/src/modules/user/user.service';
 import { QuizRoomService } from '@/src/modules/quiz-game-gateway/quiz-room/quiz-room.service';
+import { QuizGameService } from '@/src/modules/quiz-game-gateway/quiz-game/quiz-game.service';
 
 @Injectable()
 export class QuizRoomManagerService {
@@ -19,73 +13,62 @@ export class QuizRoomManagerService {
 
   private readonly quizRooms: Map<QuizRoomService['roomId'], QuizRoomService> = new Map();
   private readonly quizRoomHosts: Map<QuizRoomService['roomId'], Socket> = new Map();
-  private readonly newQuizRooms: Map<QuizRoomService['roomId'], QuizRoomService> = new Map();
 
-  constructor(private userService: UserService) {}
-
-  public addUser(user: User) {
-    this.userService.addUser(user);
-  }
+  constructor(
+    private userService: UserService,
+    private readonly quizGame: QuizGameService,
+  ) {}
 
   public terminateSocket(player: Socket): void {
     try {
       const playerQuizRoom = this.getPlayerQuizRoom(player);
-      playerQuizRoom?.removePlayerFromQuizRoom(player.id, player);
+      playerQuizRoom?.removePlayer(player.id, player);
     } catch {
       this.logger.error('Error While terminating the socket');
     }
   }
 
-  public createQuizRoom(
-    player: Socket,
-    createQuizRoomEventData: CreateQuizRoomEventData,
-    quizRoomConfig: ContentfulQuizGameContentModelType,
-    quizQuestions: ContentfulQuizQuestionContentModelType[],
-  ): QuizRoomService {
-    const quizRoom = new QuizRoomService(
-      this.server!,
-      quizRoomConfig,
-      quizQuestions,
-      createQuizRoomEventData.maxPlayersAllowed,
-    );
-    quizRoom.host = player;
+  public async _createQuizRoom(player: Socket, data: CreateQuizRoomEventData): Promise<QuizRoomService> {
+    const _quizRoom = new QuizRoomService(this.server!, player, data.maxPlayersAllowed, this.quizGame);
+    await _quizRoom.initialize(data);
 
-    this.quizRoomHosts.set(quizRoom.roomId, player);
-    this.quizRooms.set(quizRoom.roomId, quizRoom);
+    this.quizRoomHosts.set(_quizRoom.roomId, player);
+    this.quizRooms.set(_quizRoom.roomId, _quizRoom);
 
-    return quizRoom;
+    return _quizRoom;
   }
 
   public addPlayerToQuizRoom(player: Socket, data: JoinQuizRoomEventData): QuizRoomService {
     const quizRoom = this.quizRooms.get(data.quizRoomId);
-
     if (!quizRoom) throw new WsException(ERRORS.QUIZ_ROOM_NOT_FOUND);
-    if (quizRoom.players.size === quizRoom.maxPlayersAllowed) throw new WsException(ERRORS.QUIZ_ROOM_ALREADY_FULL);
 
-    quizRoom.addPlayerToQuizRoom(player, data);
+    quizRoom.addPlayer(player, data);
 
     return quizRoom;
   }
 
   public getPlayerQuizRoom(player: Socket) {
     const quizRooms = this.quizRooms.values();
-    for (const quizRoom of quizRooms) {
-      if (quizRoom.players.has(player.id)) {
-        return quizRoom;
-      }
+    const playerRoom = Array.from(quizRooms).find((room) => room.players.has(player.id));
+    if (playerRoom) {
+      return playerRoom;
+    } else {
+      throw new NotFoundException({
+        title: 'User Not Found',
+        status: HttpStatus.NOT_FOUND,
+        detail: `User with id '${player.id}' was not found`,
+      });
     }
-
-    throw new NotFoundException({
-      title: 'User Not Found',
-      status: HttpStatus.NOT_FOUND,
-      detail: `User with id '${player.id}' was not found`,
-    });
   }
 
   // here new host will the one who requested the playAgain
-  public playAgain(currentRoomId: string, quizGameId: string) {
+  public async playAgain(currentRoomId: string, quizGameId: string) {
     const currentRoomHost = this.quizRoomHosts.get(currentRoomId) || this.quizRoomHosts.values()[0]; // this should be handled by method inside QuizRoom
     const currentQuizRoom = this.quizRooms.get(currentRoomId);
+
+    const quizRoomPlayersSocketIds = this.server!.sockets.adapter.rooms.get(currentRoomId);
+    const playerSockets = this.server!.sockets.sockets;
+    const players = currentQuizRoom!.players;
 
     if (!currentQuizRoom) {
       throw new NotFoundException({
@@ -95,25 +78,29 @@ export class QuizRoomManagerService {
       });
     }
 
-    const newQuizRoom = this.createQuizRoom(
-      currentRoomHost,
-      {
-        userName: currentQuizRoom.usersNames.get(currentRoomHost.id)!,
-        maxPlayersAllowed: currentQuizRoom.players.size,
-        quizGameId: quizGameId,
-      },
-      currentQuizRoom.quizRoomConfig,
-      currentQuizRoom.quizQuestions,
-    );
+    // TODO: Play Again should not create an new quiz room, rather it should re-start the game in the same room
+    const newQuizRoom = await this._createQuizRoom(currentRoomHost, {
+      userName: currentQuizRoom.players.get(currentRoomHost.id)!,
+      maxPlayersAllowed: currentQuizRoom.players.size,
+      quizGameId: quizGameId,
+    });
 
-    for (const [playerSocketId, playerSocket] of currentQuizRoom.players) {
-      this.addPlayerToQuizRoom(playerSocket, {
-        quizRoomId: newQuizRoom.roomId,
-        userName: currentQuizRoom.usersNames.get(playerSocketId)!,
-      });
-
-      currentQuizRoom.removePlayerFromQuizRoom(playerSocket.id, playerSocket);
+    for (const playerSocketId of quizRoomPlayersSocketIds!) {
+      const playerSocket = this.server!.sockets.sockets.get(playerSocketId);
+      currentQuizRoom.removePlayer(playerSocketId, playerSocket!);
     }
+
+    for (const playerSocketId of quizRoomPlayersSocketIds!) {
+      const playerSocket = playerSockets.get(playerSocketId);
+      this.addPlayerToQuizRoom(playerSocket!, {
+        quizRoomId: newQuizRoom.roomId,
+        userName: players.get(playerSocketId)!,
+      });
+    }
+
+    // This is not correct, first you will start the game then you will send the questions, starting means the the sending ques
+    newQuizRoom.startGame();
+    newQuizRoom.sendQuestions();
 
     this.quizRooms.delete(currentRoomId);
     this.quizRoomHosts.delete(currentRoomId);

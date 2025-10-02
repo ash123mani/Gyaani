@@ -8,6 +8,7 @@
 - Add play with online players feature
 - After refactoring (i.e. point 1), add the option to view which question user have done correct and what answer did he
   marked.
+- -  Leaderboard should handle score for players using singleton
 
 ### Frontend:-
 

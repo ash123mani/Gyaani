@@ -10,10 +10,17 @@ import { CmsService } from '@/src/modules/quiz-game-gateway/cms/cms.service';
 import { SuccessResponseMiddleware } from 'src/common/middlewares';
 import { CmsModule } from '@/src/modules/quiz-game-gateway/cms/cms.module';
 import { UserModule } from '@/src/modules/user/user.module';
-import { QuizRoomModule } from '@/src/modules/quiz-game-gateway/quiz-room/quiz-room.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), HttpModule, QuizModule, CmsModule, UserModule, QuizRoomModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    HttpModule,
+    QuizModule,
+    CmsModule,
+    UserModule,
+  ],
   controllers: [AppController, CmsController],
   providers: [AppService, CmsService],
 })

@@ -8,50 +8,60 @@ import {
   QuizQues,
   QUIZ_QUES_GAP_MILLISECONDS,
   WAIT_TIME_BEFORE_QUIZ_STOP_MILLISECONDS,
-  ContentfulQuizGameContentModelType,
-  ContentfulQuizQuestionContentModelType,
   UserId,
-  User,
 } from '@qj/shared';
 import { mapToArrayValues } from '@/src/utils/map-to-array.util';
-import { Injectable, Optional } from '@nestjs/common';
 import { QuizGameService } from '@/src/modules/quiz-game-gateway/quiz-game/quiz-game.service';
+import { CreateQuizRoomEventData } from '@qj/shared';
+import { ContentfulQuizQuestionContentModelType } from '@qj/shared';
+import { WsException } from '@nestjs/websockets';
+import { ERRORS } from '@qj/shared';
 
 // TODO: Name it properly and read https://khalilstemmler.com/articles/typescript-domain-driven-design/entities/ before refactoring
-@Injectable()
 export class QuizRoomService {
   public readonly roomId: string = uuidv4();
-  public readonly createdAt: Date = new Date();
-  public readonly players: Map<Socket['id'], Socket> = new Map<Socket['id'], Socket>();
-  public readonly quizGame: QuizGameService = new QuizGameService(this.quizRoomConfig, this.quizQuestions);
-  public readonly usersNames: Map<Socket['id'], string> = new Map();
-  private queue = Array.from(this.quizGame.newQuizQuestions || []);
-  private notRunning: boolean = true;
+  public readonly players: Map<Socket['id'], JoinQuizRoomEventData['userName'] | CreateQuizRoomEventData['userName']> =
+    new Map();
+  private quesQueue: ContentfulQuizQuestionContentModelType[] = [];
   public hostSocketId: Socket['id'] | null = null;
   public selectedAns: Map<Socket['id'], Map<QuizQues['id'], number>> = new Map();
 
-  public _players: Map<UserId, User> = new Map();
-
   constructor(
-    @Optional() private readonly server: Server,
-    @Optional() public readonly quizRoomConfig: ContentfulQuizGameContentModelType,
-    @Optional() public readonly quizQuestions: ContentfulQuizQuestionContentModelType[],
-    @Optional() public readonly maxPlayersAllowed: number = 1,
+    private readonly server: Server,
+    private readonly player: Socket,
+    private readonly maxPlayersAllowed: number,
+    private readonly quizGame: QuizGameService,
   ) {}
+
+  public async initialize(data: CreateQuizRoomEventData): Promise<QuizRoomService> {
+    await this.quizGame.initialize(data.quizGameId);
+    this.quesQueue = Array.from(this.quizGame.newQuizQuestions || []);
+
+    // TODO: While create this Quiz Room it should only take the quizGameId and server
+    this.host = this.player;
+    this.addPlayer(this.player, {
+      userName: data.userName,
+      quizRoomId: data.quizGameId,
+    });
+
+    return this;
+  }
 
   public set host(player: Socket) {
     this.hostSocketId = player.id;
   }
 
-  public addPlayerToQuizRoom(player: Socket, data: JoinQuizRoomEventData) {
-    this.players.set(player.id, player);
-    this.usersNames.set(player.id, data.userName);
-    player.join(this.roomId);
+  public addPlayer(player: Socket, data: JoinQuizRoomEventData) {
+    if (this.players.size < this.maxPlayersAllowed) {
+      this.players.set(player.id, data.userName);
+      player.join(this.roomId);
+    } else {
+      throw new WsException(ERRORS.QUIZ_ROOM_ALREADY_FULL);
+    }
   }
 
-  public removePlayerFromQuizRoom(userId: UserId, player: Socket) {
+  public removePlayer(userId: UserId, player: Socket) {
     player.leave(this.roomId);
-    this.usersNames.delete(userId);
     this.players.delete(userId);
     if (this.hostSocketId === userId) {
       this.hostSocketId = null;
@@ -62,7 +72,7 @@ export class QuizRoomService {
     if (this.players.size === 0) this.quizGame.endGame();
   }
 
-  public startQuizGame() {
+  public startGame() {
     if (this.players.size === this.maxPlayersAllowed) {
       this.quizGame.startGame();
     }
@@ -80,8 +90,8 @@ export class QuizRoomService {
       let inCorrectQuesCount = 0;
       let unAttemptedQuesCount = 0;
 
-      this.quizGame.newQuizQuestions.map((ques) => {
-        const correctAns = this.quizGame.answers.get(ques.sys.id);
+      this.quizGame!.newQuizQuestions.map((ques) => {
+        const correctAns = this.quizGame!.answers.get(ques.sys.id);
         const selectedAns = (this.selectedAns.get(playerId) || new Map()).get(ques.sys.id);
 
         if (!selectedAns) {
@@ -93,7 +103,7 @@ export class QuizRoomService {
         }
       });
       const scorePayload: QuizRoomState['quizGame']['scores'][0] = {
-        playerName: this.usersNames.get(playerId)!,
+        playerName: this.players.get(playerId)!,
         playerId: playerId,
         correctQuesCount: correctQuesCount,
         inCorrectQuesCount: inCorrectQuesCount,
@@ -105,24 +115,28 @@ export class QuizRoomService {
     return scores;
   }
 
-  public get state(): QuizRoomState {
+  public get state(): QuizRoomState | null {
+    if (!this.quizGame) {
+      return null;
+    }
+
     return {
-      users: mapToArrayValues(this.usersNames),
+      users: mapToArrayValues(this.players),
       roomId: this.roomId,
       hasAllPlayersJoined: this.hasAllPlayersJoined,
       hostSocketId: this.hostSocketId!,
-      quizRoomConfig: this.quizGame.newQuizRoomConfig,
-      newQuizQues: this.quizGame.newQuizQuestions,
+      quizRoomConfig: this.quizGame!.newQuizRoomConfig,
+      newQuizQues: this.quizGame!.newQuizQuestions,
       maxPlayersAllowed: this.maxPlayersAllowed,
       quizGame: {
-        hasStarted: this.quizGame.hasStarted,
-        currentQues: this.quizGame.currentQues,
-        hasFinished: this.quizGame.hasFinished,
-        hasNextQues: this.quizGame.hasNextQues,
+        hasStarted: this.quizGame!.hasStarted,
+        currentQues: this.quizGame!.currentQues,
+        hasFinished: this.quizGame!.hasFinished,
+        hasNextQues: this.quizGame!.hasNextQues,
         scores: this.playerScores(),
-        totalScore: this.quizGame.newQuizQuestions.length * 10,
-        totalQues: this.quizGame.newQuizQuestions.length,
-        currentQuesIndex: this.quizGame.currentQuestionIndex + 1,
+        totalScore: this.quizGame!.newQuizQuestions.length * 10,
+        totalQues: this.quizGame!.newQuizQuestions.length,
+        currentQuesIndex: this.quizGame!.currentQuestionIndex + 1,
       },
     };
   }
@@ -135,36 +149,30 @@ export class QuizRoomService {
     return this.players.size === this.maxPlayersAllowed;
   }
 
-  private sendQues() {
-    if (this.queue.length > 0) {
+  // This is not correct correct, first you will start the game then you will send the questions
+  public sendQuestions() {
+    if (this.quesQueue.length > 0) {
       // TODO: Clear timeout after need
 
-      const gap = this.quizGame.hasStarted ? QUIZ_QUES_GAP_MILLISECONDS : WAIT_TIME_BEFORE_QUIZ_STOP_MILLISECONDS;
+      const gap = this.quizGame!.hasStarted ? QUIZ_QUES_GAP_MILLISECONDS : WAIT_TIME_BEFORE_QUIZ_STOP_MILLISECONDS;
 
       setTimeout(() => {
-        if (!this.quizGame.hasStarted) {
-          this.startQuizGame();
+        if (!this.quizGame!.hasStarted) {
+          this.startGame();
         }
-        this.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', this.state);
-        this.quizGame.moveToNextQues();
+        this.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', this.state);
+        this.quizGame!.moveToNextQues();
 
-        this.queue.shift();
-        this.sendQues();
+        this.quesQueue.shift();
+        this.sendQuestions();
       }, gap);
     } else {
       setTimeout(() => {
-        this.notRunning = true;
-        this.quizGame.endGame();
-        this.dispatchEventToQuizRoom<QuizRoomState>('QuizRoomState', this.state);
+        // this.notRunning = true;
+        this.quizGame!.endGame();
+        this.dispatchEventToQuizRoom<QuizRoomState | null>('QuizRoomState', this.state);
         // this.removePlayerFromQuizRoom(player);
       }, QUIZ_QUES_GAP_MILLISECONDS);
-    }
-  }
-
-  public startSendingQues(): void {
-    if (this.notRunning) {
-      this.notRunning = false;
-      this.sendQues();
     }
   }
 }
