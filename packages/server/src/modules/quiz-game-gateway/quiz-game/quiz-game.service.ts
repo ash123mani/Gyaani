@@ -18,19 +18,21 @@ export class QuizGameService {
     this.newQuizRoomConfig = await this.cmsService.quizGameConfig(quizGameId);
     const quizQuestionsIds = this.newQuizRoomConfig.fields?.questions?.map((ques) => ques.sys.id);
     this.newQuizQuestions = await this.cmsService.allQuizGameQuesConfig(quizQuestionsIds);
+    this.hasStarted = false;
+    this.hasFinished = false;
+    this.currentQuestionIndex = 0;
     this.initializeAnswers();
   }
 
   public startGame() {
     if (this.hasStarted) return;
     this.hasStarted = true;
-    this.currentQuestionIndex = 0;
+    this.hasFinished = false;
   }
 
   public endGame() {
     if (this.hasFinished || !this.hasStarted) return;
     this.hasFinished = true;
-    this.currentQuestionIndex = -1;
   }
 
   public get currentQues() {

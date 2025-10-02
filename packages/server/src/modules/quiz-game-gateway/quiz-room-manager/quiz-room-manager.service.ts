@@ -66,6 +66,10 @@ export class QuizRoomManagerService {
     const currentRoomHost = this.quizRoomHosts.get(currentRoomId) || this.quizRoomHosts.values()[0]; // this should be handled by method inside QuizRoom
     const currentQuizRoom = this.quizRooms.get(currentRoomId);
 
+    const quizRoomPlayersSocketIds = this.server!.sockets.adapter.rooms.get(currentRoomId);
+    const playerSockets = this.server!.sockets.sockets;
+    const players = currentQuizRoom!.players;
+
     if (!currentQuizRoom) {
       throw new NotFoundException({
         title: 'User Not Found',
@@ -76,19 +80,27 @@ export class QuizRoomManagerService {
 
     // TODO: Play Again should not create an new quiz room, rather it should re-start the game in the same room
     const newQuizRoom = await this._createQuizRoom(currentRoomHost, {
-      userName: currentQuizRoom.usersNames.get(currentRoomHost.id)!,
+      userName: currentQuizRoom.players.get(currentRoomHost.id)!,
       maxPlayersAllowed: currentQuizRoom.players.size,
       quizGameId: quizGameId,
     });
 
-    for (const [playerSocketId, playerSocket] of currentQuizRoom.players) {
-      this.addPlayerToQuizRoom(playerSocket, {
-        quizRoomId: newQuizRoom.roomId,
-        userName: currentQuizRoom.usersNames.get(playerSocketId)!,
-      });
-
-      currentQuizRoom.removePlayer(playerSocket.id, playerSocket);
+    for (const playerSocketId of quizRoomPlayersSocketIds!) {
+      const playerSocket = this.server!.sockets.sockets.get(playerSocketId);
+      currentQuizRoom.removePlayer(playerSocketId, playerSocket!);
     }
+
+    for (const playerSocketId of quizRoomPlayersSocketIds!) {
+      const playerSocket = playerSockets.get(playerSocketId);
+      this.addPlayerToQuizRoom(playerSocket!, {
+        quizRoomId: newQuizRoom.roomId,
+        userName: players.get(playerSocketId)!,
+      });
+    }
+
+    // This is not correct, first you will start the game then you will send the questions, starting means the the sending ques
+    newQuizRoom.startGame();
+    newQuizRoom.sendQuestions();
 
     this.quizRooms.delete(currentRoomId);
     this.quizRoomHosts.delete(currentRoomId);

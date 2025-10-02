@@ -149,6 +149,7 @@ export class QuizRoomService {
     return this.players.size === this.maxPlayersAllowed;
   }
 
+  // This is not correct correct, first you will start the game then you will send the questions
   public sendQuestions() {
     if (this.quesQueue.length > 0) {
       // TODO: Clear timeout after need
